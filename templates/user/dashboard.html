@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ _('My Bookings') }} - {{ _('Ptah Studios') }}{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===========================
+           DESIGN SYSTEM & VARIABLES
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-status-confirmed-bg: rgba(16, 185, 129, 0.1);
+            --color-status-confirmed-text: #10B981;
+            
+            --color-status-pending-bg: rgba(245, 158, 11, 0.1);
+            --color-status-pending-text: #F59E0B;
+
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* ===========================
+           HEADER SECTION
+           =========================== */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title span {
+            color: var(--color-gold);
+        }
+
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10, 25, 47, 0.5) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-message h2 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-message p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard Back Button */
+        .btn-dashboard {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-dashboard:hover {
+            background: var(--color-gold);
+            color: var(--color-bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+        
+        /* RTL Back Button */
+        html[dir="rtl"] .btn-dashboard i { transform: scaleX(-1); }
+
+        /* ===========================
+           STATS CARDS ROW
+           =========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Active State for Filter */
+        .stat-card.active {
+            border-color: var(--color-gold);
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+        }
+        
+        /* Small indicator for active tab */
+        .stat-card.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--color-gold);
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 -2px 10px rgba(212,175,55,0.5);
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--color-text-main);
+        }
+
+        .stat-label {
+            color: var(--color-text-muted);
+            font-size: 0.75rem;
+            text-transform: capitalize;
+        }
+
+        /* ===========================
+           FILTER BAR
+           =========================== */
+        .filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        
+        /* RTL Search Input */
+        html[dir="rtl"] .search-input {
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-gold);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+        }
+        
+        /* RTL Search Icon */
+        html[dir="rtl"] .search-icon {
+            left: auto;
+            right: 1rem;
+        }
+
+        /* Booking Reference Badge */
+        .booking-ref {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-filter, .btn-view {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.6rem 0.875rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .btn-view.active {
+            background: var(--color-gold);
+            color: #000;
+            border-color: var(--color-gold);
+        }
+
+        .btn-filter:hover, .btn-view:hover:not(.active) {
+            border-color: var(--color-text-muted);
+            color: var(--color-text-main);
+        }
+
+        /* ===========================
+           TABLE STYLES
+           =========================== */
+        .bookings-table-container {
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .bookings-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--color-border);
+            background: rgba(10, 25, 47, 0.5);
+        }
+        
+        /* RTL Table Header */
+        html[dir="rtl"] .bookings-table th { text-align: right; }
+
+        .bookings-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-main);
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        .bookings-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .client-cell h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .client-cell span {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .service-cell {
+            color: var(--color-text-muted);
+        }
+
+        .date-cell div:first-child {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .date-cell div:last-child {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .amount-cell {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+            border: 1px solid transparent;
+        }
+
+        .status-pill.confirmed {
+            background: var(--color-status-confirmed-bg);
+            color: var(--color-status-confirmed-text);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .status-pill.pending {
+            background: var(--color-status-pending-bg);
+            color: var(--color-status-pending-text);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .status-pill.completed {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .status-pill.in_progress {
+            background: rgba(139, 92, 246, 0.15);
+            color: #A78BFA;
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .status-pill.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-manage {
+            background: transparent;
+            color: var(--color-gold);
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            padding: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-manage:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* ===========================
+           MODAL STYLES (View Only for Users)
+           =========================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-gold);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        /* RTL Close Button */
+        html[dir="rtl"] .close-btn {
+            position: absolute;
+            left: 1rem;
+            right: auto;
+        }
+
+        .close-btn:hover { color: #fff; }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .info-value.email { font-size: 0.8rem; color: var(--color-text-muted); }
+        .info-value.price { color: var(--color-gold); font-size: 1.1rem; font-weight: 700; }
+
+        .info-value.status-view {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.85rem;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--color-gold);
+            color: #050d1a;
+        }
+        
+        .btn-primary:hover {
+            background: #c49f2d;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--color-text-muted);
+            color: var(--color-text-main);
+        }
+
+        /* Service Cost Breakdown */
+        .cost-breakdown {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .cost-breakdown label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .cost-box {
+            background: var(--color-bg-dark);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .cost-row:last-child {
+            margin-bottom: 0;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--color-border);
+            font-weight: 600;
+        }
+
+        .cost-label {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        .cost-amount {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        /* Equipment Section */
+        .equipment-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .equipment-section label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .equipment-box {
+            background: var(--color-bg-dark);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .equipment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .equipment-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .equipment-item .qty {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        .equipment-item .name {
+            flex: 1;
+            margin-left: 0.5rem;
+        }
+        html[dir="rtl"] .equipment-item .name { margin-left: 0; margin-right: 0.5rem; }
+
+        .equipment-item .item-total {
+            color: var(--color-gold);
+        }
+
+        /* ===========================
+           RESPONSIVE STYLES (< 768px)
+           =========================== */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .bookings-table th:nth-child(4), 
+            .bookings-table td:nth-child(4) { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .btn-dashboard {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.85rem;
+            }
+
+            /* Stats Grid - Single column on very small screens */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1rem 0.75rem;
+                border-radius: 10px;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+            }
+
+            /* Filter Bar */
+            .filter-bar {
+                gap: 0.75rem;
+            }
+
+            .action-group {
+                justify-content: space-between;
+            }
+
+            .btn-filter, .btn-view {
+                flex: 1;
+                justify-content: center;
+                padding: 0.6rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            /* Table Container - Horizontal Scroll */
+            .bookings-table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .bookings-table {
+                min-width: 700px;
+            }
+
+            .bookings-table th,
+            .bookings-table td {
+                padding: 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            /* Modal */
+            .modal-card {
+                padding: 1.25rem;
+                max-width: 100%;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
+            }
+
+            .modal-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            /* RTL Override for Modal Text */
+            html[dir="rtl"] .modal-grid .info-group { text-align: right !important; }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-modal {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.875rem 0.5rem;
+            }
+
+            .stat-number {
+                font-size: 1.35rem;
+            }
+
+            .stat-label {
+                font-size: 0.65rem;
+            }
+
+            .btn-filter, .btn-view {
+                font-size: 0.7rem;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">{{ _('My') }} <span>{{ _('Bookings') }}</span></h1>
+            <p class="page-subtitle">{{ _('View and manage your studio bookings') }}</p>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn-dashboard">
+            <i class="fas fa-arrow-left"></i> {{ _('Back to Home') }}
+        </a>
+    </div>
+
+    <div class="welcome-message">
+        <h2>{{ _('Welcome back') }}, {{ current_user.name }}!</h2>
+        <p>{{ _('Here\'s an overview of your booking activity. Click on any booking to view details.') }}</p>
+    </div>
+
+    {% set count_all = bookings|length %}
+    {% set count_pending = bookings|selectattr("status", "equalto", "pending")|list|length %}
+    {% set count_confirmed = bookings|selectattr("status", "equalto", "confirmed")|list|length %}
+    {% set count_completed = bookings|selectattr("status", "equalto", "completed")|list|length %}
+
+    <div class="stats-grid">
+        <div class="stat-card active" onclick="filterBookings('all', this)">
+            <div class="stat-number">{{ count_all }}</div>
+            <div class="stat-label">{{ _('All Bookings') }}</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('pending', this)">
+            <div class="stat-number">{{ count_pending }}</div>
+            <div class="stat-label">{{ _('Pending') }}</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('confirmed', this)">
+            <div class="stat-number">{{ count_confirmed }}</div>
+            <div class="stat-label">{{ _('Confirmed') }}</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('completed', this)">
+            <div class="stat-number">{{ count_completed }}</div>
+            <div class="stat-label">{{ _('Completed') }}</div>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="{{ _('Search by reference or service...') }}" onkeyup="searchBookings()">
+        </div>
+    </div>
+
+    <div class="bookings-table-container">
+        <table class="bookings-table" id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>{{ _('Reference') }}</th>
+                    <th>{{ _('Service') }}</th>
+                    <th>{{ _('Date & Time') }}</th>
+                    <th>{{ _('Location') }}</th>
+                    <th>{{ _('Amount') }}</th>
+                    <th>{{ _('Status') }}</th>
+                    <th>{{ _('Actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if bookings %}
+                    {% for booking in bookings|sort(attribute='id', reverse=True) %}
+                    <tr class="booking-row" data-status="{{ booking.status }}" data-reference="{{ booking.booking_reference|lower }}">
+                        <td>
+                            <span class="booking-ref">{{ booking.booking_reference }}</span>
+                        </td>
+                        <td class="service-cell">
+                            {{ booking.service.name_ar or booking.service.name if get_locale() == 'ar' else booking.service.name }}
+                        </td>
+                        
+                        <td class="date-cell">
+                            <div>
+                                {% if get_locale() == 'ar' %}
+                                    {% set m = booking.booking_date.strftime('%m')|int %}
+                                    {% set months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] %}
+                                    {{ months[m-1] }} {{ booking.booking_date.strftime('%d, %Y') }}
+                                {% else %}
+                                    {{ booking.booking_date.strftime('%b %d, %Y') }}
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                {% set start_t = booking.start_time.strftime('%I:%M') %}
+                                {% set end_t = booking.end_time.strftime('%I:%M') %}
+                                {% set am_pm_start = booking.start_time.strftime('%p') %}
+                                {% set am_pm_end = booking.end_time.strftime('%p') %}
+                                
+                                {% if get_locale() == 'ar' %}
+                                    {{ start_t }} {{ 'م' if am_pm_start == 'PM' else 'ص' }} - {{ end_t }} {{ 'م' if am_pm_end == 'PM' else 'ص' }}
+                                {% else %}
+                                    {{ start_t }} {{ am_pm_start }} - {{ end_t }} {{ am_pm_end }}
+                                {% endif %}
+                                <span style="color: var(--color-gold); font-size: 0.7rem; margin-left: 5px;">
+                                    ({{ booking.duration_hours|int }}{{ _('h') }})
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <td class="service-cell">
+                            {% if booking.studio %}
+                                {{ booking.studio.name_ar or booking.studio.name if get_locale() == 'ar' else booking.studio.name }}
+                                <div style="font-size: 0.7rem; color: var(--color-text-muted);">
+                                    {{ booking.studio.persons_capacity }} {{ _('persons max') }}
+                                </div>
+                            {% else %}
+                                {{ _('No Studio Assigned') }}
+                            {% endif %}
+                        </td>
+                        
+                        <td class="amount-cell">
+                            {{ "{:,.0f}".format(booking.total_price) }} {{ _('EGP') }}
+                        </td>
+                        
+                        <td>
+                            <span class="status-pill {{ booking.status }}">
+                                {% if get_locale() == 'ar' %}
+                                    {% if booking.status == 'pending' %}قيد الانتظار
+                                    {% elif booking.status == 'confirmed' %}مؤكد
+                                    {% elif booking.status == 'completed' %}مكتمل
+                                    {% elif booking.status == 'cancelled' %}ملغي
+                                    {% else %}{{ booking.status }}{% endif %}
+                                {% else %}
+                                    {{ booking.status|replace('_', ' ')|title }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        
+                        <td>
+                            <button 
+                                type="button"
+                                class="btn-manage"
+                                onclick="openViewModal(this)"
+                                data-id="{{ booking.id }}"
+                                data-reference="{{ booking.booking_reference }}"
+                                data-service="{{ booking.service.name_ar or booking.service.name if get_locale() == 'ar' else booking.service.name }}"
+                                data-price="{{ booking.total_price }}"
+                                data-status="{{ booking.status }}"
+                                data-status-display="{% if get_locale() == 'ar' %}{% if booking.status == 'pending' %}قيد الانتظار{% elif booking.status == 'confirmed' %}مؤكد{% elif booking.status == 'completed' %}مكتمل{% elif booking.status == 'cancelled' %}ملغي{% else %}{{ booking.status }}{% endif %}{% else %}{{ booking.status|replace('_', ' ')|title }}{% endif %}"
+                                data-date="{% if get_locale() == 'ar' %}{% set m = booking.booking_date.strftime('%m')|int %}{% set months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] %}{{ months[m-1] }} {{ booking.booking_date.strftime('%d, %Y') }}{% else %}{{ booking.booking_date.strftime('%B %d, %Y') }}{% endif %}"
+                                data-time="{% if get_locale() == 'ar' %}{{ booking.start_time.strftime('%I:%M') }} {{ 'م' if booking.start_time.strftime('%p') == 'PM' else 'ص' }} - {{ booking.end_time.strftime('%I:%M') }} {{ 'م' if booking.end_time.strftime('%p') == 'PM' else 'ص' }}{% else %}{{ booking.start_time.strftime('%H:%M') }} - {{ booking.end_time.strftime('%H:%M') }}{% endif %}"
+                                data-duration="{{ booking.duration_hours }}"
+                                data-base-price="{{ booking.service.hourly_rate if booking.service.hourly_rate else booking.service.base_price }}"
+                                data-equipment='{{ booking.equipment_data if booking.equipment_data else "{}" }}'
+                            >
+                                {{ _('View Details') }}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr id="noRowsMessage">
+                        <td colspan="7" style="text-align:center; color: #8892B0; padding: 3rem;">
+                            <i class="fas fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+                            {{ _('No bookings found.') }}<br>
+                            <a href="{{ url_for('booking') }}" style="color: var(--color-gold); text-decoration: none; margin-top: 1rem; display: inline-block;">
+                                {{ _('Book a session now') }} <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="7" style="text-align:center; color: #8892B0; padding: 3rem;">
+                        <i class="fas fa-filter" style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+                        {{ _('No bookings found with this status or search criteria.') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="viewModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">{{ _('Booking Details') }}</h3>
+                <button onclick="closeModal()" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--color-text-muted); font-size: 0.8rem;">{{ _('Booking Reference') }}</span>
+                    <span id="m-reference" class="booking-ref"></span>
+                </div>
+            </div>
+
+            <div class="modal-grid">
+                <div class="info-group">
+                    <label>{{ _('Service') }}</label>
+                    <div id="m-service" class="info-value"></div>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <label>{{ _('Status') }}</label>
+                    <span id="m-status" class="status-pill"></span>
+                </div>
+
+                <div class="info-group">
+                    <label>{{ _('Date') }}</label>
+                    <div id="m-date" class="info-value"></div>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <label>{{ _('Time') }}</label>
+                    <div id="m-time" class="info-value"></div>
+                </div>
+            </div>
+
+            <div class="cost-breakdown">
+                <label>{{ _('Service Cost Breakdown') }}</label>
+                <div class="cost-box">
+                    <div class="cost-row">
+                        <span class="cost-label">{{ _('Service Cost') }}</span>
+                        <span id="m-service-cost" class="cost-amount">0 {{ _('EGP') }}</span>
+                    </div>
+                    <div class="cost-row">
+                        <span id="m-duration-breakdown" class="cost-label">-</span>
+                    </div>
+                    <div class="cost-row">
+                        <span class="cost-label">{{ _('Total Amount') }}</span>
+                        <span id="m-price" class="cost-amount"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="equipment-section">
+                <label>{{ _('Equipment & Extras') }}</label>
+                <div id="m-equipment" class="equipment-box">
+                    <div style="color: var(--color-text-muted); font-size: 0.85rem;">{{ _('No equipment selected') }}</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
+                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem; text-align: center;">
+                    {{ _('Need to make changes to your booking?') }}
+                </p>
+                <div class="modal-actions">
+                    <a href="{{ url_for('contact') }}" class="btn-modal btn-secondary">
+                        <i class="fas fa-envelope"></i> {{ _('Contact Us') }}
+                    </a>
+                    <a href="{{ url_for('booking') }}" class="btn-modal btn-primary">
+                        <i class="fas fa-plus"></i> {{ _('New Booking') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use Jinja to inject equipment list logic into JS variable
+        const equipmentList = [
+            {% for addon in equipment_list %}
+            {
+                "id": {{ addon.id }},
+                "name": {{ (addon.name_ar or addon.name if get_locale() == 'ar' else addon.name) | tojson }},
+                "price": {{ addon.price }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // --- 1. Filter Functionality ---
+        function filterBookings(status, cardElement) {
+            if(cardElement) {
+                document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+                cardElement.classList.add('active');
+            }
+
+            const rows = document.querySelectorAll('.booking-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const noResultsRow = document.getElementById('noResultsRow');
+            if (visibleCount === 0 && rows.length > 0) {
+                noResultsRow.style.display = '';
+            } else {
+                noResultsRow.style.display = 'none';
+            }
+        }
+
+        // --- 2. Search Functionality ---
+        function searchBookings() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('.booking-row');
+
+            rows.forEach(row => {
+                const reference = row.getAttribute('data-reference') || '';
+                const serviceText = row.querySelector('.service-cell').innerText.toLowerCase();
+                if (reference.includes(filter) || serviceText.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // --- 3. Modal Functionality (View Only) ---
+        const modal = document.getElementById('viewModal');
+        const bookingEquipmentData = {};
+
+        function openViewModal(btn) {
+            const dataset = btn.dataset;
+            
+            // Extract data
+            const id = dataset.id;
+            const reference = dataset.reference;
+            const service = dataset.service;
+            const price = dataset.price;
+            const status = dataset.status;
+            const statusDisplay = dataset.statusDisplay; // New localized status
+            const date = dataset.date;
+            const time = dataset.time;
+            const duration = dataset.duration;
+            const basePrice = dataset.basePrice;
+            const equipmentJson = dataset.equipment;
+
+            document.getElementById('m-reference').innerText = reference;
+            document.getElementById('m-service').innerText = service;
+            document.getElementById('m-price').innerText = Math.floor(parseFloat(price)) + " {{ _('EGP') }}";
+            document.getElementById('m-date').innerText = date;
+            document.getElementById('m-time').innerText = time;
+            
+            const dur = parseFloat(duration) || 0;
+            const bp = parseFloat(basePrice) || 0;
+            const serviceCost = bp * dur;
+            
+            document.getElementById('m-duration-breakdown').innerText = `${dur}{{ _('h session @') }} ${bp} {{ _('EGP/hr') }}`;
+            document.getElementById('m-service-cost').innerText = serviceCost.toFixed(0) + " {{ _('EGP') }}";
+            
+            try {
+                if (equipmentJson && equipmentJson !== 'null' && equipmentJson !== '{}') {
+                    bookingEquipmentData[id] = JSON.parse(equipmentJson);
+                } else {
+                    bookingEquipmentData[id] = {};
+                }
+            } catch (e) {
+                console.error("Error parsing equipment JSON:", e);
+                bookingEquipmentData[id] = {};
+            }
+            
+            displayEquipment(id);
+            
+            const statusEl = document.getElementById('m-status');
+            statusEl.innerText = statusDisplay; // Use localized status
+            statusEl.className = 'status-pill ' + status;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function displayEquipment(bookingId) {
+            const equipmentContainer = document.getElementById('m-equipment');
+            const equipment = bookingEquipmentData[bookingId] || {};
+            
+            if (Object.keys(equipment).length === 0) {
+                equipmentContainer.innerHTML = '<div style="color: var(--color-text-muted); font-size: 0.85rem;">{{ _("No equipment selected") }}</div>';
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            let total = 0;
+            
+            for (const [addonId, quantity] of Object.entries(equipment)) {
+                // Use the pre-loaded equipmentList which contains translated names
+                const addon = equipmentList.find(e => e.id == addonId);
+                if (addon) {
+                    const itemTotal = addon.price * quantity;
+                    total += itemTotal;
+                    html += `
+                        <div class="equipment-item">
+                            <span class="qty">x${quantity}</span>
+                            <span class="name">${addon.name}</span>
+                            <span class="item-total">+${itemTotal} {{ _('EGP') }}</span>
+                        </div>
+                    `;
+                }
+            }
+            html += '</div>';
+            equipmentContainer.innerHTML = html;
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

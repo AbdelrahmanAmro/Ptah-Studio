@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('Booking Confirmed - Ptah Studios') }}</title>
+</head>
+{% extends "base.html" %}
+
+{% block title %}{{ _('Booking Confirmed - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       CSS Variables & Shared Styles
+       =========================== */
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-navy-medium: #112240;
+        --color-navy-light: #233554;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --color-gray-400: #ADB5BD;
+        
+        --font-heading: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', -apple-system, sans-serif;
+    }
+    
+    html.lenis { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+    
+    body {
+        cursor: default;
+        overflow-x: hidden;
+        background: var(--color-navy-darkest);
+    }
+
+    /* ===========================
+       Cinematic Grain Overlay
+       =========================== */
+    .grain-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0.04;
+        mix-blend-mode: overlay;
+        /* Animation removed for performance */
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+    }
+    
+    /* ===========================
+       Preloader
+       =========================== */
+    .preloader {
+        position: fixed;
+        inset: 0;
+        background: var(--color-navy-darkest);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s, visibility 0.8s;
+    }
+    
+    .preloader.loaded {
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .preloader-logo { width: 150px; height: 150px; }
+    .preloader-logo svg { width: 100%; height: 100%; }
+    
+    .logo-path {
+        fill: none;
+        stroke: var(--color-gold);
+        stroke-width: 2;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: drawLogo 2s ease-out forwards;
+    }
+    @keyframes drawLogo { to { stroke-dashoffset: 0; } }
+
+    /* ===========================
+       Success Page Specifics
+       =========================== */
+    .success-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem 3rem;
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-section::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+        animation: rotate 30s linear infinite;
+    }
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    }
+    
+    .success-card {
+        background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(20px);
+        border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        position: relative; overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success-card::before {
+        content: ''; position: absolute; inset: -2px;
+        background: linear-gradient(135deg, var(--color-gold), transparent, var(--color-gold));
+        border-radius: 20px; z-index: -1; opacity: 0.3;
+        animation: borderGlow 3s ease-in-out infinite;
+    }
+    @keyframes borderGlow { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.5; } }
+    
+    .success-icon {
+        width: 90px; height: 90px;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        position: relative; animation: iconPulse 2s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 20px 60px rgba(212, 175, 55, 0.6); }
+    }
+    .success-icon::before {
+        content: ''; position: absolute; inset: -8px;
+        border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 50%;
+        animation: ripple 2s ease-out infinite;
+    }
+    @keyframes ripple { from { transform: scale(1); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+    
+    .success-icon i { font-size: 3rem; color: var(--color-navy-dark); }
+    
+    .success-card h1 {
+        font-family: var(--font-heading);
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        margin-bottom: 1rem; color: #fff;
+    }
+    
+    .text-gold {
+        background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; color: var(--color-gold);
+    }
+    
+    .success-message {
+        font-size: 0.95rem;
+        color: var(--color-text-light); margin-bottom: 2rem; line-height: 1.6;
+        max-width: 550px; margin-left: auto; margin-right: auto;
+    }
+    .success-message strong { color: var(--color-gold); }
+    
+    .booking-reference {
+        background: rgba(10, 25, 47, 0.8);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .reference-label {
+        display: block; font-size: 0.65rem; text-transform: uppercase;
+        letter-spacing: 2px; color: var(--color-gray-400); margin-bottom: 0.5rem;
+    }
+    .reference-number {
+        font-family: var(--font-heading); font-size: 2rem;
+        font-weight: 700; color: var(--color-gold); letter-spacing: 2px;
+    }
+    
+    .booking-details {
+        background: rgba(10, 25, 47, 0.6);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 12px; padding: 1.5rem;
+        margin-bottom: 2rem; text-align: left;
+    }
+    
+    /* RTL Flip for Booking Details Text */
+    html[dir="rtl"] .booking-details { text-align: right; }
+    
+    .booking-details h3 {
+        font-family: var(--font-heading); font-size: 1.25rem;
+        margin-bottom: 1.5rem; color: var(--color-gold); text-align: center;
+    }
+    
+    .detail-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 1rem; margin-bottom: 1.5rem;
+    }
+    
+    .detail-item {
+        text-align: center; padding: 1rem;
+        background: rgba(212, 175, 55, 0.05);
+        border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.1);
+        transition: all 0.3s ease;
+    }
+    .detail-item:hover {
+        background: rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    .detail-label {
+        display: block; font-size: 0.65rem; text-transform: uppercase;
+        letter-spacing: 1px; color: var(--color-gray-400); margin-bottom: 0.3rem;
+    }
+    .detail-value { font-weight: 600; font-size: 0.95rem; color: #fff; }
+    
+    .status-badge {
+        display: inline-block; padding: 0.3rem 0.8rem;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 50px; font-size: 0.75rem; font-weight: 600;
+        color: var(--color-navy-dark); text-transform: uppercase; letter-spacing: 1px;
+    }
+    
+    .total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 1.5rem; background: rgba(212, 175, 55, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; margin-top: 1.5rem;
+    }
+    .total-row span:first-child {
+        font-weight: 600; font-size: 1rem; color: var(--color-text-light);
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .total-amount {
+        font-family: var(--font-heading); font-size: 2.2rem;
+        font-weight: 700; color: var(--color-gold);
+    }
+    
+    .next-steps {
+        background: rgba(212, 175, 55, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: left;
+    }
+    
+    /* RTL Flip for Next Steps Text */
+    html[dir="rtl"] .next-steps { text-align: right; }
+    
+    .next-steps h3 {
+        font-family: var(--font-heading); font-size: 1.25rem;
+        margin-bottom: 1rem; color: var(--color-gold); text-align: center;
+        display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .next-steps h3 i { font-size: 1rem; }
+    
+    .next-steps ol { padding-left: 1.5rem; color: var(--color-text-light); line-height: 1.8; }
+    
+    /* RTL Flip for List Padding */
+    html[dir="rtl"] .next-steps ol { padding-left: 0; padding-right: 1.5rem; }
+    
+    .next-steps li {
+        margin-bottom: 0.75rem; font-size: 0.9rem;
+        position: relative; padding-left: 0.5rem;
+    }
+    
+    /* RTL Flip for List Item Padding */
+    html[dir="rtl"] .next-steps li { padding-left: 0; padding-right: 0.5rem; }
+    
+    .next-steps li::marker { color: var(--color-gold); font-weight: 700; }
+    
+    .success-actions {
+        display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.8rem 2rem; 
+        border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+        text-decoration: none; transition: all 0.4s; cursor: pointer;
+        border: none; text-transform: uppercase; letter-spacing: 1px;
+        position: relative; overflow: hidden;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-dark); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6); }
+    
+    .btn-navy {
+        background: var(--color-navy-medium); color: #fff;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .btn-navy:hover {
+        background: var(--color-navy-light); border-color: var(--color-gold); transform: translateY(-3px);
+    }
+    
+    .btn-outline-gold {
+        background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);
+    }
+    .btn-outline-gold:hover {
+        background: var(--color-gold); color: var(--color-navy-dark); transform: translateY(-3px);
+    }
+    
+    /* Confetti Animation */
+    .confetti {
+        position: fixed; width: 8px; height: 8px; background: var(--color-gold);
+        top: -10px; z-index: 1; animation: confetti-fall linear forwards;
+    }
+    @keyframes confetti-fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+    
+    /* ===========================
+       Responsive
+       =========================== */
+    @media (max-width: 900px) {
+        .success-section { padding: 5rem 1.5rem 2rem; }
+        .success-card { padding: 1.5rem; }
+        
+        .detail-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .total-row { flex-direction: column; gap: 0.5rem; text-align: center; }
+        .total-amount { font-size: 1.8rem; }
+        .booking-reference { padding: 1rem; }
+        .reference-number { font-size: 1.5rem; }
+
+        /* --- UPDATED BUTTON FIX --- */
+        .success-actions { 
+            flex-direction: column; 
+            gap: 1rem; 
+            align-items: center; 
+            width: 100%;
+        }
+        
+        .success-actions .magnetic-wrap { 
+            width: 100%; 
+            /* Use percentage instead of pixels to guarantee it fits inside the frame */
+            max-width: 85%; 
+            margin: 0 auto;     
+            display: block;     
+        }
+        
+        .success-actions .btn { 
+            width: 100% !important; 
+            display: flex;
+            justify-content: center;
+            /* Prevent any previous minimum widths from forcing it wide */
+            min-width: 0 !important; 
+            /* Reduce padding slightly for mobile */
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+
+
+    
+
+    @media (max-width: 480px) {
+        .detail-grid { grid-template-columns: 1fr; }
+        .success-icon { width: 70px; height: 70px; }
+        .success-icon i { font-size: 2rem; }
+        .success-card h1 { font-size: 1.5rem; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="grain-overlay"></div>
+    
+    <div class="preloader">
+        <div class="preloader-logo">
+            <svg viewBox="0 0 100 100">
+                <path class="logo-path" d="M50,10 L50,90 M30,30 L70,30 M30,50 L70,50 M30,70 L70,70" />
+            </svg>
+        </div>
+    </div>
+
+    <section class="success-section">
+        <div class="container">
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                
+                <h1>{{ _('Booking Request') }} <span class="text-gold">{{ _('Received!') }}</span></h1>
+                
+                <p class="success-message">
+                   {{ _('To secure your booking, please transfer the booking fee via InstaPay to') }} <strong>01029540102</strong> {{ _('and send us a screenshot of the payment receipt.') }}
+                 </p>
+                
+                <div class="booking-reference">
+                    <span class="reference-label">{{ _('Your Booking Reference') }}</span>
+                    <span class="reference-number">{{ booking.booking_reference }}</span>
+                </div>
+                
+                <div class="booking-details">
+                    <h3>{{ _('Booking Summary') }}</h3>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Service') }}</span>
+                            <span class="detail-value">
+                                {{ booking.service.name_ar or booking.service.name if get_locale() == 'ar' else booking.service.name }}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Date') }}</span>
+                            <span class="detail-value">
+                                {% if get_locale() == 'ar' %}
+                                    {# Manual Arabic Month Mapping #}
+                                    {% set m = booking.booking_date.strftime('%m')|int %}
+                                    {% set months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] %}
+                                    {{ months[m-1] }} {{ booking.booking_date.strftime('%d, %Y') }}
+                                {% else %}
+                                    {{ booking.booking_date.strftime('%b %d, %Y') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Time') }}</span>
+                            <span class="detail-value">
+                                {% set time_str = booking.start_time.strftime('%I:%M') %}
+                                {% set am_pm = booking.start_time.strftime('%p') %}
+                                {% if get_locale() == 'ar' %}
+                                    {{ time_str }} {{ 'م' if am_pm == 'PM' else 'ص' }}
+                                {% else %}
+                                    {{ time_str }} {{ am_pm }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Duration') }}</span>
+                            <span class="detail-value">{{ booking.duration_hours }} {{ _('hours') }}</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Complexity') }}</span>
+                            <span class="detail-value">
+                                {% if booking.complexity_tier %}
+                                    {{ booking.complexity_tier.name_ar or booking.complexity_tier.name if get_locale() == 'ar' else booking.complexity_tier.name }}
+                                {% else %}
+                                    {{ _('Standard') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">{{ _('Status') }}</span>
+                            <span class="status-badge">
+                                {% if get_locale() == 'ar' %}
+                                    {% if booking.status|lower == 'pending' %}قيد الانتظار
+                                    {% elif booking.status|lower == 'confirmed' %}مؤكد
+                                    {% elif booking.status|lower == 'cancelled' %}ملغي
+                                    {% else %}{{ booking.status }}{% endif %}
+                                {% else %}
+                                    {{ booking.status|title }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="total-row">
+                        <span>{{ _('Estimated Total') }}</span>
+                        <span class="total-amount">{{ booking.total_price|int }} {{ _('EGP') }}</span>
+                    </div>
+                </div>
+                
+                <div class="next-steps">
+                    <h3>
+                        <i class="fas fa-route"></i>
+                        {{ _('What Happens Next?') }}
+                    </h3>
+                    <ol>
+                        <li><strong>{{ _('Review:') }}</strong> {{ _('Our team will review your booking request within 24 hours') }}</li>
+                        <li><strong>{{ _('Confirmation:') }}</strong> {{ _("You'll receive a detailed confirmation message to your number with session specifics") }}</li>
+                        <li><strong>{{ _('Discovery Call:') }}</strong> {{ _('We\'ll schedule a brief call to discuss your project vision and requirements') }}</li>
+                        <li><strong>{{ _('Final Confirmation:') }}</strong> {{ _('Once all details are aligned, your session will be officially confirmed') }}</li>
+                    </ol>
+                </div>
+                
+                <div class="success-actions">
+                    <div class="magnetic-wrap">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i>
+                            {{ _('Back to Home') }}
+                        </a>
+                    </div>
+                    <div class="magnetic-wrap">
+                        <a href="{{ url_for('portfolio') }}" class="btn btn-outline-gold">
+                            <i class="fas fa-images"></i>
+                            {{ _('View Studios') }}
+                        </a>
+                    </div>
+                    <div class="magnetic-wrap">
+                        <a href="{{ url_for('contact') }}" class="btn btn-navy">
+                            <i class="fas fa-envelope"></i>
+                            {{ _('Contact Us') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    
+    <script>
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    // --- FIX: Force Scroll to Top Immediately ---
+    if (history.scrollRestoration) {
+        history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    class PtahSuccess {
+        constructor() {
+            this.init();
+        }
+        
+        init() {
+            // Ensure visual scroll is at top before Lenis starts
+            window.scrollTo(0, 0);
+            
+            this.initLenis();
+            this.initPreloader();
+            this.initMagneticElements();
+            this.createConfetti();
+        }
+        
+        // CORRECTED SCROLL LOGIC (Removes Double Loop Lag)
+        initLenis() {
+            if (prefersReducedMotion) return;
+            
+            this.lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smooth: true,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+                autoResize: false
+            });
+
+            // Force Lenis to acknowledge the top position
+            this.lenis.scrollTo(0, { immediate: true });
+            
+            // CONNECT TO GSAP TICKER (Single Loop)
+            this.lenis.on('scroll', ScrollTrigger.update);
+            
+            gsap.ticker.add((time) => {
+                this.lenis.raf(time * 1000);
+            });
+            
+            gsap.ticker.lagSmoothing(0);
+        }
+        
+        initPreloader() {
+            const preloader = document.querySelector('.preloader');
+            if (preloader) {
+                setTimeout(() => { preloader.classList.add('loaded'); }, 1500);
+            }
+        }
+        
+        initMagneticElements() {
+            // Disable magnetic effect on mobile/tablets to prevent lag
+            if (window.innerWidth < 992) return;
+
+            const magneticElements = document.querySelectorAll('.magnetic-wrap');
+            
+            magneticElements.forEach(wrap => {
+                const button = wrap.querySelector('a, button, .btn');
+                if (!button) return;
+
+                wrap.addEventListener('mousemove', (e) => {
+                    const rect = wrap.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    if (!prefersReducedMotion) {
+                        gsap.to(button, {
+                            x: x * 0.3,
+                            y: y * 0.3,
+                            duration: 0.3,
+                            ease: 'power2.out',
+                            overwrite: true // Prevent conflict
+                        });
+                    }
+                });
+                
+                wrap.addEventListener('mouseleave', () => {
+                    if (!prefersReducedMotion) {
+                        gsap.to(button, {
+                            x: 0,
+                            y: 0,
+                            duration: 0.5,
+                            ease: 'elastic.out(1, 0.5)'
+                        });
+                    }
+                });
+            });
+        }
+        
+        createConfetti() {
+            const colors = ['#D4AF37', '#F4D06F', '#B8950F', '#FFFFFF'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.width = confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 30);
+            }
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => new PtahSuccess());
+    } else {
+        new PtahSuccess();
+    }
+</script>
+{% endblock %}
+</html>

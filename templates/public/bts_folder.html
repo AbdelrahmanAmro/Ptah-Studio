@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{# Dynamic Title Logic #}
+{% block title %}
+    {{ project.title_ar or project.title if get_locale() == 'ar' else project.title }} | {{ _('Ptah Studios') }}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page-specific styles only */
+    .project-header {
+        padding: 10rem 2rem 4rem;
+        background: linear-gradient(to bottom, #0A192F, var(--color-navy-darkest));
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        
+        /* CHANGED: 'start' aligns Left in English, Right in Arabic */
+        text-align: start; 
+    }
+    
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-gold);
+        text-decoration: none;
+        font-family: 'Cinzel', serif;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s;
+    }
+    
+    .back-link:hover {
+        /* CHANGED: Use logical properties for hover movement */
+        transform: translateX(var(--hover-move, -5px));
+    }
+    
+    /* RTL Flip for Back Link */
+    html[dir="rtl"] .back-link {
+        --hover-move: 5px; /* Move right on hover in Arabic */
+    }
+    
+    html[dir="rtl"] .back-link i {
+        transform: scaleX(-1); /* Flip the arrow icon */
+    }
+    
+    .project-title {
+        font-family: var(--font-heading);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        color: #fff;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+    
+    .project-meta {
+        display: flex;
+        gap: 2rem;
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+    
+    .project-desc {
+        max-width: 800px;
+        color: #CED4DA;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        
+        /* CHANGED: Logical properties to handle Border position automatically */
+        border-inline-start: 2px solid var(--color-gold);
+        padding-inline-start: 1.5rem;
+    }
+    
+    /* Media Grid (Smaller Cards) */
+    .media-grid {
+        padding: 4rem 2rem;
+        max-width: 1600px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .media-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #000;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+        aspect-ratio: 1 / 1;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .media-item:hover {
+        transform: translateY(-5px);
+        z-index: 2;
+        border-color: var(--color-gold);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .media-content {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .media-item:hover .media-content {
+        transform: scale(1.05);
+    }
+
+    .video-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(212, 175, 55, 0.9);
+        color: #000;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        z-index: 5;
+    }
+    
+    /* Ensure badge stays on correct side or flips if desired. 
+       Currently usually badges stay top-right regardless of language, 
+       but if you want it left in Arabic, uncomment: */
+    /* html[dir="rtl"] .video-badge {
+        right: auto;
+        left: 10px;
+    } 
+    */
+    
+    .play-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 4;
+    }
+    
+    .media-item:hover .play-overlay {
+        opacity: 1;
+    }
+    
+    .play-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--color-gold);
+        color: #050d1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(5, 13, 26, 0.95);
+        backdrop-filter: blur(10px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .lightbox-wrapper {
+        position: relative;
+        max-width: 90vw;
+        max-height: 85vh;
+        box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    }
+
+    .lightbox-content-element {
+        max-width: 100%;
+        max-height: 85vh;
+        display: block;
+        border: 1px solid var(--color-gold);
+        border-radius: 4px;
+    }
+
+    .lightbox-close-btn {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 3rem;
+        cursor: pointer;
+        z-index: 10000;
+        line-height: 1;
+        transition: color 0.3s;
+    }
+    
+    html[dir="rtl"] .lightbox-close-btn {
+        right: auto;
+        left: 2rem;
+    }
+
+    .lightbox-close-btn:hover {
+        color: var(--color-gold);
+    }
+
+    .lightbox-hint {
+        position: absolute;
+        bottom: 2rem;
+        color: #888;
+        font-size: 0.9rem;
+        pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .project-header {
+            padding: 8rem 1.5rem 3rem;
+        }
+        
+        .project-title {
+            font-size: 2.5rem;
+        }
+        
+        .project-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .project-desc {
+            padding-inline-start: 1rem;
+            font-size: 1rem;
+        }
+        
+        .media-grid {
+            padding: 2rem 1rem;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-content-wrapper">
+        <div class="project-header">
+            <div style="max-width: 1400px; margin: 0 auto;">
+                <a href="{{ url_for('behind_the_scenes') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i> {{ _('Back to Archives') }}
+                </a>
+                
+                <h1 class="project-title">
+                    {{ project.title_ar or project.title if get_locale() == 'ar' else project.title }}
+                </h1>
+                
+                <div class="project-meta">
+                    <span><i class="far fa-calendar"></i> {{ project.event_date.strftime('%B %d, %Y') }}</span>
+                    <span><i class="fas fa-camera"></i> {{ project.media|length }} {{ _('Assets') }}</span>
+                </div>
+                
+                {% if project.description %}
+                <div class="project-desc">
+                    {{ project.description_ar or project.description if get_locale() == 'ar' else project.description }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="media-grid">
+            {% for media in project.media %}
+                <div class="media-item" onclick="openLightbox('{{ url_for('static', filename=media.file_url) }}', '{{ media.file_type }}')">
+                    {% if media.file_type == 'video' %}
+                        <div class="video-badge"><i class="fas fa-play"></i> {{ _('Video') }}</div>
+                        <video class="media-content" muted preload="metadata">
+                            <source src="{{ url_for('static', filename=media.file_url) }}" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-circle"><i class="fas fa-play"></i></div>
+                        </div>
+                    {% else %}
+                        <img src="{{ url_for('static', filename=media.file_url) }}" alt="{{ _('BTS Image') }}" class="media-content" loading="lazy">
+                        <div class="play-overlay">
+                            <div class="play-circle"><i class="fas fa-expand-alt"></i></div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 4rem;">
+                    <p>{{ _('No media uploaded to this folder yet.') }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close-btn" onclick="closeLightboxForce()">&times;</button>
+        
+        <div class="lightbox-wrapper">
+            <img id="lb-image" class="lightbox-content-element" src="" style="display: none;">
+            <video id="lb-video" class="lightbox-content-element" controls style="display: none;">
+                <source id="lb-video-src" src="" type="video/mp4">
+            </video>
+        </div>
+        <div class="lightbox-hint">{{ _('Press ESC to close') }}</div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Lightbox Logic
+        const lightbox = document.getElementById('lightbox');
+        const lbImage = document.getElementById('lb-image');
+        const lbVideo = document.getElementById('lb-video');
+        const lbVideoSrc = document.getElementById('lb-video-src');
+
+        function openLightbox(url, type) {
+            lbImage.style.display = 'none';
+            lbVideo.style.display = 'none';
+            lbVideo.pause();
+
+            if (type === 'video') {
+                lbVideoSrc.src = url;
+                lbVideo.load();
+                lbVideo.style.display = 'block';
+                lbVideo.play().catch(e => console.log("Autoplay prevented"));
+            } else {
+                lbImage.src = url;
+                lbImage.style.display = 'block';
+            }
+
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(event) {
+            if (event.target === lightbox) {
+                closeLightboxForce();
+            }
+        }
+
+        function closeLightboxForce() {
+            lightbox.classList.remove('active');
+            lbVideo.pause();
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && lightbox.classList.contains('active')) {
+                closeLightboxForce();
+            }
+        });
+    </script>
+{% endblock %}

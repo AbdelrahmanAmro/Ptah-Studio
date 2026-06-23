@@ -1,0 +1,680 @@
+{% extends "admin/base.html" %}
+
+{% block title %}PTAH STUDIOS - Admin Management{% endblock %}
+
+{% block content %}
+<style>
+    /* ===========================
+       ADMIN MANAGEMENT DASHBOARD STYLES
+       =========================== */
+    
+    .admin-dashboard-container {
+        animation: fadeInUp 0.5s ease-out;
+        padding-top: 1rem;
+    }
+
+    /* Grid Layout: Form (Left) & List (Right) */
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 2rem;
+    }
+
+    /* --- FORM CARD STYLES --- */
+    .admin-form-card {
+        height: fit-content;
+        position: sticky;
+        top: 120px;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control {
+        width: 100%;
+        background: rgba(10, 25, 47, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        color: white;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        background: rgba(10, 25, 47, 0.9);
+    }
+
+    .form-helper {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        margin-top: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        line-height: 1.4;
+    }
+
+    .form-helper i {
+        color: var(--color-gold);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+        color: var(--color-navy-darkest);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+    }
+
+    /* --- TABLE STYLES --- */
+    .user-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .user-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+
+    .user-table th {
+        text-align: left;
+        padding: 0 1.5rem 0.75rem;
+        color: var(--color-text-muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    .user-table td {
+        background: rgba(30, 41, 59, 0.4);
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        color: var(--color-text-primary);
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.2s;
+    }
+
+    .user-table tr:hover td {
+        background: rgba(30, 41, 59, 0.7);
+        border-color: rgba(212, 175, 55, 0.1);
+    }
+
+    .user-table tr td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+        border-left: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .user-table tr td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+        border-right: 1px solid rgba(255, 255, 255, 0.03);
+        text-align: right;
+    }
+
+    /* User Profile Cell */
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--color-navy-medium);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-gold);
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-details div {
+        line-height: 1.4;
+    }
+
+    .user-email {
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+    }
+
+    /* Role Badges (System Level) */
+    .role-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .role-super_admin {
+        background: rgba(212, 175, 55, 0.15);
+        color: var(--color-gold);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+    }
+
+    .role-employee {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--color-info);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Project Tags Container */
+    .projects-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Updated Project Tag Styles with Removal Button */
+    .project-tag-wrapper {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding-left: 0.6rem;
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .project-tag-wrapper:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .project-tag {
+        font-size: 0.75rem;
+        color: var(--color-text-light);
+        margin-right: 0.5rem;
+        white-space: nowrap;
+    }
+
+    /* Role Specific Tags inside Projects */
+    .role-tag-small {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        margin-right: 0.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .role-tag-small.Supervisor { color: #d4af37; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.2); }
+    .role-tag-small.Editor { color: #60A5FA; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .role-tag-small.Reviewer { color: #9CA3AF; background: rgba(156, 163, 175, 0.15); border: 1px solid rgba(156, 163, 175, 0.2); }
+
+    .btn-remove-project {
+        background: transparent;
+        border: none;
+        color: var(--color-text-muted);
+        padding: 0.4rem 0.6rem;
+        cursor: pointer;
+        font-size: 0.7rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+        height: 100%;
+    }
+
+    .btn-remove-project:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--color-danger);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--color-text-secondary);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-assign {
+        color: var(--color-gold);
+        border-color: rgba(212, 175, 55, 0.2);
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .btn-assign:hover {
+        background: rgba(212, 175, 55, 0.15);
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-delete {
+        color: var(--color-danger);
+        border-color: rgba(239, 68, 68, 0.2);
+        background: rgba(239, 68, 68, 0.05);
+    }
+
+    .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* --- MODAL STYLES (MATCHING PROJECT MODAL) --- */
+    .modal-overlay-pm {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 1rem;
+    }
+
+    .modal-overlay-pm.active {
+        display: flex;
+    }
+
+    .project-modal-box {
+        background: var(--color-navy-dark);
+        border: var(--border-glass);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: var(--shadow-card), 0 0 60px rgba(212, 175, 55, 0.1);
+        animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    @keyframes modalSlideUp {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-pm-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(5, 13, 26, 0.5);
+    }
+
+    .modal-pm-title {
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0;
+    }
+
+    .modal-pm-subtitle {
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .modal-close-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .modal-close-icon:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: var(--color-gold);
+        color: var(--color-gold);
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-modal {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-modal-secondary {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--color-text-secondary);
+    }
+
+    .btn-modal-secondary:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        color: white;
+    }
+
+    .btn-modal-primary {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+        border: none;
+        color: var(--color-navy-darkest);
+    }
+
+    .btn-modal-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Role Option Styling in Modal */
+    .role-option-info {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+        font-style: italic;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+        .admin-form-card {
+            position: static;
+        }
+    }
+</style>
+
+<div class="admin-dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-title">
+            <h1>Admin <span>Management</span></h1>
+            <p>Manage team access and assign projects with specific roles</p>
+        </div>
+    </header>
+
+    <div class="admin-grid">
+        <div class="glass-card admin-form-card">
+            <div class="card-header" style="border:none; padding-bottom:0; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.1rem;"><i class="fas fa-user-plus"></i> Add Team Member</h3>
+            </div>
+            
+            <form action="{{ url_for('admin_add_user') }}" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" required placeholder="e.g. Sarah Connor">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" required placeholder="name@ptahstudios.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">System Access Level</label>
+                    <select name="role" class="form-control">
+                        <option value="employee">Employee (Restricted Access)</option>
+                        <option value="super_admin">Super Admin (Full Access)</option>
+                    </select>
+                    <div class="form-helper">
+                        <i class="fas fa-info-circle"></i> 
+                        <span>Employees only see projects assigned to them.</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-header">
+                <h3><i class="fas fa-users-cog"></i> Current Team</h3>
+                <span class="card-count">{{ users|length }} Members</span>
+            </div>
+            
+            <div class="user-table-wrapper">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>System Role</th>
+                            <th>Project Assignments & Roles</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="user-profile">
+                                    <div class="user-avatar">
+                                        {{ user.name[0] | upper }}
+                                    </div>
+                                    <div class="user-details">
+                                        <div style="font-weight: 600; color: #fff;">{{ user.name }}</div>
+                                        <div class="user-email">{{ user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if user.role == 'super_admin' %}
+                                    <span class="role-badge role-super_admin">
+                                        <i class="fas fa-crown"></i> Super Admin
+                                    </span>
+                                {% else %}
+                                    <span class="role-badge role-employee">
+                                        <i class="fas fa-user-tag"></i> Employee
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.role == 'super_admin' %}
+                                    <span style="color: var(--color-text-muted); font-style: italic; font-size: 0.8rem;">
+                                        <i class="fas fa-globe"></i> Global Access (All Projects)
+                                    </span>
+                                {% else %}
+                                    <div class="projects-container">
+                                        {% if user.project_memberships %}
+                                            {% for membership in user.project_memberships %}
+                                                <div class="project-tag-wrapper">
+                                                    <span class="project-tag" title="{{ membership.project.title }}">
+                                                        {{ membership.project.title[:15] }}{% if membership.project.title|length > 15 %}...{% endif %}
+                                                    </span>
+                                                    
+                                                    <span class="role-tag-small {{ membership.role }}" title="Role: {{ membership.role }}">
+                                                        {{ membership.role[0] }}
+                                                    </span>
+
+                                                    <form action="{{ url_for('admin_unassign_project') }}" method="POST" style="display:inline; height:100%;">
+                                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                                        <input type="hidden" name="project_id" value="{{ membership.project.id }}">
+                                                        <button type="submit" class="btn-remove-project" title="Remove assignment">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span style="color: var(--color-text-muted); font-size: 0.8rem;">No active assignments</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                    {% if user.role != 'super_admin' %}
+                                    <button class="action-btn btn-assign" onclick="openAssignModal('{{ user.id }}', '{{ user.name }}')" title="Assign Project">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    {% endif %}
+                                    
+                                    {% if user.id != session['user_id'] %}
+                                    <form action="{{ url_for('admin_delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this user?');" style="display: inline;">
+                                        <button type="submit" class="action-btn btn-delete" title="Remove User">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay-pm" id="assignModal">
+    <div class="project-modal-box">
+        <div class="modal-pm-header">
+            <div>
+                <h2 class="modal-pm-title">Assign Project Role</h2>
+                <div class="modal-pm-subtitle">Manage access for <span id="assignUserName" style="color: var(--color-gold);">User</span></div>
+            </div>
+            <button class="modal-close-icon" onclick="closeAssignModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <form action="{{ url_for('admin_assign_project') }}" method="POST">
+                <input type="hidden" name="user_id" id="assignUserId">
+                
+                <div class="form-group">
+                    <label class="form-label" style="color: var(--color-gold);">SELECT PROJECT</label>
+                    <select name="project_id" class="form-control" required style="height: 50px;">
+                        <option value="">-- Choose Project --</option>
+                        {% for project in projects %}
+                        <option value="{{ project.id }}">{{ project.title }} ({{ project.status|replace('_',' ')|title }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" style="color: var(--color-info);">ASSIGN ROLE</label>
+                    <select name="project_role" class="form-control" required style="height: 50px;">
+                        <option value="Reviewer">Reviewer (View Only)</option>
+                        <option value="Editor">Editor (Tasks & Status Updates)</option>
+                        <option value="Supervisor">Supervisor (Full Access & Deletion)</option>
+                    </select>
+                    <div class="role-option-info">
+                        <i class="fas fa-shield-alt"></i> Supervisors can modify project details and delete items.<br>
+                        <i class="fas fa-tasks"></i> Editors can complete tasks and upload files.<br>
+                        <i class="fas fa-eye"></i> Reviewers can only view project progress.
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-modal-secondary" onclick="closeAssignModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-modal btn-modal-primary">
+                        Confirm Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAssignModal(id, name) {
+        document.getElementById('assignUserId').value = id;
+        document.getElementById('assignUserName').innerText = name;
+        document.getElementById('assignModal').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    function closeAssignModal() {
+        document.getElementById('assignModal').classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Close on click outside
+    document.getElementById('assignModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAssignModal();
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('assignModal').classList.contains('active')) {
+            closeAssignModal();
+        }
+    });
+</script>
+{% endblock %}

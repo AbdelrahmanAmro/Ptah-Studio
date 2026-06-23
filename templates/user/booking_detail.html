@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ _('Booking Details') }} - {{ _('Ptah Studios') }}{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===========================
+           DESIGN SYSTEM & VARIABLES
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;
+            --color-card-bg: #0A192F;
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-status-confirmed-bg: rgba(16, 185, 129, 0.1);
+            --color-status-confirmed-text: #10B981;
+            
+            --color-status-pending-bg: rgba(245, 158, 11, 0.1);
+            --color-status-pending-text: #F59E0B;
+
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* ===========================
+           HEADER SECTION
+           =========================== */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title span {
+            color: var(--color-gold);
+        }
+
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .booking-ref-large {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .btn-back {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: var(--color-gold);
+            color: var(--color-bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+        
+        /* RTL Flip for Back Button Arrow */
+        html[dir="rtl"] .btn-back i { transform: scaleX(-1); }
+
+        /* ===========================
+           BOOKING DETAIL CARD
+           =========================== */
+        .detail-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 800px;
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10, 25, 47, 0.5) 100%);
+            border-bottom: 1px solid var(--color-border);
+            padding: 2rem;
+        }
+
+        .detail-header h1 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-header .service-name {
+            color: var(--color-gold);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            margin-top: 1rem;
+        }
+
+        .status-badge.pending {
+            background: var(--color-status-pending-bg);
+            color: var(--color-status-pending-text);
+        }
+
+        .status-badge.confirmed {
+            background: var(--color-status-confirmed-bg);
+            color: var(--color-status-confirmed-text);
+        }
+
+        .status-badge.completed {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .status-badge.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .detail-body {
+            padding: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-item label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .info-item .value.gold {
+            color: var(--color-gold);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Cost Breakdown Section */
+        .cost-section {
+            background: rgba(5, 13, 26, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .cost-section h3 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--color-text-main);
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            font-size: 0.9rem;
+        }
+
+        .cost-row:not(:last-child) {
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .cost-row .label {
+            color: var(--color-text-muted);
+        }
+
+        .cost-row .amount {
+            font-weight: 600;
+        }
+
+        .cost-row.total {
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--color-border);
+            font-size: 1.1rem;
+        }
+
+        .cost-row.total .amount {
+            color: var(--color-gold);
+            font-size: 1.3rem;
+        }
+
+        /* Equipment Section */
+        .equipment-section {
+            margin-top: 1.5rem;
+        }
+
+        .equipment-section h3 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--color-text-main);
+            margin-bottom: 1rem;
+        }
+
+        .equipment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .equipment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(5, 13, 26, 0.5);
+            border-radius: 8px;
+        }
+
+        .equipment-item .name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .equipment-item .qty {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .equipment-item .price {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        .no-equipment {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            padding: 1rem;
+            text-align: center;
+            background: rgba(5, 13, 26, 0.3);
+            border-radius: 8px;
+        }
+
+        /* Action Buttons */
+        .action-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-gold);
+            color: #050d1a;
+        }
+
+        .btn-primary:hover {
+            background: #c49f2d;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-text-muted);
+            color: var(--color-text-main);
+        }
+
+        /* ===========================
+           RESPONSIVE STYLES
+           =========================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .btn-back {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .action-section {
+                flex-direction: column;
+            }
+
+            .detail-header, .detail-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">{{ _('Booking') }} <span>{{ _('Details') }}</span></h1>
+            <p class="page-subtitle">{{ _('Reference') }}: <span class="booking-ref-large">{{ booking.booking_reference }}</span></p>
+        </div>
+        <a href="{{ url_for('user_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> {{ _('Back to My Bookings') }}
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-header">
+            <span class="service-name">
+                {{ booking.service.name_ar or booking.service.name if get_locale() == 'ar' else booking.service.name }}
+            </span>
+            <h1>{{ _('Booking Confirmation') }}</h1>
+            
+            <span class="status-badge {{ booking.status }}">
+                {% if booking.status == 'pending' %}
+                    <i class="fas fa-clock"></i>
+                {% elif booking.status == 'confirmed' %}
+                    <i class="fas fa-check-circle"></i>
+                {% elif booking.status == 'completed' %}
+                    <i class="fas fa-check-double"></i>
+                {% elif booking.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i>
+                {% endif %}
+                
+                {# Translation Logic for Status #}
+                {% if get_locale() == 'ar' %}
+                    {% if booking.status == 'pending' %}قيد الانتظار
+                    {% elif booking.status == 'confirmed' %}مؤكد
+                    {% elif booking.status == 'completed' %}مكتمل
+                    {% elif booking.status == 'cancelled' %}ملغي
+                    {% else %}{{ booking.status }}{% endif %}
+                {% else %}
+                    {{ booking.status|replace('_', ' ')|title }}
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="detail-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>{{ _('Booking Date') }}</label>
+                    <span class="value">
+                        {% if get_locale() == 'ar' %}
+                            {% set m = booking.booking_date.strftime('%m')|int %}
+                            {% set months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] %}
+                            {{ months[m-1] }} {{ booking.booking_date.strftime('%d, %Y') }}
+                        {% else %}
+                            {{ booking.booking_date.strftime('%A, %B %d, %Y') }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>{{ _('Time Slot') }}</label>
+                    <span class="value">
+                        {% set start_t = booking.start_time.strftime('%I:%M') %}
+                        {% set end_t = booking.end_time.strftime('%I:%M') %}
+                        {% set am_pm_start = booking.start_time.strftime('%p') %}
+                        {% set am_pm_end = booking.end_time.strftime('%p') %}
+                        
+                        {% if get_locale() == 'ar' %}
+                            {{ start_t }} {{ 'م' if am_pm_start == 'PM' else 'ص' }} - {{ end_t }} {{ 'م' if am_pm_end == 'PM' else 'ص' }}
+                        {% else %}
+                            {{ start_t }} {{ am_pm_start }} - {{ end_t }} {{ am_pm_end }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>{{ _('Duration') }}</label>
+                    <span class="value">{{ booking.duration_hours|int }} {{ _('hours') }}</span>
+                </div>
+                <div class="info-item">
+                    <label>{{ _('Studio Location') }}</label>
+                    <span class="value">
+                        {% if booking.studio %}
+                            {{ booking.studio.name_ar or booking.studio.name if get_locale() == 'ar' else booking.studio.name }}
+                        {% else %}
+                            {{ _('Not assigned') }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>{{ _('Studio Capacity') }}</label>
+                    <span class="value">
+                        {{ booking.studio.persons_capacity if booking.studio else 'N/A' }} {{ _('persons') }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>{{ _('Total Amount') }}</label>
+                    <span class="value gold">{{ "{:,.0f}".format(booking.total_price) }} {{ _('EGP') }}</span>
+                </div>
+            </div>
+
+            <div class="cost-section">
+                <h3>{{ _('Cost Breakdown') }}</h3>
+                <div class="cost-row">
+                    <span class="label">
+                        {{ _('Service') }} ({{ booking.duration_hours|int }}{{ _('h') }} @ {{ booking.service.hourly_rate if booking.service.hourly_rate else booking.service.base_price }}/{{ _('hr') }})
+                    </span>
+                    <span class="amount">{{ "{:,.0f}".format(booking.base_price) }}</span>
+                </div>
+                {% if booking.studio_price and booking.studio_price > 0 %}
+                <div class="cost-row">
+                    <span class="label">{{ _('Studio Time') }}</span>
+                    <span class="amount">{{ "{:,.0f}".format(booking.studio_price) }}</span>
+                </div>
+                {% endif %}
+                {% if booking.equipment_price and booking.equipment_price > 0 %}
+                <div class="cost-row">
+                    <span class="label">{{ _('Equipment & Extras') }}</span>
+                    <span class="amount">{{ "{:,.0f}".format(booking.equipment_price) }}</span>
+                </div>
+                {% endif %}
+                <div class="cost-row total">
+                    <span class="label">{{ _('Total') }}</span>
+                    <span class="amount">{{ "{:,.0f}".format(booking.total_price) }}</span>
+                </div>
+            </div>
+
+            {% if booking.equipment_data %}
+            <div class="equipment-section">
+                <h3>{{ _('Equipment & Extras') }}</h3>
+                <div class="equipment-list">
+                    {% set equipment_dict = booking.equipment_data|from_json %}
+                    {% for addon_id, quantity in equipment_dict.items() %}
+                        {% set addon = equipment_list|selectattr('id', 'equalto', addon_id|int)|first %}
+                        {% if addon %}
+                        <div class="equipment-item">
+                            <div class="name">
+                                <span class="qty">x{{ quantity }}</span>
+                                <span>{{ addon.name_ar or addon.name if get_locale() == 'ar' else addon.name }}</span>
+                            </div>
+                            <span class="price">+{{ (addon.price * quantity)|int }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="equipment-section">
+                <h3>{{ _('Equipment & Extras') }}</h3>
+                <div class="no-equipment">
+                    <i class="fas fa-box-open" style="margin-right: 0.5rem; opacity: 0.5;"></i>
+                    {{ _('No additional equipment selected') }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="action-section">
+                <a href="{{ url_for('contact') }}" class="btn-action btn-secondary">
+                    <i class="fas fa-envelope"></i> {{ _('Contact Support') }}
+                </a>
+                <a href="{{ url_for('booking') }}" class="btn-action btn-primary">
+                    <i class="fas fa-plus"></i> {{ _('New Booking') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

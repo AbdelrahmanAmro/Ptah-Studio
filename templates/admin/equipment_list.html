@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Management - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           STATS GRID
+           =========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gold);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .stat-info h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            color: #fff;
+        }
+
+        .stat-info p {
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ===========================
+           ACTION BAR
+           =========================== */
+        .action-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .action-bar-info {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-gold {
+            background: var(--color-gold);
+            color: #000;
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-gold:hover { background: var(--color-gold-hover); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        /* ===========================
+           TABLE STYLES
+           =========================== */
+        .table-container {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .data-table th {
+            background: rgba(5, 13, 26, 0.5);
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-main);
+            vertical-align: middle;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(212, 175, 55, 0.03);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-cat {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+        }
+
+        .badge-status {
+            background: rgba(136, 146, 176, 0.2);
+            color: var(--color-text-muted);
+        }
+        
+        .badge-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        /* Actions */
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+            background: transparent;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-edit:hover {
+            border-color: var(--color-gold);
+            color: var(--color-gold);
+        }
+
+        .btn-delete {
+            color: var(--color-danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--color-danger);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--color-card-bg);
+            border: 2px dashed var(--color-border);
+            border-radius: 12px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p { color: var(--color-text-muted); margin-bottom: 1.5rem; }
+
+        /* Flash Messages */
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+
+        /* Modal */
+        #deleteModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 2rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .category-header h3 {
+            font-size: 1.1rem;
+            color: var(--color-gold);
+            margin: 0;
+        }
+
+        /* ===========================
+           RESPONSIVE STYLES
+           =========================== */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .table-container { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Equipment <span>Management</span></h1>
+            <p class="page-subtitle">Manage cameras, lighting, audio equipment, and track maintenance.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_settings') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-camera"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|length }}</h4>
+                <p>Total Items</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-info">
+                <h4>${{ items|sum(attribute='price')|round|int }}</h4>
+                <p>Total Value</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|selectattr('is_active')|list|length }}</h4>
+                <p>Active Items</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-tools"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|map(attribute='category')|unique|list|length }}</h4>
+                <p>Categories</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <div class="action-bar-info">
+            <i class="fas fa-list"></i> Showing all equipment items
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('admin_equipment_new') }}" class="btn-gold">
+                <i class="fas fa-plus"></i> Add New Item
+            </a>
+        </div>
+    </div>
+
+    {% set grouped = items|groupby('category') %}
+    
+    {% for group in grouped %}
+    <div class="category-section">
+        <div class="category-header">
+            {% set cat = group.grouper if group.grouper else 'general' %}
+            <i class="fas fa-{% if cat == 'camera' %}camera{% elif cat == 'lighting' %}lightbulb{% elif cat == 'audio' %}microphone{% elif cat == 'accessories' %}tools{% else %}box{% endif %}"></i>
+            <h3>{{ cat|title }} ({{ group.list|length }})</h3>
+        </div>
+        
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Maintenance (90 Days)</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in group.list %}
+                    <tr>
+                        <td>
+                            <span class="item-name">{{ item.name }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-cat">{{ item.category|title }}</span>
+                        </td>
+                        <td>
+                            <span class="item-price">${{ item.price|round(2) }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                                {{ 'Active' if item.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                        
+                        <td>
+                            {% if item.maintenance_status %}
+                                {% set status = item.maintenance_status %}
+                                
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        {% if status.is_overdue %}
+                                            <i class="fas fa-exclamation-circle" style="color: var(--color-danger);"></i>
+                                            <span style="font-weight: 700; font-size: 0.85rem; color: var(--color-danger);">
+                                                Overdue {{ status.overdue_days }} days
+                                            </span>
+                                        {% else %}
+                                            <i class="fas fa-tools" style="font-size: 0.75rem; opacity: 0.6; color: {% if status.is_due_soon %}var(--color-gold){% else %}var(--color-success){% endif %}"></i>
+                                            <span style="font-weight: 500; font-size: 0.85rem; color: {% if status.is_due_soon %}var(--color-gold){% else %}var(--color-success){% endif %};">
+                                                {{ status.days_remaining }} days left
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if status.is_overdue or status.is_due_soon %}
+                                    <form action="{{ url_for('admin_equipment_maintenance_complete', equipment_id=item.id) }}" method="POST">
+                                        <button type="submit" class="btn-action" style="font-size: 0.7rem; padding: 4px 8px; border-color: var(--color-border); width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                            <i class="fas fa-check" style="font-size: 0.6rem;"></i> Mark Done
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+
+                            {% else %}
+                                <span style="color: var(--color-text-muted); opacity: 0.3; font-size: 0.9rem;">&mdash;</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <a href="{{ url_for('admin_equipment_edit', equipment_id=item.id) }}" class="btn-action btn-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button type="button" class="btn-action btn-delete" 
+                                        onclick="deleteItem({{ item.id }}, '{{ item.name }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-camera"></i>
+        <h3>No Equipment Found</h3>
+        <p>Get started by adding your first equipment item.</p>
+        <a href="{{ url_for('admin_equipment_new') }}" class="btn-gold">
+            <i class="fas fa-plus"></i> Add Equipment
+        </a>
+    </div>
+    {% endfor %}
+
+    <div id="deleteModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--color-danger); margin-bottom: 1rem;"></i>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 0.75rem; color: #fff;">Delete Equipment?</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Are you sure you want to delete <strong id="deleteItemName" style="color: #fff;"></strong>? 
+                <br>This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                <button onclick="closeDeleteModal()" class="btn-outline">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-gold" style="background: var(--color-danger); color: #fff;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteItem(id, name) {
+            document.getElementById('deleteItemName').textContent = name;
+            document.getElementById('deleteForm').action = '/admin/equipment/delete/' + id;
+            document.getElementById('deleteModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+    </script>
+</body>
+</html>

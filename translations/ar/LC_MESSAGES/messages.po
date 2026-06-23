@@ -1,0 +1,2138 @@
+# Arabic translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-02-02 14:12+0200\n"
+"PO-Revision-Date: 2026-02-01 12:55+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ar\n"
+"Language-Team: ar <LL@li.org>\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : "
+"n%100>=3 && n%100<=10 ? 3 : n%100>=0 && n%100<=2 ? 4 : 5);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: templates/base.html:7
+msgid "Ptah Studios - Premium Creative Production"
+msgstr ""
+
+#: templates/base.html:8
+msgid ""
+"Professional creative studio for podcast, video, and content production. "
+"Premium quality, exceptional results."
+msgstr ""
+"استوديو إبداعي محترف لإنتاج البودكاست والفيديو والمحتوى. جودة متميزة "
+"ونتائج استثنائية."
+
+#: templates/base.html:845
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+#: templates/base.html:846 templates/base.html:878
+#: templates/user/dashboard.html:792
+msgid "Bookings"
+msgstr "الحجوزات"
+
+#: templates/base.html:847 templates/base.html:879
+#: templates/public/portfolio.html:495
+msgid "PTAH Studios"
+msgstr "استوديوهات بتاح"
+
+#: templates/base.html:859 templates/base.html:899
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+#: templates/base.html:861 templates/base.html:903
+msgid "Log In"
+msgstr "تسجيل الدخول"
+
+#: templates/base.html:862 templates/base.html:906
+msgid "Sign Up"
+msgstr "إنشاء حساب"
+
+#: templates/base.html:873
+msgid "Creation & Crafts"
+msgstr "الإبداع والحرف"
+
+#: templates/base.html:896
+msgid "Account"
+msgstr "الحساب"
+
+#: templates/base.html:912
+msgid "Book Session"
+msgstr "احجز جلسة"
+
+#: templates/base.html:944
+msgid "CREATE"
+msgstr "أبدِع"
+
+#: templates/base.html:945
+msgid "Ready to elevate your vision?"
+msgstr "هل أنت مستعد للارتقاء برؤيتك؟"
+
+#: templates/base.html:947
+msgid "Start Your Project"
+msgstr "ابدأ مشروعك"
+
+#: templates/base.html:975
+msgid ""
+"The digital temple of creation. Where ambitious ideas become captivating "
+"reality."
+msgstr "المعبد الرقمي للإبداع. حيث تتحول الأفكار الطموحة إلى واقع ساحر."
+
+#: templates/base.html:987
+msgid "Quick Links"
+msgstr "روابط سريعة"
+
+#: templates/base.html:989
+msgid "About Us"
+msgstr "من نحن"
+
+#: templates/base.html:990 templates/public/booking_success.html:492
+#: templates/public/service_detail.html:472 templates/user/dashboard.html:1024
+msgid "Contact Us"
+msgstr "اتصل بنا"
+
+#: templates/base.html:991
+msgid "Portfolio"
+msgstr "معرض الأعمال"
+
+#: templates/base.html:992 templates/public/index.html:1390
+#: templates/public/services.html:338
+msgid "Services"
+msgstr "الخدمات"
+
+#: templates/base.html:993 templates/public/pricing.html:212
+msgid "FAQs"
+msgstr "الأسئلة الشائعة"
+
+#: templates/base.html:998
+msgid "Connect"
+msgstr "تواصل معنا"
+
+#: templates/base.html:1015
+msgid "5th District, 6th October City"
+msgstr "الحي الخامس، مدينة 6 أكتوبر"
+
+#: templates/base.html:1015 templates/public/contact.html:628
+msgid "Giza, Egypt"
+msgstr "الجيزة، مصر"
+
+#: templates/base.html:1022
+msgid "Newsletter"
+msgstr "النشرة البريدية"
+
+#: templates/base.html:1024
+msgid "Stay updated with our latest projects."
+msgstr "ابقَ على اطلاع بأحدث مشاريعنا."
+
+#: templates/base.html:1028
+msgid "Your name (optional)"
+msgstr "اسمك (اختياري)"
+
+#: templates/base.html:1034
+msgid "Enter your email"
+msgstr "أدخل بريدك الإلكتروني"
+
+#: templates/base.html:1037 templates/public/contact.html:549
+msgid "Please enter a valid email address (e.g. user@example.com)"
+msgstr "يرجى إدخال عنوان بريد إلكتروني صالح (مثال: user@example.com)"
+
+#: templates/base.html:1039
+msgid "Keep updated"
+msgstr "تابع أحدث الأخبار"
+
+#: templates/base.html:1048
+msgid "Ptah Studios. Temple of Creation."
+msgstr "استوديوهات بتاح. معبد الإبداع."
+
+#: templates/base.html:1050
+msgid "Privacy Policy"
+msgstr "سياسة الخصوصية"
+
+#: templates/base.html:1052
+msgid "Terms of Service"
+msgstr "شروط الخدمة"
+
+#: templates/base.html:1054
+msgid "Cookie Policy"
+msgstr "سياسة ملفات تعريف الارتباط"
+
+#: templates/public/about-us.html:5 templates/public/about-us.html:9
+msgid "About Us - Ptah Studios"
+msgstr "من نحن - استوديوهات بتاح"
+
+#: templates/public/about-us.html:416
+msgid "Temple of Creation"
+msgstr "معبد الإبداع"
+
+#: templates/public/about-us.html:418 templates/public/index.html:1390
+#: templates/public/services.html:337
+msgid "Our"
+msgstr " "
+
+#: templates/public/about-us.html:418
+msgid "Story"
+msgstr "قصتنا"
+
+#: templates/public/about-us.html:419
+msgid ""
+"Where ancient Egyptian craftsmanship meets modern content creation "
+"excellence. Discover the story behind Cairo's premier production studio."
+msgstr ""
+"حيث تلتقي الحرفية المصرية القديمة مع التميز في صناعة المحتوى الحديث. "
+"اكتشف القصة وراء استوديو الإنتاج الأول في القاهرة."
+
+#: templates/public/about-us.html:426
+msgid "Born from"
+msgstr "ولدت من"
+
+#: templates/public/about-us.html:426
+msgid "Craftsmanship"
+msgstr "الحرفية"
+
+#: templates/public/about-us.html:427
+msgid ""
+"In the heart of Cairo, where ancient craftsmanship meets modern "
+"innovation, PTAH Studios was born. Named after the revered Egyptian god "
+"of creation and craftsmen, our studio embodies the timeless pursuit of "
+"excellence that has defined Egyptian artistry for millennia."
+msgstr ""
+"في قلب القاهرة، حيث تلتقي الحرفية القديمة بالابتكار الحديث، ولدت "
+"استوديوهات بتاح. سُميت تيمناً بالإله المصري القديم للخلق والحرفيين، ليجسد"
+" الاستوديو السعي الخالد للتميز الذي ميز الفن المصري لآلاف السنين."
+
+#: templates/public/about-us.html:428
+msgid ""
+"What started as a passion project has grown into a full-service "
+"production facility, equipped with cutting-edge technology and staffed by"
+" industry veterans who share our commitment to quality. From podcasters "
+"and content creators to corporate clients and advertising agencies, we've"
+" helped hundreds bring their visions to life."
+msgstr ""
+"ما بدأ كمشروع شغف نما ليصبح منشأة إنتاج متكاملة الخدمات، مجهزة بأحدث "
+"التقنيات ويديرها خبراء الصناعة الذين يشاركوننا الالتزام بالجودة. من صناع "
+"البودكاست والمحتوى إلى عملاء الشركات ووكالات الإعلان، ساعدنا المئات على "
+"تحويل رؤاهم إلى واقع."
+
+#: templates/public/about-us.html:429
+msgid ""
+"Today, PTAH Studios stands as a testament to what happens when creative "
+"passion meets technical excellence. We're not just a rental facility – "
+"we're your creative partners, dedicated to crafting content that "
+"resonates and inspires."
+msgstr ""
+"اليوم، تقف استوديوهات بتاح كشاهد على ما يحدث عندما يلتقي الشغف الإبداعي "
+"بالتميز التقني. نحن لسنا مجرد مكان للإيجار - نحن شركاؤك المبدعون، مكرسون "
+"لصياغة محتوى يترك صدى ويلهِم."
+
+#: templates/public/about-us.html:432
+msgid "PTAH Studios Interior"
+msgstr "استوديوهات بتاح من الداخل"
+
+#: templates/public/about-us.html:440 templates/public/index.html:1287
+msgid "PTAH Vision"
+msgstr "رؤية بتاح"
+
+#: templates/public/about-us.html:443 templates/public/index.html:1290
+msgid ""
+"\"To redefine the horizon of digital media, transforming fleeting moments"
+" into timeless, high-impact cinematic experiences.\""
+msgstr ""
+"\"إعادة تعريف أفق الإعلام الرقمي، وتحويل اللحظات العابرة إلى تجارب "
+"سينمائية خالدة ذات تأثير عالٍ.\""
+
+#: templates/public/about-us.html:450 templates/public/index.html:1297
+msgid "PTAH Mission"
+msgstr "مهمة بتاح"
+
+#: templates/public/about-us.html:453 templates/public/index.html:1300
+msgid ""
+"\"We architect visual legacies by fusing authentic storytelling with "
+"strategic precision, crafting content that doesn't just engage—it "
+"captivates.\""
+msgstr ""
+"\"نحن نؤسس لإرث بصري من خلال دمج السرد القصصي الأصيل مع الدقة "
+"الاستراتيجية، لصياغة محتوى لا يكتفي بجذب الانتباه فحسب، بل يأسر العقول.\""
+
+#: templates/public/about-us.html:461 templates/public/index.html:1308
+msgid "Our Values"
+msgstr "قيمنا"
+
+#: templates/public/about-us.html:465 templates/public/index.html:1312
+msgid "Creativity First"
+msgstr "الإبداع أولاً"
+
+#: templates/public/about-us.html:466 templates/public/index.html:1313
+msgid ""
+"We believe in pushing creative boundaries and bringing unique visions to "
+"life."
+msgstr "نؤمن بتجاوز الحدود الإبداعية وتحويل الرؤى الفريدة إلى واقع ملموس."
+
+#: templates/public/about-us.html:470 templates/public/index.html:1317
+msgid "Excellence"
+msgstr "التميز"
+
+#: templates/public/about-us.html:471 templates/public/index.html:1318
+msgid ""
+"Delivering premium quality in every project, from concept to final "
+"delivery."
+msgstr "تقديم جودة فائقة في كل مشروع، من الفكرة وحتى التسليم النهائي."
+
+#: templates/public/about-us.html:475 templates/public/index.html:1322
+msgid "Collaboration"
+msgstr "التعاون"
+
+#: templates/public/about-us.html:476 templates/public/index.html:1323
+msgid "Working closely with clients as partners to achieve their creative goals."
+msgstr "العمل عن كثب مع العملاء كشركاء لتحقيق أهدافهم الإبداعية."
+
+#: templates/public/about-us.html:480 templates/public/index.html:1327
+msgid "Integrity"
+msgstr "النزاهة"
+
+#: templates/public/about-us.html:481 templates/public/index.html:1328
+msgid ""
+"Transparent pricing, honest timelines, and professional service every "
+"time."
+msgstr "أسعار شفافة، جداول زمنية دقيقة، وخدمة احترافية في كل مرة."
+
+#: templates/public/about-us.html:489
+msgid "What Our"
+msgstr "ماذا يقول"
+
+#: templates/public/about-us.html:489
+msgid "Clients Say"
+msgstr "عملاؤنا"
+
+#: templates/public/about-us.html:490 templates/public/index.html:1487
+msgid "Professional feedback from our creative partners."
+msgstr "آراء احترافية من شركائنا المبدعين."
+
+#: templates/public/about-us.html:500
+msgid ""
+"\"PTAH Studios exceeded our expectations! Their podcast production "
+"service is top-notch. The team's professionalism and attention to detail "
+"made our corporate podcast series a huge success.\""
+msgstr ""
+"\"تجاوزت استوديوهات بتاح توقعاتنا! خدمة إنتاج البودكاست لديهم من الطراز "
+"الأول. احترافية الفريق واهتمامهم بالتفاصيل جعلت سلسلة بودكاست شركتنا تنجح"
+" نجاحاً باهراً.\""
+
+#: templates/public/about-us.html:505 templates/public/index.html:1502
+msgid "Ahmed Hassan"
+msgstr "أحمد حسن"
+
+#: templates/public/about-us.html:506
+msgid "Marketing Director, TechVision Egypt"
+msgstr "مدير التسويق، تيك فيجن مصر"
+
+#: templates/public/about-us.html:517
+msgid ""
+"\"The social media content PTAH created for us went viral! Their creative"
+" team knows exactly how to capture attention and engage audiences. Highly"
+" recommend!\""
+msgstr ""
+"\"محتوى التواصل الاجتماعي الذي أنشأته بتاح لنا انتشر بشكل واسع! فريقهم "
+"الإبداعي يعرف بالضبط كيف يجذب الانتباه ويتفاعل مع الجمهور. نوصي بهم "
+"بشدة!\""
+
+#: templates/public/about-us.html:522 templates/public/index.html:1536
+msgid "Omar Kamal"
+msgstr "عمر كمال"
+
+#: templates/public/about-us.html:523
+msgid "CEO, StartHub Cairo"
+msgstr "الرئيس التنفيذي، ستارت هب القاهرة"
+
+#: templates/public/about-us.html:534
+msgid ""
+"\"From concept to final edit, PTAH Studios demonstrated unmatched "
+"professionalism. Their team guided us through every step, and the final "
+"corporate video exceeded all expectations.\""
+msgstr ""
+"\"من الفكرة وحتى المونتاج النهائي، أظهرت استوديوهات بتاح احترافية لا مثيل"
+" لها. قام فريقهم بتوجيهنا في كل خطوة، وتجاوز الفيديو النهائي للشركة كل "
+"التوقعات.\""
+
+#: templates/public/about-us.html:539
+msgid "Nadia El-Sayed"
+msgstr "نادية السيد"
+
+#: templates/public/about-us.html:540
+msgid "HR Manager, Global Finance Corp"
+msgstr "مدير الموارد البشرية، جلوبال فاينانس كورب"
+
+#: templates/public/about-us.html:551
+msgid ""
+"\"We've worked with many studios, but PTAH is in a league of their own. "
+"The quality of equipment, the expertise of the team, and the final output"
+" are simply outstanding.\""
+msgstr ""
+"\"عملنا مع العديد من الاستوديوهات، لكن بتاح في مستوى آخر تماماً. جودة "
+"المعدات، وخبرة الفريق، والمخرجات النهائية ببساطة مذهلة.\""
+
+#: templates/public/about-us.html:556
+msgid "Mohamed Rashad"
+msgstr "محمد رشاد"
+
+#: templates/public/about-us.html:557
+msgid "Founder, Digital Dreams Agency"
+msgstr "مؤسس وكالة ديجيتال دريمز"
+
+#: templates/public/about-us.html:568
+msgid ""
+"\"PTAH Studios transformed our brand identity with a stunning promotional"
+" video. Their attention to detail and creative vision brought our story "
+"to life in ways we never imagined.\""
+msgstr ""
+"\"حولت استوديوهات بتاح هوية علامتنا التجارية بفيديو ترويجي مذهل. اهتمامهم"
+" بالتفاصيل ورؤيتهم الإبداعية أعادت الحياة لقصتنا بطرق لم نتخيلها أبداً.\""
+
+#: templates/public/about-us.html:573
+msgid "Layla Mahmoud"
+msgstr "ليلى محمود"
+
+#: templates/public/about-us.html:574
+msgid "Brand Manager, Luxe Retail Egypt"
+msgstr "مدير العلامة التجارية، لوكس ريتيل مصر"
+
+#: templates/public/behind_the_scenes.html:3
+msgid "Behind The Scenes - Ptah Studios"
+msgstr "ما وراء الكواليس - استوديوهات بتاح"
+
+#: templates/public/behind_the_scenes.html:178
+msgid "UNFILTERED ACCESS"
+msgstr "وصول بلا قيود"
+
+#: templates/public/behind_the_scenes.html:179
+msgid "Behind The"
+msgstr "ما وراء"
+
+#: templates/public/behind_the_scenes.html:179
+msgid "Scenes"
+msgstr "الكواليس"
+
+#: templates/public/behind_the_scenes.html:181
+msgid ""
+"Step inside the chaos and craftsmanship. A raw look at how we bring our "
+"projects to life."
+msgstr ""
+"ادخل إلى عالم يجمع بين الفوضى الخلاقة والحرفية المتقنة. نظرة واقعية تكشف "
+"كيف نبث الحياة في مشاريعنا."
+
+#: templates/public/behind_the_scenes.html:204
+msgid "items"
+msgstr "عنصر"
+
+#: templates/public/behind_the_scenes.html:210
+msgid "No Footage Released Yet"
+msgstr "لم يتم نشر أي لقطات بعد"
+
+#: templates/public/behind_the_scenes.html:211
+msgid "Check back soon for new project uploads."
+msgstr "تحقق مرة أخرى قريباً لمشاهدة أحدث إضافات المشاريع."
+
+#: templates/public/booking.html:6 templates/public/booking.html:10
+msgid "Book a Session - Ptah Studios"
+msgstr "احجز جلسة - استوديوهات بتاح"
+
+#: templates/public/booking.html:732
+msgid "Reserve Your Creation Session"
+msgstr "احجز جلستك الإبداعية"
+
+#: templates/public/booking.html:734
+msgid "Book Your"
+msgstr "احجز"
+
+#: templates/public/booking.html:734 templates/public/index.html:1442
+msgid "Session"
+msgstr "جلستك"
+
+#: templates/public/booking.html:735
+msgid "Select your studio, choose a date and time, and customize your booking."
+msgstr "اختر الاستوديو، حدد التاريخ والوقت، وخصص حجزك."
+
+#: templates/public/booking.html:761
+msgid "Select a Studio"
+msgstr "اختر الاستوديو"
+
+#: templates/public/booking.html:762
+msgid "Choose from our professional studio spaces."
+msgstr "اختر من مساحات الاستوديو الاحترافية لدينا."
+
+#: templates/public/booking.html:783
+msgid "Persons"
+msgstr "شخص"
+
+#: templates/public/booking.html:786 templates/public/portfolio.html:545
+msgid "View Studio"
+msgstr "عرض الاستوديو"
+
+#: templates/public/booking.html:795
+msgid "Please select a studio."
+msgstr "يرجى اختيار استوديو."
+
+#: templates/public/booking.html:797 templates/public/booking.html:866
+#: templates/public/booking.html:954 templates/public/booking.html:1026
+msgid "Next Step"
+msgstr "الخطوة التالية"
+
+#: templates/public/booking.html:802 templates/public/booking.html:1083
+#: templates/user/dashboard.html:842
+msgid "Date & Time"
+msgstr "التاريخ والوقت"
+
+#: templates/public/booking.html:807
+msgid "Select Date"
+msgstr "اختر التاريخ"
+
+#: templates/public/booking.html:808
+msgid "Select a date..."
+msgstr "اختر تاريخاً..."
+
+#: templates/public/booking.html:817
+msgid "Start Time"
+msgstr "وقت البدء"
+
+#: templates/public/booking.html:820 templates/public/booking.html:1601
+msgid "Select Start"
+msgstr "اختر البدء"
+
+#: templates/public/booking.html:824
+msgid "Opens at 08:00 AM"
+msgstr "يفتح الساعة 08:00 ص"
+
+#: templates/public/booking.html:832
+msgid "End Time"
+msgstr "وقت الانتهاء"
+
+#: templates/public/booking.html:835 templates/public/booking.html:1602
+#: templates/public/booking.html:1671
+msgid "Select End"
+msgstr "اختر الانتهاء"
+
+#: templates/public/booking.html:839
+msgid "Closes at 11:00 PM"
+msgstr "يغلق الساعة 11:00 م"
+
+#: templates/public/booking.html:848
+msgid "Total Session Duration"
+msgstr "إجمالي مدة الجلسة"
+
+#: templates/public/booking.html:849 templates/public/booking.html:934
+#: templates/public/booking.html:1390 templates/public/booking.html:1731
+#: templates/public/booking.html:1744 templates/public/booking.html:1748
+msgid "Hours"
+msgstr "ساعات"
+
+#: templates/public/booking.html:851 templates/public/booking.html:1750
+msgid "Select Times"
+msgstr "اختر الأوقات"
+
+#: templates/public/booking.html:861
+msgid "Please select a valid date and time duration (Min 2 hours)."
+msgstr "يرجى اختيار تاريخ ومدة صالحة (الحد الأدنى ساعتان)."
+
+#: templates/public/booking.html:865 templates/public/booking.html:953
+#: templates/public/booking.html:1025 templates/public/booking.html:1066
+msgid "Back"
+msgstr "رجوع"
+
+#: templates/public/booking.html:871
+msgid "Select a Service"
+msgstr "اختر خدمة"
+
+#: templates/public/booking.html:873
+msgid "Select a service to see details."
+msgstr "اختر خدمة لرؤية التفاصيل."
+
+#: templates/public/booking.html:893
+msgid "Request Quotation"
+msgstr "طلب عرض سعر"
+
+#: templates/public/booking.html:897
+msgid "From"
+msgstr "يبدأ من"
+
+#: templates/public/booking.html:897 templates/public/booking.html:899
+#: templates/public/booking.html:935 templates/public/booking.html:1101
+#: templates/public/booking.html:1369 templates/public/booking.html:1382
+#: templates/public/booking.html:1389 templates/public/booking.html:1424
+#: templates/public/booking_success.html:459 templates/public/index.html:1473
+#: templates/user/booking_detail.html:493 templates/user/dashboard.html:900
+#: templates/user/dashboard.html:999 templates/user/dashboard.html:1113
+#: templates/user/dashboard.html:1122 templates/user/dashboard.html:1167
+msgid "EGP"
+msgstr "ج.م"
+
+#: templates/public/booking.html:899
+msgid "Hour"
+msgstr "ساعة"
+
+#: templates/public/booking.html:906 templates/public/services.html:407
+#: templates/user/dashboard.html:934
+msgid "View Details"
+msgstr "عرض التفاصيل"
+
+#: templates/public/booking.html:918
+msgid "Quotation Required:"
+msgstr "يتطلب عرض سعر:"
+
+#: templates/public/booking.html:918
+msgid ""
+"Pricing for this service depends on specific requirements. Submit your "
+"booking and we will contact you with a custom quote."
+msgstr ""
+"يعتمد تسعير هذه الخدمة على متطلبات محددة. أرسل حجزك وسنتصل بك لتقديم عرض "
+"سعر مخصص."
+
+#: templates/public/booking.html:929
+msgid "Pricing Packages"
+msgstr "باقات الأسعار"
+
+#: templates/public/booking.html:939
+msgid "Additional hours"
+msgstr "ساعات إضافية"
+
+#: templates/public/booking.html:940
+msgid "EGP / Hr"
+msgstr "ج.م / ساعة"
+
+#: templates/public/booking.html:951
+msgid "Please select a service."
+msgstr "يرجى اختيار خدمة."
+
+#: templates/public/booking.html:959 templates/public/booking.html:1095
+#: templates/user/booking_detail.html:513
+#: templates/user/booking_detail.html:525
+#: templates/user/booking_detail.html:544 templates/user/dashboard.html:1012
+msgid "Equipment & Extras"
+msgstr "المعدات والإضافات"
+
+#: templates/public/booking.html:960
+msgid "Enhance your session with our professional gear."
+msgstr "عزز جلستك بمعداتنا الاحترافية."
+
+#: templates/public/booking.html:999
+msgid "EGP each"
+msgstr "ج.م للقطعة"
+
+#: templates/public/booking.html:1012
+msgid "Add"
+msgstr "إضافة"
+
+#: templates/public/booking.html:1015
+msgid "Remove"
+msgstr "إزالة"
+
+#: templates/public/booking.html:1031
+msgid "Final Details"
+msgstr "التفاصيل النهائية"
+
+#: templates/public/booking.html:1034
+msgid "First Name"
+msgstr "اسم"
+
+#: templates/public/booking.html:1035
+msgid "John"
+msgstr "الاسم"
+
+#: templates/public/booking.html:1036 templates/public/booking.html:1041
+#: templates/public/booking.html:1048 templates/public/booking.html:1053
+#: templates/public/booking.html:1765
+msgid "Required"
+msgstr "مطلوب"
+
+#: templates/public/booking.html:1039
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+#: templates/public/booking.html:1040
+msgid "Doe"
+msgstr "الاسم الأخير"
+
+#: templates/public/booking.html:1046
+msgid "Email Address"
+msgstr "ايميل"
+
+#: templates/public/booking.html:1047
+msgid "example@email.com"
+msgstr "example@email.com"
+
+#: templates/public/booking.html:1051
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+#: templates/public/booking.html:1052
+msgid "+1 (555) 000-0000"
+msgstr "+20 1xx xxx xxxx"
+
+#: templates/public/booking.html:1057 templates/public/contact.html:567
+msgid "Company Name"
+msgstr "اسم الشركة"
+
+#: templates/public/booking.html:1058
+msgid "Company Name (Optional)"
+msgstr "اسم الشركة (اختياري)"
+
+#: templates/public/booking.html:1061
+msgid "Project Details / Notes"
+msgstr "ملاحظات اضافية"
+
+#: templates/public/booking.html:1062
+msgid "Tell us about your project requirements..."
+msgstr "أخبرنا عن متطلبات مشروعك..."
+
+#: templates/public/booking.html:1067
+msgid "Submit Booking"
+msgstr "تأكيد الحجز"
+
+#: templates/public/booking.html:1074 templates/public/booking_success.html:389
+msgid "Booking Summary"
+msgstr "ملخص الحجز"
+
+#: templates/public/booking.html:1076
+msgid "Studio"
+msgstr "الاستوديو"
+
+#: templates/public/booking.html:1078
+msgid "Select Studio"
+msgstr "اختر الاستوديو"
+
+#: templates/public/booking.html:1084 templates/public/booking.html:1324
+#: templates/public/booking.html:1333
+msgid "TBD"
+msgstr "يحدد لاحقاً"
+
+#: templates/public/booking.html:1087
+msgid "Selected Service"
+msgstr "الخدمة المختارة"
+
+#: templates/public/booking.html:1089
+msgid "Select Service"
+msgstr "اختر الخدمة"
+
+#: templates/public/booking.html:1100 templates/user/booking_detail.html:518
+msgid "Total"
+msgstr "الإجمالي"
+
+#: templates/public/booking.html:1112
+msgid "Secure Booking"
+msgstr "حجز آمن"
+
+#: templates/public/booking.html:1113
+msgid "5-Star Rated"
+msgstr "تقييم 5 نجوم"
+
+#: templates/public/booking.html:1114
+msgid "24/7 Support"
+msgstr "دعم 24/7"
+
+#: templates/public/booking.html:1284
+msgid "Capacity"
+msgstr "السعة"
+
+#: templates/public/booking.html:1334
+msgid "Quotation Required"
+msgstr "يتطلب عرض سعر"
+
+#: templates/public/booking.html:1373
+msgid "h Bundle"
+msgstr "ساعات (باقة)"
+
+#: templates/public/booking.html:1373
+msgid "h Overtime"
+msgstr "ساعات إضافية"
+
+#: templates/public/booking.html:1376
+msgid "Hour Bundle"
+msgstr "ساعات"
+
+#: templates/public/booking.html:1383
+msgid "Minimum Package"
+msgstr "الحد الأدنى للباقة"
+
+#: templates/public/booking.html:1421
+msgid "Quote Request"
+msgstr "طلب عرض سعر"
+
+#: templates/public/booking.html:1692 templates/public/booking.html:1918
+msgid "(Booked)"
+msgstr "(محجوز)"
+
+#: templates/public/booking.html:1737 templates/user/dashboard.html:821
+msgid "Confirmed"
+msgstr "مؤكد"
+
+#: templates/public/booking.html:1744
+msgid "Even Hours Only"
+msgstr "ساعات زوجية فقط"
+
+#: templates/public/booking.html:1744
+msgid "Min"
+msgstr "حد أدنى"
+
+#: templates/public/booking.html:1775
+msgid "Invalid email format"
+msgstr "تنسيق البريد الإلكتروني غير صحيح"
+
+#: templates/public/booking.html:1786
+msgid "Invalid Egyptian number"
+msgstr "رقم مصري غير صحيح"
+
+#: templates/public/booking_success.html:5
+#: templates/public/booking_success.html:9
+msgid "Booking Confirmed - Ptah Studios"
+msgstr "تأكيد الحجز - استوديوهات بتاح"
+
+#: templates/public/booking_success.html:377
+msgid "Booking Request"
+msgstr "تم استلام"
+
+#: templates/public/booking_success.html:377
+msgid "Received!"
+msgstr "طلب الحجز!"
+
+#: templates/public/booking_success.html:380
+msgid "To secure your booking, please transfer the booking fee via InstaPay to"
+msgstr "لتأكيد حجزك، يرجى تحويل رسوم الحجز عبر إنستا باي (InstaPay) إلى"
+
+#: templates/public/booking_success.html:380
+msgid "and send us a screenshot of the payment receipt."
+msgstr "وإرسال لقطة شاشة (Screenshot) لإيصال الدفع إلينا."
+
+#: templates/public/booking_success.html:384
+msgid "Your Booking Reference"
+msgstr "رقم مرجع الحجز"
+
+#: templates/public/booking_success.html:393
+#: templates/user/booking_detail.html:501 templates/user/dashboard.html:841
+#: templates/user/dashboard.html:976
+msgid "Service"
+msgstr "الخدمة"
+
+#: templates/public/booking_success.html:400 templates/user/dashboard.html:985
+msgid "Date"
+msgstr "التاريخ"
+
+#: templates/public/booking_success.html:414 templates/user/dashboard.html:989
+msgid "Time"
+msgstr "الوقت"
+
+#: templates/public/booking_success.html:427
+#: templates/user/booking_detail.html:472
+msgid "Duration"
+msgstr "المدة"
+
+#: templates/public/booking_success.html:428
+#: templates/user/booking_detail.html:473
+msgid "hours"
+msgstr "ساعات"
+
+#: templates/public/booking_success.html:432
+msgid "Complexity"
+msgstr "المستوى"
+
+#: templates/public/booking_success.html:437
+msgid "Standard"
+msgstr "قياسي"
+
+#: templates/public/booking_success.html:443 templates/user/dashboard.html:845
+#: templates/user/dashboard.html:980
+msgid "Status"
+msgstr "الحالة"
+
+#: templates/public/booking_success.html:458
+msgid "Estimated Total"
+msgstr "الإجمالي التقديري"
+
+#: templates/public/booking_success.html:466
+msgid "What Happens Next?"
+msgstr "ما الخطوة التالية؟"
+
+#: templates/public/booking_success.html:469
+msgid "Review:"
+msgstr "المراجعة:"
+
+#: templates/public/booking_success.html:469
+msgid "Our team will review your booking request within 24 hours"
+msgstr "سيقوم فريقنا بمراجعة طلب الحجز خلال 24 ساعة"
+
+#: templates/public/booking_success.html:470
+msgid "Confirmation:"
+msgstr "التأكيد:"
+
+#: templates/public/booking_success.html:470
+msgid ""
+"You'll receive a detailed confirmation message to your number with "
+"session specifics"
+msgstr "ستتلقى رسالة تأكيد مفصلة على رقمك تحتوي على تفاصيل الجلسة"
+
+#: templates/public/booking_success.html:471
+msgid "Discovery Call:"
+msgstr "مكالمة استكشافية:"
+
+#: templates/public/booking_success.html:471
+msgid ""
+"We'll schedule a brief call to discuss your project vision and "
+"requirements"
+msgstr "سنحدد موعداً لمكالمة قصيرة لمناقشة رؤية مشروعك ومتطلباته"
+
+#: templates/public/booking_success.html:472
+msgid "Final Confirmation:"
+msgstr "التأكيد النهائي:"
+
+#: templates/public/booking_success.html:472
+msgid "Once all details are aligned, your session will be officially confirmed"
+msgstr "بمجرد الاتفاق على كافة التفاصيل، سيتم تأكيد جلستك رسمياً"
+
+#: templates/public/booking_success.html:480 templates/user/dashboard.html:796
+msgid "Back to Home"
+msgstr "العودة للرئيسية"
+
+#: templates/public/booking_success.html:486
+msgid "View Studios"
+msgstr "تصفح الاستوديوهات"
+
+#: templates/public/bts_folder.html:5 templates/public/portfolio_item.html:5
+#: templates/public/service_detail.html:11 templates/user/booking_detail.html:6
+#: templates/user/dashboard.html:6
+msgid "Ptah Studios"
+msgstr "استوديوهات بتاح"
+
+#: templates/public/bts_folder.html:264
+msgid "Back to Archives"
+msgstr "العودة للأرشيف"
+
+#: templates/public/bts_folder.html:273
+msgid "Assets"
+msgstr "الملفات"
+
+#: templates/public/bts_folder.html:288
+msgid "Video"
+msgstr "فيديو"
+
+#: templates/public/bts_folder.html:296
+msgid "BTS Image"
+msgstr "صورة من الكواليس"
+
+#: templates/public/bts_folder.html:304
+msgid "No media uploaded to this folder yet."
+msgstr "لم يتم رفع أي وسائط في هذا المجلد بعد."
+
+#: templates/public/bts_folder.html:319
+msgid "Press ESC to close"
+msgstr "اضغط ESC للإغلاق"
+
+#: templates/public/contact.html:9
+msgid "Contact Us - Ptah Studios"
+msgstr "اتصل بنا - استوديوهات بتاح"
+
+#: templates/public/contact.html:519
+msgid "Let's Connect"
+msgstr "لنتواصل"
+
+#: templates/public/contact.html:521
+msgid "Get in"
+msgstr "تواصل"
+
+#: templates/public/contact.html:521
+msgid "Touch"
+msgstr "معنا"
+
+#: templates/public/contact.html:522
+msgid ""
+"Have a question or want to discuss your project? We'd love to hear from "
+"you and bring your vision to life."
+msgstr ""
+"هل لديك سؤال أو ترغب في مناقشة مشروعك؟ نود أن نسمع منك ونحول رؤيتك إلى "
+"واقع."
+
+#: templates/public/contact.html:532
+msgid "Send Us a Message"
+msgstr "أرسل لنا رسالة"
+
+#: templates/public/contact.html:540
+msgid "Full Name"
+msgstr "الاسم بالكامل"
+
+#: templates/public/contact.html:541
+msgid "John Doe"
+msgstr "الاسم هنا"
+
+#: templates/public/contact.html:548
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: templates/public/contact.html:549
+msgid "name@company.com"
+msgstr "name@company.com"
+
+#: templates/public/contact.html:558
+msgid "Phone"
+msgstr "الهاتف"
+
+#: templates/public/contact.html:559
+msgid "+20 123 456 7890"
+msgstr "+20 123 456 7890"
+
+#: templates/public/contact.html:559 templates/public/contact.html:595
+msgid "Must be a valid Egyptian Number (010, 011, 012, 015)"
+msgstr "يجب أن يكون رقماً مصرياً صحيحاً (010، 011، 012، 015)"
+
+#: templates/public/contact.html:566
+msgid "Company"
+msgstr "الشركة"
+
+#: templates/public/contact.html:573
+msgid "Company Size"
+msgstr "حجم الشركة"
+
+#: templates/public/contact.html:578
+msgid "Service Interested In"
+msgstr "الخدمة المطلوبة"
+
+#: templates/public/contact.html:584
+msgid "How did you know about us?"
+msgstr "كيف عرفت عنا؟"
+
+#: templates/public/contact.html:589 templates/public/contact.html:752
+msgid "Please Specify"
+msgstr "يرجى التحديد"
+
+#: templates/public/contact.html:590
+msgid "Enter details..."
+msgstr "أدخل التفاصيل..."
+
+#: templates/public/contact.html:594
+msgid "Referrer's Number"
+msgstr "رقم من قام بالترشيح"
+
+#: templates/public/contact.html:595
+msgid "+20 1xx xxx xxxx"
+msgstr "+20 1xx xxx xxxx"
+
+#: templates/public/contact.html:602
+msgid "Message"
+msgstr "الرسالة"
+
+#: templates/public/contact.html:603
+msgid "Tell us about your project..."
+msgstr "أخبرنا عن مشروعك..."
+
+#: templates/public/contact.html:611
+msgid "Send Message"
+msgstr "إرسال الرسالة"
+
+#: templates/public/contact.html:619
+msgid "Contact Information"
+msgstr "معلومات الاتصال"
+
+#: templates/public/contact.html:627
+msgid "Our Location"
+msgstr "موقعنا"
+
+#: templates/public/contact.html:628
+msgid "5th Disrict, 6 October City"
+msgstr "الحي الخامس، مدينة 6 أكتوبر"
+
+#: templates/public/contact.html:637
+msgid "Email Us"
+msgstr "راسلنا"
+
+#: templates/public/contact.html:647
+msgid "Call Us"
+msgstr "اتصل بنا"
+
+#: templates/public/contact.html:657
+msgid "Live Chat"
+msgstr "المحادثة المباشرة"
+
+#: templates/public/contact.html:658
+msgid "Available 24/7"
+msgstr "متاح 24/7"
+
+#: templates/public/contact.html:658
+msgid "Response within minutes"
+msgstr "الرد خلال دقائق"
+
+#: templates/public/contact.html:665
+msgid "Business Hours"
+msgstr "ساعات العمل"
+
+#: templates/public/contact.html:668
+msgid "Monday - Friday"
+msgstr "الاثنين - الجمعة"
+
+#: templates/public/contact.html:669
+msgid "9:00 AM - 6:00 PM"
+msgstr "9:00 ص - 6:00 م"
+
+#: templates/public/contact.html:672
+msgid "Saturday"
+msgstr "السبت"
+
+#: templates/public/contact.html:673
+msgid "10:00 AM - 4:00 PM"
+msgstr "10:00 ص - 4:00 م"
+
+#: templates/public/contact.html:676
+msgid "Sunday"
+msgstr "الأحد"
+
+#: templates/public/contact.html:677
+msgid "Closed"
+msgstr "مغلق"
+
+#: templates/public/contact.html:740
+msgid "Referrer Name"
+msgstr "اسم من قام بالترشيح"
+
+#: templates/public/contact.html:741
+msgid "Enter friend's name"
+msgstr "أدخل اسم الصديق"
+
+#: templates/public/contact.html:753
+msgid "e.g. Event name..."
+msgstr "مثال: اسم الفعالية..."
+
+#: templates/public/index.html:3
+msgid "Ptah Studios - Temple of Creation"
+msgstr "استوديوهات بتاح - معبد الإبداع"
+
+#: templates/public/index.html:1253
+msgid "God of Creation & Craftsmen"
+msgstr "إله الخلق والحرفيين"
+
+#: templates/public/index.html:1256
+msgid "WHERE"
+msgstr "حيث"
+
+#: templates/public/index.html:1257
+msgid "CREATION"
+msgstr "الإبداع"
+
+#: templates/public/index.html:1258
+msgid "COMES"
+msgstr "ينبض"
+
+#: templates/public/index.html:1259
+msgid "ALIVE"
+msgstr "بالحياة"
+
+#: templates/public/index.html:1262
+msgid ""
+"The ancient Egyptian god of craftsmen and architects. We craft visual "
+"masterpieces that tell your story."
+msgstr "الإله المصري القديم للحرفيين والمعماريين. نحن نصوغ روائع بصرية تروي قصتك."
+
+#: templates/public/index.html:1266 templates/public/service_detail.html:486
+msgid "Book Your Session"
+msgstr "احجز جلستك"
+
+#: templates/public/index.html:1269
+msgid "View Our Service"
+msgstr "شاهد خدماتنا"
+
+#: templates/public/index.html:1276
+msgid "Ancient Egyptian Statue"
+msgstr "تمثال مصري قديم"
+
+#: templates/public/index.html:1336 templates/public/portfolio.html:497
+msgid "Explore Our"
+msgstr "استكشف"
+
+#: templates/public/index.html:1336 templates/public/portfolio.html:497
+#: templates/public/portfolio_item.html:1052
+msgid "Studios"
+msgstr "استوديوهاتنا"
+
+#: templates/public/index.html:1337
+msgid "State-of-the-art production environments designed for creators."
+msgstr "بيئات إنتاج حديثة ومُجهزة بأعلى التقنيات، مصممة خصيصاً للمبدعين."
+
+#: templates/public/index.html:1341
+msgid "Scroll Left"
+msgstr "تمرير لليمين"
+
+#: templates/public/index.html:1365
+msgid "View Studio Details"
+msgstr "عرض تفاصيل الاستوديو"
+
+#: templates/public/index.html:1372
+msgid "No featured studios available at the moment."
+msgstr "لا توجد استوديوهات مميزة متاحة حالياً."
+
+#: templates/public/index.html:1378
+msgid "Scroll Right"
+msgstr "تمرير لليسار"
+
+#: templates/public/index.html:1383
+msgid "See All Spaces"
+msgstr "شاهد كل الاستوديوهات"
+
+#: templates/public/index.html:1389
+msgid "Our Expertise"
+msgstr "خبراتنا"
+
+#: templates/public/index.html:1391
+msgid "Professional creative services delivered with studio precision."
+msgstr "خدمات إبداعية احترافية تُقدم بدقة الاستوديوهات."
+
+#: templates/public/index.html:1411
+msgid "View"
+msgstr "عرض"
+
+#: templates/public/index.html:1411
+msgid "details"
+msgstr "التفاصيل"
+
+#: templates/public/index.html:1419
+msgid "Special Offers"
+msgstr "عروض خاصة"
+
+#: templates/public/index.html:1420
+msgid "Exclusive"
+msgstr "باقات"
+
+#: templates/public/index.html:1420
+msgid "Packages"
+msgstr "حصرية"
+
+#: templates/public/index.html:1421
+msgid "Bundled solutions designed to give you maximum value."
+msgstr "حلول مجمعة مصممة لمنحك أقصى قيمة."
+
+#: templates/public/index.html:1432
+msgid "SAVE"
+msgstr "وفر"
+
+#: templates/public/index.html:1476
+msgid "Contact Sales"
+msgstr "تواصل معنا "
+
+#: templates/public/index.html:1486
+msgid "What our clients"
+msgstr "ماذا يقول"
+
+#: templates/public/index.html:1486
+msgid "Says"
+msgstr "عملاؤنا"
+
+#: templates/public/index.html:1497
+msgid ""
+"\"PTAH Studios exceeded our expectations! Their podcast production "
+"service is top-notch. The team's attention to detail made our series a "
+"huge success.\""
+msgstr ""
+"\"تجاوزت استوديوهات بتاح توقعاتنا! خدمة إنتاج البودكاست لديهم من الطراز "
+"الأول. اهتمام الفريق بالتفاصيل جعل سلسلتنا تنجح نجاحاً باهراً.\""
+
+#: templates/public/index.html:1503
+msgid "TechVision Egypt"
+msgstr "تيك فيجن مصر"
+
+#: templates/public/index.html:1514
+msgid ""
+"\"Working on our product ads was incredible. They understood our brand "
+"vision perfectly and delivered stunning visuals.\""
+msgstr ""
+"\"العمل على إعلانات منتجاتنا كان رائعاً. لقد فهموا رؤية علامتنا التجارية "
+"بشكل مثالي وقدموا صوراً مذهلة.\""
+
+#: templates/public/index.html:1519
+msgid "Sarah Mohamed"
+msgstr "سارة محمد"
+
+#: templates/public/index.html:1520
+msgid "Bloom Cosmetics"
+msgstr "بلوم لمستحضرات التجميل"
+
+#: templates/public/index.html:1531
+msgid ""
+"\"The social media content PTAH created went viral! Their creative team "
+"knows exactly how to engage audiences.\""
+msgstr ""
+"\"محتوى التواصل الاجتماعي الذي أنشأته بتاح انتشر بشكل واسع! فريقهم "
+"الإبداعي يعرف بالضبط كيف يجذب الجمهور.\""
+
+#: templates/public/index.html:1537
+msgid "StartHub Cairo"
+msgstr "ستارت هب كايرو"
+
+#: templates/public/portfolio.html:9
+msgid "Portfolio - Ptah Studios"
+msgstr "معرض الأعمال - استوديوهات بتاح"
+
+#: templates/public/portfolio.html:498
+msgid ""
+"Discover our state-of-the-art production spaces designed to bring your "
+"creative vision to life"
+msgstr ""
+"اكتشف مساحات الإنتاج المتطورة لدينا، المصممة لتحويل رؤيتك الإبداعية إلى "
+"واقع"
+
+#: templates/public/portfolio.html:505
+msgid "All Studios"
+msgstr "كل الاستوديوهات"
+
+#: templates/public/portfolio.html:508
+msgid "Production"
+msgstr "الإنتاج"
+
+#: templates/public/portfolio.html:511
+msgid "Podcast"
+msgstr "البودكاست"
+
+#: templates/public/portfolio.html:514
+msgid "Commercial"
+msgstr "الإعلانات"
+
+#: templates/public/portfolio.html:517
+msgid "Educational"
+msgstr "التعليمي"
+
+#: templates/public/portfolio.html:553
+msgid "No Studios Found"
+msgstr "لا توجد استوديوهات"
+
+#: templates/public/portfolio.html:554
+msgid "Check back soon for new additions to our studio portfolio."
+msgstr "تحقق مرة أخرى قريباً لمشاهدة إضافات جديدة لمعرض الاستوديوهات."
+
+#: templates/public/portfolio_item.html:915
+msgid "Back to Studios"
+msgstr "العودة للاستوديوهات"
+
+#: templates/public/portfolio_item.html:954
+msgid "Watch Studio Tour"
+msgstr "شاهد جولة في الاستوديو"
+
+#: templates/public/portfolio_item.html:967
+msgid "Studio Gallery"
+msgstr "معرض صور الاستوديو"
+
+#: templates/public/portfolio_item.html:983
+msgid "About This Studio"
+msgstr "عن هذا الاستوديو"
+
+#: templates/public/portfolio_item.html:988
+msgid "Studio Features"
+msgstr "ميزات الاستوديو"
+
+#: templates/public/portfolio_item.html:1009
+msgid "Studio Details"
+msgstr "تفاصيل الاستوديو"
+
+#: templates/public/portfolio_item.html:1012
+msgid "Studio Name"
+msgstr "اسم الاستوديو"
+
+#: templates/public/portfolio_item.html:1018
+msgid "Category"
+msgstr "الفئة"
+
+#: templates/public/portfolio_item.html:1022
+msgid "Added"
+msgstr "أضيف في"
+
+#: templates/public/portfolio_item.html:1029
+msgid "Ready to Create?"
+msgstr "مستعد للإبداع؟"
+
+#: templates/public/portfolio_item.html:1030
+msgid ""
+"Book this studio for your next production. Our team will ensure "
+"everything is set up for your success."
+msgstr "احجز هذا الاستوديو لإنتاجك القادم. سيضمن فريقنا إعداد كل شيء لنجاحك."
+
+#: templates/public/portfolio_item.html:1035
+msgid "Book This Studio"
+msgstr "احجز هذا الاستوديو"
+
+#: templates/public/portfolio_item.html:1040 templates/public/services.html:345
+msgid "Book a Session"
+msgstr "احجز جلسة"
+
+#: templates/public/portfolio_item.html:1052
+msgid "More"
+msgstr "المزيد من"
+
+#: templates/public/pricing.html:3
+msgid "Pricing & FAQ - Ptah Studios"
+msgstr "الأسعار والأسئلة الشائعة - استوديوهات بتاح"
+
+#: templates/public/pricing.html:210
+msgid "Support Center"
+msgstr "مركز الدعم"
+
+#: templates/public/pricing.html:212
+msgid "Support"
+msgstr "الدعم"
+
+#: templates/public/pricing.html:213
+msgid "Everything you need to know before booking your creative session."
+msgstr "كل ما تحتاج معرفته قبل حجز جلستك الإبداعية."
+
+#: templates/public/pricing.html:218
+msgid "Frequently Asked"
+msgstr "الأسئلة الأكثر"
+
+#: templates/public/pricing.html:218
+msgid "Questions"
+msgstr "شيوعاً"
+
+#: templates/public/pricing.html:222
+msgid "Do you offer package discounts?"
+msgstr "هل تقدمون خصومات على الباقات؟"
+
+#: templates/public/pricing.html:223
+msgid ""
+"Yes! Combine multiple sessions or services for custom quotes tailored to "
+"your long-term projects."
+msgstr ""
+"نعم! ادمج جلسات أو خدمات متعددة للحصول على عروض أسعار مخصصة لمشاريعك "
+"طويلة الأجل."
+
+#: templates/public/pricing.html:227
+msgid "What's your cancellation policy?"
+msgstr "ما هي سياسة الإلغاء لديكم؟"
+
+#: templates/public/pricing.html:228
+msgid ""
+"We require 48 hours notice. Cancellations made within shorter timeframes "
+"may incur a service fee."
+msgstr "نطلب إشعاراً قبل 48 ساعة. الإلغاء في أوقات أقصر قد يترتب عليه رسوم خدمة."
+
+#: templates/public/pricing.html:232
+msgid "Can I get a custom quote?"
+msgstr "هل يمكنني الحصول على عرض سعر مخصص؟"
+
+#: templates/public/pricing.html:233
+msgid ""
+"Every vision is unique. Contact us directly for a proposal designed for "
+"your specific production needs."
+msgstr ""
+"كل رؤية فريدة من نوعها. اتصل بنا مباشرة للحصول على عرض مصمم خصيصاً "
+"لاحتياجات الإنتاج الخاصة بك."
+
+#: templates/public/pricing.html:237
+msgid "Do you offer rush delivery?"
+msgstr "هل تقدمون خدمة التسليم السريع؟"
+
+#: templates/public/pricing.html:238
+msgid ""
+"Yes, rush editing and production options are available for most services "
+"at an additional premium."
+msgstr ""
+"نعم، تتوفر خيارات المونتاج والإنتاج السريع لمعظم الخدمات مقابل تكلفة "
+"إضافية."
+
+#: templates/public/pricing.html:242
+msgid "What's included in the base price?"
+msgstr "ما الذي يشمله السعر الأساسي؟"
+
+#: templates/public/pricing.html:243
+msgid ""
+"Base rates typically include studio access, standard equipment, and basic"
+" post-production support."
+msgstr ""
+"تشمل الأسعار الأساسية عادةً استخدام الاستوديو، والمعدات القياسية، ودعم ما"
+" بعد الإنتاج الأساسي."
+
+#: templates/public/pricing.html:247
+msgid "Do you offer ongoing contracts?"
+msgstr "هل تقدمون عقوداً مستمرة؟"
+
+#: templates/public/pricing.html:248
+msgid ""
+"We offer monthly retainer packages for consistent content creators and "
+"enterprise partners."
+msgstr ""
+"نحن نقدم باقات شهرية (ريتينر) لمنشئي المحتوى المستمرين والشركاء من "
+"الشركات."
+
+#: templates/public/service_detail.html:425
+msgid "Back to Services"
+msgstr "العودة للخدمات"
+
+#: templates/public/service_detail.html:458
+msgid "Premium Quality"
+msgstr "جودة متميزة"
+
+#: templates/public/service_detail.html:462
+msgid "Satisfaction Guaranteed"
+msgstr "رضا مضمون"
+
+#: templates/public/service_detail.html:469
+msgid "Need more info?"
+msgstr "تحتاج لمزيد من المعلومات؟"
+
+#: templates/public/service_detail.html:480
+msgid "How It"
+msgstr "كيف"
+
+#: templates/public/service_detail.html:480
+msgid "Works"
+msgstr "نعمل"
+
+#: templates/public/service_detail.html:487
+msgid "Select your preferred date and time through our simple booking form"
+msgstr "اختر التاريخ والوقت المفضل لديك من خلال نموذج الحجز البسيط"
+
+#: templates/public/service_detail.html:493
+msgid "Pre-Production"
+msgstr "ما قبل الإنتاج"
+
+#: templates/public/service_detail.html:494
+msgid "We'll discuss your vision and prepare everything needed for success"
+msgstr "سنناقش رؤيتك ونجهز كل ما يلزم لنجاح العمل"
+
+#: templates/public/service_detail.html:500
+msgid "Production Day"
+msgstr "يوم الإنتاج"
+
+#: templates/public/service_detail.html:501
+msgid "Experience our professional studio environment and expert team"
+msgstr "عِش تجربة بيئة الاستوديو الاحترافية وفريقنا الخبير"
+
+#: templates/public/service_detail.html:507
+msgid "Final Delivery"
+msgstr "التسليم النهائي"
+
+#: templates/public/service_detail.html:508
+msgid "Receive your polished deliverables on time, ready to use"
+msgstr "استلم أعمالك المنقحة في الوقت المحدد، جاهزة للاستخدام"
+
+#: templates/public/services.html:5 templates/public/services.html:9
+msgid "Our Services - Ptah Studios"
+msgstr "خدماتنا - استوديوهات بتاح"
+
+#: templates/public/services.html:334
+msgid "Premium Services"
+msgstr "خدمات متميزة"
+
+#: templates/public/services.html:341
+msgid ""
+"Professional creative production solutions tailored to your unique "
+"vision. From podcast production to cinematic video, we bring your ideas "
+"to life."
+msgstr ""
+"حلول إنتاج إبداعي احترافية مفصلة لتناسب رؤيتك الفريدة. من إنتاج البودكاست"
+" إلى الفيديو السينمائي، نحن نحيي أفكارك."
+
+#: templates/public/services.html:348
+msgid "Get in Touch"
+msgstr "تواصل معنا"
+
+#: templates/public/services.html:356
+msgid "What We Offer"
+msgstr "ماذا نقدم"
+
+#: templates/public/services.html:357
+msgid "Premium"
+msgstr "خدمات إنتاج"
+
+#: templates/public/services.html:357
+msgid "Production Services"
+msgstr "متميزة"
+
+#: templates/public/services.html:358
+msgid ""
+"Professional creative solutions tailored to bring your vision to life "
+"with studio-quality results."
+msgstr "حلول إبداعية احترافية مصممة لتحويل رؤيتك إلى واقع بنتائج بجودة الاستوديو."
+
+#: templates/public/services.html:392
+msgid "Professional Equipment"
+msgstr "معدات احترافية"
+
+#: templates/public/services.html:393
+msgid "Expert Team"
+msgstr "فريق خبير"
+
+#: templates/public/services.html:394
+msgid "Quick Turnaround"
+msgstr "سرعة في التنفيذ"
+
+#: templates/public/services.html:395
+msgid "Unlimited Revisions"
+msgstr "تعديلات غير محدودة"
+
+#: templates/public/services.html:403
+msgid "Build Package"
+msgstr "صمم باقتك"
+
+#: templates/user/booking_detail.html:6 templates/user/dashboard.html:963
+msgid "Booking Details"
+msgstr "تفاصيل الحجز "
+
+#: templates/user/booking_detail.html:403
+msgid "Booking"
+msgstr "الحجوزات"
+
+#: templates/user/booking_detail.html:403
+msgid "Details"
+msgstr "التفاصيل"
+
+#: templates/user/booking_detail.html:404 templates/user/dashboard.html:840
+msgid "Reference"
+msgstr "المرجع"
+
+#: templates/user/booking_detail.html:407
+#, fuzzy
+msgid "Back to My Bookings"
+msgstr "الرجوع لحجوزاتي"
+
+#: templates/user/booking_detail.html:416
+msgid "Booking Confirmation"
+msgstr "التأكيد النهائي:"
+
+#: templates/user/booking_detail.html:445
+msgid "Booking Date"
+msgstr "تاريخ الحجز"
+
+#: templates/user/booking_detail.html:457
+msgid "Time Slot"
+msgstr "الوقت"
+
+#: templates/user/booking_detail.html:476
+msgid "Studio Location"
+msgstr "موقعنا"
+
+#: templates/user/booking_detail.html:481
+msgid "Not assigned"
+msgstr "غير مخصص"
+
+#: templates/user/booking_detail.html:486
+msgid "Studio Capacity"
+msgstr "السعة"
+
+#: templates/user/booking_detail.html:488
+msgid "persons"
+msgstr "شخص"
+
+#: templates/user/booking_detail.html:492 templates/user/dashboard.html:1005
+msgid "Total Amount"
+msgstr "الكم النهائي"
+
+#: templates/user/booking_detail.html:498
+msgid "Cost Breakdown"
+msgstr "السعر بالتفصيل"
+
+#: templates/user/booking_detail.html:501 templates/user/dashboard.html:883
+msgid "h"
+msgstr "ساعات"
+
+#: templates/user/booking_detail.html:501
+msgid "hr"
+msgstr "ساعة"
+
+#: templates/user/booking_detail.html:507
+msgid "Studio Time"
+msgstr "اسم الاستوديو"
+
+#: templates/user/booking_detail.html:547
+msgid "No additional equipment selected"
+msgstr "لا يوجد ادوات اخرى تم استخدامها"
+
+#: templates/user/booking_detail.html:554
+msgid "Contact Support"
+msgstr "اتصل بنا"
+
+#: templates/user/booking_detail.html:557 templates/user/dashboard.html:1027
+msgid "New Booking"
+msgstr "حجز جديد"
+
+#: templates/user/dashboard.html:6
+msgid "My Bookings"
+msgstr "حجوزاتي"
+
+#: templates/user/dashboard.html:792
+msgid "My"
+msgstr "قائمة"
+
+#: templates/user/dashboard.html:793
+msgid "View and manage your studio bookings"
+msgstr "عرض وإدارة حجوزات الاستوديو الخاصة بك"
+
+#: templates/user/dashboard.html:801
+msgid "Welcome back"
+msgstr "أهلاً بعودتك"
+
+#: templates/user/dashboard.html:802
+msgid ""
+"Here's an overview of your booking activity. Click on any booking to view"
+" details."
+msgstr ""
+"إليك نظرة عامة على نشاط الحجز الخاص بك. انقر على أي حجز لعرض التفاصيل."
+
+#: templates/user/dashboard.html:813
+msgid "All Bookings"
+msgstr "كل الحجوزات"
+
+#: templates/user/dashboard.html:817
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#: templates/user/dashboard.html:825
+msgid "Completed"
+msgstr "مكتملة"
+
+#: templates/user/dashboard.html:832
+msgid "Search by reference or service..."
+msgstr "ابحث برقم المرجع أو الخدمة..."
+
+#: templates/user/dashboard.html:843
+msgid "Location"
+msgstr "الموقع"
+
+#: templates/user/dashboard.html:844
+msgid "Amount"
+msgstr "المبلغ"
+
+#: templates/user/dashboard.html:846
+msgid "Actions"
+msgstr "إجراءات"
+
+#: templates/user/dashboard.html:892
+msgid "persons max"
+msgstr "أشخاص كحد أقصى"
+
+#: templates/user/dashboard.html:895
+msgid "No Studio Assigned"
+msgstr "لم يتم تعيين استوديو"
+
+#: templates/user/dashboard.html:943
+msgid "No bookings found."
+msgstr "لا توجد حجوزات."
+
+#: templates/user/dashboard.html:945
+msgid "Book a session now"
+msgstr "احجز جلسة الآن"
+
+#: templates/user/dashboard.html:953
+msgid "No bookings found with this status or search criteria."
+msgstr "لم يتم العثور على حجوزات بهذه الحالة أو معايير البحث."
+
+#: templates/user/dashboard.html:969
+msgid "Booking Reference"
+msgstr "رقم مرجع الحجز"
+
+#: templates/user/dashboard.html:995
+msgid "Service Cost Breakdown"
+msgstr "تفاصيل تكلفة الخدمة"
+
+#: templates/user/dashboard.html:998
+msgid "Service Cost"
+msgstr "تكلفة الخدمة"
+
+#: templates/user/dashboard.html:1014 templates/user/dashboard.html:1150
+msgid "No equipment selected"
+msgstr "لم يتم اختيار معدات"
+
+#: templates/user/dashboard.html:1020
+msgid "Need to make changes to your booking?"
+msgstr "هل تحتاج لإجراء تغييرات على حجزك؟"
+
+#: templates/user/dashboard.html:1121
+msgid "h session @"
+msgstr "ساعة (جلسة) بسعر"
+
+#: templates/user/dashboard.html:1121
+msgid "EGP/hr"
+msgstr "ج.م/ساعة"
+
+#~ msgid "{editor}: Editing failed"
+#~ msgstr ""
+
+#~ msgid "{editor}: Editing failed: {e}"
+#~ msgstr ""
+
+#~ msgid "{text} {deprecated_message}"
+#~ msgstr ""
+
+#~ msgid "Options"
+#~ msgstr ""
+
+#~ msgid "Got unexpected extra argument ({args})"
+#~ msgid_plural "Got unexpected extra arguments ({args})"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "DeprecationWarning: The command {name!r} is deprecated.{extra_message}"
+#~ msgstr ""
+
+#~ msgid "Aborted!"
+#~ msgstr ""
+
+#~ msgid "Commands"
+#~ msgstr ""
+
+#~ msgid "Missing command."
+#~ msgstr ""
+
+#~ msgid "No such command {name!r}."
+#~ msgstr ""
+
+#~ msgid "Value must be an iterable."
+#~ msgstr ""
+
+#~ msgid "Takes {nargs} values but 1 was given."
+#~ msgid_plural "Takes {nargs} values but {len} were given."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid ""
+#~ "DeprecationWarning: The {param_type} {name!r} "
+#~ "is deprecated.{extra_message}"
+#~ msgstr ""
+
+#~ msgid "env var: {var}"
+#~ msgstr ""
+
+#~ msgid "default: {default}"
+#~ msgstr ""
+
+#~ msgid "required"
+#~ msgstr ""
+
+#~ msgid "(dynamic)"
+#~ msgstr ""
+
+#~ msgid "%(prog)s, version %(version)s"
+#~ msgstr ""
+
+#~ msgid "Show the version and exit."
+#~ msgstr ""
+
+#~ msgid "Show this message and exit."
+#~ msgstr ""
+
+#~ msgid "Error: {message}"
+#~ msgstr ""
+
+#~ msgid "Try '{command} {option}' for help."
+#~ msgstr ""
+
+#~ msgid "Invalid value: {message}"
+#~ msgstr ""
+
+#~ msgid "Invalid value for {param_hint}: {message}"
+#~ msgstr ""
+
+#~ msgid "Missing argument"
+#~ msgstr ""
+
+#~ msgid "Missing option"
+#~ msgstr ""
+
+#~ msgid "Missing parameter"
+#~ msgstr ""
+
+#~ msgid "Missing {param_type}"
+#~ msgstr ""
+
+#~ msgid "Missing parameter: {param_name}"
+#~ msgstr ""
+
+#~ msgid "No such option: {name}"
+#~ msgstr ""
+
+#~ msgid "Did you mean {possibility}?"
+#~ msgid_plural "(Possible options: {possibilities})"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "unknown error"
+#~ msgstr ""
+
+#~ msgid "Could not open file {filename!r}: {message}"
+#~ msgstr ""
+
+#~ msgid "Usage:"
+#~ msgstr ""
+
+#~ msgid "Argument {name!r} takes {nargs} values."
+#~ msgstr ""
+
+#~ msgid "Option {name!r} does not take a value."
+#~ msgstr ""
+
+#~ msgid "Option {name!r} requires an argument."
+#~ msgid_plural "Option {name!r} requires {nargs} arguments."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "Shell completion is not supported for Bash versions older than 4.4."
+#~ msgstr ""
+
+#~ msgid "Couldn't detect Bash version, shell completion is not supported."
+#~ msgstr ""
+
+#~ msgid "Repeat for confirmation"
+#~ msgstr ""
+
+#~ msgid "Error: The value you entered was invalid."
+#~ msgstr ""
+
+#~ msgid "Error: {e.message}"
+#~ msgstr ""
+
+#~ msgid "Error: The two entered values do not match."
+#~ msgstr ""
+
+#~ msgid "Error: invalid input"
+#~ msgstr ""
+
+#~ msgid "Press any key to continue..."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Choose from:\n"
+#~ "\t{choices}"
+#~ msgstr ""
+
+#~ msgid "{value!r} is not {choice}."
+#~ msgid_plural "{value!r} is not one of {choices}."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "{value!r} does not match the format {format}."
+#~ msgid_plural "{value!r} does not match the formats {formats}."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "{value!r} is not a valid {number_type}."
+#~ msgstr ""
+
+#~ msgid "{value} is not in the range {range}."
+#~ msgstr ""
+
+#~ msgid "{value!r} is not a valid boolean. Recognized values: {states}"
+#~ msgstr ""
+
+#~ msgid "{value!r} is not a valid UUID."
+#~ msgstr ""
+
+#~ msgid "file"
+#~ msgstr ""
+
+#~ msgid "directory"
+#~ msgstr ""
+
+#~ msgid "path"
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} does not exist."
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} is a file."
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} is a directory."
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} is not readable."
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} is not writable."
+#~ msgstr ""
+
+#~ msgid "{name} {filename!r} is not executable."
+#~ msgstr ""
+
+#~ msgid "{len_type} values are required, but {len_value} was given."
+#~ msgid_plural "{len_type} values are required, but {len_value} were given."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "This field is required."
+#~ msgstr ""
+
+#~ msgid "File does not have an approved extension: {extensions}"
+#~ msgstr ""
+
+#~ msgid "File does not have an approved extension."
+#~ msgstr ""
+
+#~ msgid "Invalid field name '%s'."
+#~ msgstr ""
+
+#~ msgid "Field must be equal to %(other_name)s."
+#~ msgstr ""
+
+#~ msgid "Field must be at least %(min)d character long."
+#~ msgid_plural "Field must be at least %(min)d characters long."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "Field cannot be longer than %(max)d character."
+#~ msgid_plural "Field cannot be longer than %(max)d characters."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "Field must be exactly %(max)d character long."
+#~ msgid_plural "Field must be exactly %(max)d characters long."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "Field must be between %(min)d and %(max)d characters long."
+#~ msgstr ""
+
+#~ msgid "Number must be at least %(min)s."
+#~ msgstr ""
+
+#~ msgid "Number must be at most %(max)s."
+#~ msgstr ""
+
+#~ msgid "Number must be between %(min)s and %(max)s."
+#~ msgstr ""
+
+#~ msgid "Invalid input."
+#~ msgstr ""
+
+#~ msgid "Invalid email address."
+#~ msgstr ""
+
+#~ msgid "Invalid IP address."
+#~ msgstr ""
+
+#~ msgid "Invalid Mac address."
+#~ msgstr ""
+
+#~ msgid "Invalid URL."
+#~ msgstr ""
+
+#~ msgid "Invalid UUID."
+#~ msgstr ""
+
+#~ msgid "Invalid value, must be one of: %(values)s."
+#~ msgstr ""
+
+#~ msgid "Invalid value, can't be any of: %(values)s."
+#~ msgstr ""
+
+#~ msgid "This field cannot be edited."
+#~ msgstr ""
+
+#~ msgid "This field is disabled and cannot have a value."
+#~ msgstr ""
+
+#~ msgid "Invalid CSRF Token."
+#~ msgstr ""
+
+#~ msgid "CSRF token missing."
+#~ msgstr ""
+
+#~ msgid "CSRF failed."
+#~ msgstr ""
+
+#~ msgid "CSRF token expired."
+#~ msgstr ""
+
+#~ msgid "Invalid Choice: could not coerce."
+#~ msgstr ""
+
+#~ msgid "Choices cannot be None."
+#~ msgstr ""
+
+#~ msgid "Not a valid choice."
+#~ msgstr ""
+
+#~ msgid "Invalid choice(s): one or more data inputs could not be coerced."
+#~ msgstr ""
+
+#~ msgid "'%(value)s' is not a valid choice for this field."
+#~ msgid_plural "'%(value)s' are not valid choices for this field."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+#~ msgstr[2] ""
+#~ msgstr[3] ""
+#~ msgstr[4] ""
+#~ msgstr[5] ""
+
+#~ msgid "Not a valid datetime value."
+#~ msgstr ""
+
+#~ msgid "Not a valid date value."
+#~ msgstr ""
+
+#~ msgid "Not a valid time value."
+#~ msgstr ""
+
+#~ msgid "Not a valid week value."
+#~ msgstr ""
+
+#~ msgid "Not a valid integer value."
+#~ msgstr ""
+
+#~ msgid "Not a valid decimal value."
+#~ msgstr ""
+
+#~ msgid "Not a valid float value."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "\"Working with PTAH Studios on our "
+#~ "product ads was incredible. They "
+#~ "understood our brand vision perfectly "
+#~ "and delivered stunning visuals that "
+#~ "boosted our sales by 40%.\""
+#~ msgstr ""
+#~ "\"العمل مع استوديوهات بتاح على إعلانات"
+#~ " منتجاتنا كان رائعاً. لقد فهموا رؤية"
+#~ " علامتنا التجارية بشكل مثالي وقدموا "
+#~ "صوراً مذهلة عززت مبيعاتنا بنسبة 40%.\""
+
+#~ msgid "Creative Director, Bloom Cosmetics"
+#~ msgstr "المدير الإبداعي، بلوم لمستحضرات التجميل"
+

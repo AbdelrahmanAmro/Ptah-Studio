@@ -1,0 +1,1740 @@
+{% extends "admin/base.html" %}
+
+{% block title %}PTAH STUDIOS - Manage Projects{% endblock %}
+
+{% block content %}
+<style>
+    /* ===========================
+       PROJECT MANAGEMENT DASHBOARD STYLES
+       =========================== */
+    
+    .projects-dashboard {
+        padding: 1rem 0;
+        height: calc(100vh - 80px); /* Fixed height for dashboard to allow internal scrolling */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* Header Section */
+    .projects-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .projects-header h1 {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--color-text-primary);
+    }
+
+    .projects-header h1 span {
+        color: var(--color-gold);
+    }
+
+    .projects-header p {
+        color: var(--color-text-secondary);
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Search & Filter Row */
+    .projects-filter-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+    }
+
+    .search-wrapper {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+    }
+
+    .search-input {
+        width: 100%;
+        background: var(--color-navy-glass);
+        border: var(--border-glass);
+        border-radius: 10px;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        color: white;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    }
+
+    .filter-dropdown {
+        background: var(--color-navy-glass);
+        border: var(--border-glass);
+        border-radius: 10px;
+        padding: 0.875rem 1.5rem;
+        color: var(--color-text-primary);
+        font-family: inherit;
+        font-size: 0.9rem;
+        cursor: pointer;
+        min-width: 160px;
+        transition: var(--transition-smooth);
+    }
+
+    .filter-dropdown:focus {
+        outline: none;
+        border-color: var(--color-gold);
+    }
+
+    /* ===========================
+       KANBAN BOARD (COLUMN LAYOUT)
+       =========================== */
+    
+    #projectGroupsContainer {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: 100%;
+        padding-bottom: 1rem;
+        align-items: flex-start;
+        /* Custom Scrollbar for horizontal scroll */
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gold) rgba(255, 255, 255, 0.05);
+    }
+
+    #projectGroupsContainer::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    #projectGroupsContainer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    #projectGroupsContainer::-webkit-scrollbar-thumb {
+        background-color: var(--color-gold);
+        border-radius: 4px;
+    }
+
+    /* Status Column */
+    .status-section {
+        min-width: 320px;
+        max-width: 320px;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+        flex-shrink: 0;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    /* Column Header */
+    .status-header-row {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 16px 16px 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        backdrop-filter: blur(5px);
+    }
+
+    .status-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        color: #fff;
+        text-transform: capitalize;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .status-count {
+        background: rgba(255,255,255,0.1);
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        color: var(--color-text-secondary);
+    }
+
+    /* Colored Borders for Status Columns */
+    .header-planning { border-top: 4px solid #8B5CF6; }
+    .header-pre_production { border-top: 4px solid #F59E0B; }
+    .header-production { border-top: 4px solid #3B82F6; }
+    .header-post_production { border-top: 4px solid #10B981; }
+    .header-review { border-top: 4px solid #14B8A6; }
+    .header-completed { border-top: 4px solid #9CA3AF; }
+    .header-rejected { border-top: 4px solid #EF4444; }
+    .header-delivered { border-top: 4px solid var(--color-gold); }
+
+    /* Cards Container (Vertical Scroll per column) */
+    .projects-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+        overflow-y: auto;
+        /* Scrollbar for vertical column */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    /* ===========================
+       COMPACT PROJECT CARD STYLES
+       =========================== */
+    .project-card {
+        background: rgba(30, 41, 59, 0.8);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: var(--transition-smooth);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .project-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212, 175, 55, 0.3);
+        background: rgba(40, 50, 70, 0.95);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Priority Indicator */
+    .priority-indicator {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--color-text-muted);
+    }
+
+    .priority-indicator.critical {
+        background: var(--color-danger);
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+        animation: pulse-danger 2s infinite;
+    }
+    
+    .priority-indicator.high { background: var(--color-warning); }
+    .priority-indicator.medium { background: var(--color-info); }
+
+    @keyframes pulse-danger {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    .project-card-header {
+        margin-bottom: 0.5rem;
+        padding-right: 1rem;
+    }
+
+    .project-card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin-bottom: 0.1rem;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .project-card-subtitle {
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .project-ref {
+        font-size: 0.65rem;
+        font-family: monospace;
+        color: var(--color-text-secondary);
+        opacity: 0.6;
+        margin-top: 0.25rem;
+    }
+
+    /* Compact Metadata */
+    .project-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.7rem;
+        color: var(--color-text-secondary);
+    }
+
+    .meta-tag {
+        background: rgba(255,255,255,0.05);
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .meta-tag i { color: var(--color-gold); font-size: 0.6rem; }
+    .meta-tag.warning { color: var(--color-warning); background: rgba(245, 158, 11, 0.1); }
+    .meta-tag.danger { color: var(--color-danger); background: rgba(239, 68, 68, 0.1); }
+
+    /* Compact Progress */
+    .progress-section {
+        margin-top: auto;
+    }
+
+    .progress-track {
+        height: 4px;
+        background: var(--color-navy-dark);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--color-gold), #F4D06F);
+        border-radius: 2px;
+        width: 0%;
+    }
+
+    /* Team Avatars - Compact */
+    .team-avatars-compact {
+        display: flex;
+        margin-top: 0.5rem;
+        height: 20px;
+    }
+    
+    .avatar-compact {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--color-navy-medium);
+        border: 1px solid var(--color-navy-dark);
+        color: #fff;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: -6px;
+    }
+
+    .avatar-compact:first-child { margin-left: 0; }
+
+    /* Empty State for Column */
+    .empty-column-state {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--color-text-muted);
+        font-size: 0.8rem;
+        font-style: italic;
+        opacity: 0.6;
+    }
+
+    /* ===========================
+       EDIT MODAL OVERLAY STYLES
+       =========================== */
+    .modal-overlay-pm {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 1rem;
+    }
+
+    .modal-overlay-pm.active {
+        display: flex;
+    }
+
+    .project-modal-box {
+        background: var(--color-navy-dark);
+        border: var(--border-glass);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 1000px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-card), 0 0 60px rgba(212, 175, 55, 0.1);
+        animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes modalSlideUp {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-pm-header {
+        padding: 1.5rem 2rem;
+        border-bottom: var(--border-glass);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: var(--color-navy-dark);
+        z-index: 10;
+    }
+
+    .modal-pm-title {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0;
+    }
+
+    .modal-pm-subtitle {
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+        margin-top: 0.25rem;
+        font-family: monospace;
+    }
+    
+    .current-user-role-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        margin-left: 1rem;
+        vertical-align: middle;
+        font-weight: normal;
+        color: var(--color-text-secondary);
+    }
+
+    .modal-close-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        transition: var(--transition-smooth);
+    }
+
+    .modal-close-icon:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: var(--color-gold);
+        color: var(--color-gold);
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+        display: flex;
+        padding: 0 2rem;
+        border-bottom: var(--border-glass);
+        gap: 0;
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        padding: 1rem 1.5rem;
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition-smooth);
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--color-text-primary); }
+    .tab-btn.active { color: var(--color-gold); }
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--color-gold);
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .tab-content { padding: 2rem; display: none; }
+    .tab-content.active { display: block; animation: fadeInUp 0.3s ease-out; }
+
+    /* Workflow Timeline */
+    .workflow-timeline {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+        padding: 1rem 0;
+        overflow-x: auto;
+    }
+
+    .workflow-timeline::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        right: 5%;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-50%);
+        z-index: 0;
+    }
+
+    .workflow-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        min-width: 80px;
+    }
+
+    .step-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--color-navy-medium);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-muted);
+        margin-bottom: 0.75rem;
+        transition: var(--transition-smooth);
+    }
+
+    .step-icon.current {
+        background: linear-gradient(135deg, var(--color-warning), #F59E0B);
+        border-color: var(--color-warning);
+        color: white;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        animation: pulseGlow 2s infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+        50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.6); }
+    }
+
+    .step-icon.completed {
+        background: var(--color-success);
+        border-color: var(--color-success);
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.7rem;
+        color: var(--color-text-muted);
+        text-align: center;
+        font-weight: 500;
+        transition: var(--transition-smooth);
+    }
+
+    .step-label.current { color: var(--color-warning); font-weight: 600; }
+    .step-label.completed { color: var(--color-success); }
+
+    /* Info Grid */
+    .info-section { margin-bottom: 2rem; }
+    .info-section-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-gold);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .info-item {
+        background: rgba(5, 13, 26, 0.5);
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .info-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    .info-value { font-size: 0.95rem; color: var(--color-text-primary); font-weight: 500; }
+    .info-value.highlight { color: var(--color-gold); font-weight: 600; font-size: 1.1rem; }
+    .info-value.mono { font-family: monospace; color: var(--color-text-secondary); }
+
+    /* Form Fields */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label {
+        display: block; font-size: 0.8rem; font-weight: 500; color: var(--color-text-secondary);
+        margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .form-control {
+        width: 100%; background: var(--color-navy-darkest); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px; padding: 0.875rem 1rem; color: white; font-family: inherit; font-size: 0.9rem;
+        transition: var(--transition-smooth);
+    }
+    .form-control:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
+    .form-control[disabled], .form-control[readonly] {
+        background: rgba(255, 255, 255, 0.05); color: var(--color-text-muted); cursor: not-allowed; border-color: transparent;
+    }
+    
+    #projectNotes { min-height: 300px; font-size: 1rem; line-height: 1.6; }
+    textarea.form-control { min-height: 120px; resize: vertical; }
+
+    /* ===========================
+       ENHANCED PROGRESS SLIDER
+       =========================== */
+    .progress-slider-container {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin: 1.5rem 0 2rem 0;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1rem;
+    }
+
+    .progress-label-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .progress-label-title {
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .progress-slider-value {
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        line-height: 1;
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* The Slider Track */
+    .range-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 12px;
+        border-radius: 6px;
+        outline: none;
+        cursor: pointer;
+        /* Default background (will be overridden by JS for the 'fill' effect) */
+        background: rgba(255, 255, 255, 0.1); 
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    /* Slider Thumb (Handle) */
+    .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--color-gold);
+        border: 4px solid #0f172a; /* Dark border to make it pop */
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        margin-top: 0;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+    }
+
+    /* Disabled State */
+    .range-slider[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(1);
+    }
+
+    /* Modal Actions */
+    .modal-pm-actions {
+        display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem 2rem;
+        border-top: var(--border-glass); background: rgba(0, 0, 0, 0.2); position: sticky; bottom: 0;
+    }
+    .btn-modal-pm {
+        padding: 0.875rem 1.5rem; border-radius: 10px; font-family: inherit; font-size: 0.9rem;
+        font-weight: 600; cursor: pointer; transition: var(--transition-smooth);
+    }
+    .btn-modal-pm-secondary { background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: var(--color-text-secondary); }
+    .btn-modal-pm-secondary:hover { border-color: rgba(255, 255, 255, 0.4); color: var(--color-text-primary); }
+    .btn-modal-pm-primary { background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light)); border: none; color: var(--color-navy-darkest); }
+    .btn-modal-pm-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
+    .btn-modal-pm[disabled], .btn-modal-pm-primary[style*="display: none"] { display: none !important; }
+
+    /* Task Manager Styles */
+    .tasks-header-row {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+        padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .tasks-title { font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-text-primary); margin: 0; }
+    .task-stats-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .task-stat-item {
+        background: rgba(5, 13, 26, 0.5); padding: 0.75rem 1rem; border-radius: 8px;
+        display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
+    }
+    .task-stat-item i { color: var(--color-gold); }
+    .task-stat-item .count { font-weight: 700; color: var(--color-text-primary); }
+    .task-stat-item .label { color: var(--color-text-muted); }
+    
+    .btn-add-task-toggle {
+        width: 40px; height: 40px; border-radius: 50%; background: var(--color-gold); color: var(--color-navy-darkest);
+        border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+    .btn-add-task-toggle:hover { transform: rotate(90deg) scale(1.1); background: #fff; }
+    .btn-add-task-toggle.open { transform: rotate(45deg); background: var(--color-danger, #ef4444); color: white; }
+    .btn-add-task-toggle[style*="display: none"] { display: none !important; }
+
+    #taskFormContainer {
+        max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease;
+        opacity: 0; margin-bottom: 0;
+    }
+    #taskFormContainer.show { max-height: 1200px; opacity: 1; margin-bottom: 2rem; overflow: visible; }
+
+    .task-list-item {
+        display: flex; align-items: flex-start; padding: 1rem; background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem;
+        transition: all 0.2s;
+    }
+    .task-list-item:hover { background: rgba(255, 255, 255, 0.07); }
+    
+    .task-checkbox-wrapper { position: relative; margin-right: 1rem; height: 24px; width: 24px; padding-top: 2px; }
+    .task-checkbox {
+        appearance: none; -webkit-appearance: none; height: 24px; width: 24px; border: 2px solid var(--color-text-muted);
+        border-radius: 6px; cursor: pointer; transition: all 0.2s; position: relative; z-index: 2;
+    }
+    .task-checkbox:checked { background: var(--color-gold); border-color: var(--color-gold); }
+    .task-checkbox:checked::after {
+        content: '\f00c'; font-family: 'Font Awesome 5 Free'; font-weight: 900; color: var(--color-navy-darkest);
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px;
+    }
+    .task-checkbox[disabled] { cursor: not-allowed; opacity: 0.5; border-color: #555; }
+    
+    .task-content-wrapper { flex: 1; display: flex; flex-direction: column; cursor: pointer; }
+    .task-text { font-size: 1rem; color: var(--color-text-primary); transition: color 0.2s; }
+    .task-info-row { display: flex; gap: 1rem; margin-top: 0.25rem; font-size: 0.75rem; color: var(--color-text-muted); flex-wrap: wrap; align-items: center; }
+    .task-description-panel {
+        display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.5; animation: fadeIn 0.3s ease;
+    }
+    .task-description-panel.open { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .priority-badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+    .priority-badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--color-danger); }
+    .priority-badge.high { background: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+    .priority-badge.medium { background: rgba(59, 130, 246, 0.2); color: var(--color-info); }
+    .priority-badge.low { background: rgba(107, 114, 128, 0.2); color: var(--color-text-secondary); }
+    
+    .task-list-item.completed .task-text { text-decoration: line-through; color: var(--color-text-muted); opacity: 0.7; }
+    
+    /* Delete Task Button Styles */
+    .btn-delete-task {
+        background: transparent;
+        border: none;
+        color: var(--color-text-muted);
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-left: 0.5rem;
+        opacity: 0; /* Hidden by default until hover */
+    }
+
+    .task-list-item:hover .btn-delete-task {
+        opacity: 1; /* Show on hover */
+    }
+
+    .btn-delete-task:hover {
+        color: var(--color-danger);
+        transform: scale(1.1);
+    }
+    
+    /* Client Info Card */
+    .client-info-card {
+        background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .client-info-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .client-name { font-size: 1.2rem; font-weight: 600; color: var(--color-text-primary); }
+    .client-company { font-size: 0.9rem; color: var(--color-gold); margin-top: 0.25rem; }
+    .client-contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .client-contact-item { display: flex; align-items: center; gap: 0.75rem; }
+    .client-contact-item i { color: var(--color-gold); width: 20px; }
+    .client-contact-item .value { color: var(--color-text-secondary); font-size: 0.9rem; }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+    }
+    .status-planning { background: rgba(139, 92, 246, 0.15); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .status-pre_production { background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-production { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .status-post_production { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-review { background: rgba(20, 184, 166, 0.15); color: #14B8A6; border: 1px solid rgba(20, 184, 166, 0.3); }
+    .status-delivered { background: rgba(212, 175, 55, 0.15); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.3); }
+    .status-completed { background: rgba(107, 114, 128, 0.15); color: #9CA3AF; border: 1px solid rgba(107, 114, 128, 0.3); }
+    .status-rejected { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); text-decoration: line-through; }
+
+    @media (max-width: 768px) {
+        .projects-dashboard { height: auto; overflow: auto; }
+        .projects-header { flex-direction: column; }
+        .projects-filter-row { flex-direction: column; }
+        .search-wrapper { min-width: 100%; }
+        #projectGroupsContainer { flex-direction: column; height: auto; overflow-x: hidden; }
+        .status-section { min-width: 100%; max-width: 100%; }
+        .projects-grid { overflow-y: visible; max-height: none; }
+        .project-modal-box { max-width: 100%; margin: 0.5rem; }
+        .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+        .client-contact-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="projects-dashboard">
+    <header class="projects-header">
+        <div>
+            <h1>Manage <span>Projects</span></h1>
+            <p>Track and manage all your active creative projects</p>
+        </div>
+    </header>
+
+    <div class="projects-filter-row">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="projectSearch" placeholder="Search projects by name, client, service, or reference...">
+        </div>
+        <select class="filter-dropdown" id="priorityFilter">
+            <option value="">All Priority</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+        </select>
+        </div>
+
+    <div id="projectGroupsContainer">
+        {% set status_order = ['planning', 'pre_production', 'production', 'post_production', 'review', 'delivered', 'rejected', 'completed'] %}
+        
+        {% for status in status_order %}
+        <div class="status-section" data-status="{{ status }}">
+            <div class="status-header-row header-{{ status }}">
+                <h2 class="status-title">{{ status|replace('_', ' ') }}</h2>
+                <span class="status-count" id="count-{{ status }}">{{ grouped_projects.get(status, [])|length }}</span>
+            </div>
+
+            <div class="projects-grid">
+                {% set proj_list = grouped_projects.get(status, []) %}
+                {% for project in proj_list %}
+                <div class="project-card" onclick="openProjectModal('{{ project.id }}', '{{ project.title }}', '{{ project.client.full_name }}', '{{ project.service_name }}', '{{ project.status }}', '{{ project.progress_percentage }}', '{{ project.due_date }}', '{{ project.priority }}', '{{ project.user_role }}')">
+                    
+                    <div class="priority-indicator {{ project.priority if project.priority in ['critical', 'high', 'medium'] else '' }}"></div>
+                    <span class="booking-ref-hidden" style="display:none;">{{ project.booking.booking_reference if project.booking else '' }}</span>
+
+                    <div class="project-card-header">
+                        <div class="project-card-title">{{ project.title }}</div>
+                        <div class="project-card-subtitle">{{ project.client.full_name }}</div>
+                        <div class="project-ref">{{ project.project_reference }}</div>
+                    </div>
+                    
+                    <div class="project-card-meta">
+                        <div class="meta-tag">
+                            <i class="fas fa-layer-group"></i>
+                            <span>{{ project.service_name.split()[0] }}</span>
+                        </div>
+                        <div class="meta-tag">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{% if project.due_date %}{{ project.due_date.strftime('%b %d') }}{% else %}No date{% endif %}</span>
+                        </div>
+                    </div>
+
+                    {% if project.team_members %}
+                    <div class="team-avatars-compact">
+                        {% for member in project.team_members[:3] %}
+                        <div class="avatar-compact" title="{{ member.name }}">{{ member.name[0] }}</div>
+                        {% endfor %}
+                        {% if project.team_members|length > 3 %}
+                        <div class="avatar-compact" style="background: var(--color-gold); color: #000; font-weight:bold;">+{{ project.team_members|length - 3 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="progress-section">
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: {{ project.progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-column-state">No projects</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal-overlay-pm" id="projectModal">
+    <div class="project-modal-box">
+        <div class="modal-pm-header">
+            <div>
+                <h2 class="modal-pm-title" id="modalProjectTitle">
+                    Project Name
+                </h2>
+                <div class="modal-pm-subtitle">
+                    <span id="modalProjectRef">PRJ-XXXX-XXXX</span>
+                    <span id="modalUserRoleBadge" class="current-user-role-badge"></span>
+                </div>
+            </div>
+            <button class="modal-close-icon" onclick="closeProjectModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="details">Details</button>
+            <button class="tab-btn" data-tab="tasks">Tasks</button>
+            <button class="tab-btn" data-tab="notes">Notes</button>
+        </div>
+
+        <div class="tab-content active" id="tab-overview">
+            <div class="client-info-card">
+                <div class="client-info-header">
+                    <div>
+                        <div class="client-name" id="clientName">Client Name</div>
+                        <div class="client-company" id="clientCompany">Company Name</div>
+                    </div>
+                    <span class="status-badge" id="overviewStatus">Status</span>
+                </div>
+                <div class="client-contact-grid">
+                    <div class="client-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="value" id="clientEmail">email@example.com</span>
+                    </div>
+                    <div class="client-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span class="value" id="clientPhone">+1234567890</span>
+                    </div>
+                    <div class="client-contact-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <span class="value" id="bookingDate">Jan 01, 2025</span>
+                    </div>
+                    <div class="client-contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span class="value" id="sessionDuration">4 hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-timeline">
+                <div class="workflow-step" data-stage="planning">
+                    <div class="step-icon" id="icon-planning"><i class="fas fa-lightbulb"></i></div>
+                    <span class="step-label" id="label-planning">Planning</span>
+                </div>
+                <div class="workflow-step" data-stage="pre_production">
+                    <div class="step-icon" id="icon-pre_production"><i class="fas fa-clipboard-list"></i></div>
+                    <span class="step-label" id="label-pre_production">Pre-Production</span>
+                </div>
+                <div class="workflow-step" data-stage="production">
+                    <div class="step-icon" id="icon-production"><i class="fas fa-video"></i></div>
+                    <span class="step-label" id="label-production">Production</span>
+                </div>
+                <div class="workflow-step" data-stage="post_production">
+                    <div class="step-icon" id="icon-post_production"><i class="fas fa-laptop-medical"></i></div>
+                    <span class="step-label" id="label-post_production">Post-Production</span>
+                </div>
+                <div class="workflow-step" data-stage="review">
+                    <div class="step-icon" id="icon-review"><i class="fas fa-eye"></i></div>
+                    <span class="step-label" id="label-review">Review</span>
+                </div>
+                <div class="workflow-step" data-stage="delivered">
+                    <div class="step-icon" id="icon-delivered"><i class="fas fa-check-circle"></i></div>
+                    <span class="step-label" id="label-delivered">Delivered</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Contract Value</div>
+                        <div class="info-value highlight" id="contractValue">$0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Deadline</div>
+                        <div class="info-value" id="deadlineDate">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Days Remaining</div>
+                        <div class="info-value" id="daysRemaining">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tasks Progress</div>
+                        <div class="info-value" id="tasksProgress">0/0</div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="projectEditForm" method="POST" action="/admin/projects/update">
+                <input type="hidden" id="modalProjectId" name="project_id">
+                
+                <div class="form-grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-control role-controlled-input" id="projectStatus" name="status">
+                            <option value="planning">Planning</option>
+                            <option value="pre_production">Pre-Production</option>
+                            <option value="production">Production</option>
+                            <option value="post_production">Post-Production</option>
+                            <option value="review">Review</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="completed">Completed</option>
+                            <option value="rejected" style="color: #EF4444;">Rejected</option> </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Deadline</label>
+                        <input type="date" class="form-control role-controlled-input" id="projectDeadline" name="deadline">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-control role-controlled-input" id="projectPriority" name="priority">
+                            <option value="">None</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="progress-slider-container">
+                    <div class="progress-slider-header">
+                        <div class="progress-label-group">
+                            <span class="progress-label-title">Project Completion</span>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">Drag to update status</div>
+                        </div>
+                        <span class="progress-slider-value" id="progressValue">0%</span>
+                    </div>
+                    
+                    <input type="range" class="range-slider role-controlled-input" 
+                           id="projectProgress" name="progress" min="0" max="100" value="0" 
+                           oninput="updateProgressDisplay()">
+                </div>
+
+                <div class="modal-pm-actions" style="margin-top: 2rem; background: transparent; padding: 0;">
+                    <button type="button" class="btn-modal-pm btn-modal-pm-secondary" onclick="closeProjectModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSaveChanges" class="btn-modal-pm btn-modal-pm-primary role-controlled-btn">
+                        Save Changes
+                    </button>
+                    <button type="button" id="btnDeleteProject" class="btn-modal-pm btn-modal-pm-secondary role-restricted-delete" style="margin-left: auto; color: #EF4444; border-color: #EF4444;" onclick="deleteCurrentProject()">
+                        <i class="fas fa-trash-alt"></i> Delete Project
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-content" id="tab-details">
+            <div class="info-section">
+                <h3 class="info-section-title"><i class="fas fa-info-circle"></i> Project Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Project Reference</div>
+                        <div class="info-value mono" id="detailRef">PRJ-XXXX-XXXX</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Booking Reference</div>
+                        <div class="info-value mono" id="detailBookingRef">PT-XXXXX-XXXX</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Service Type</div>
+                        <div class="info-value" id="detailService">Service Name</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Studio</div>
+                        <div class="info-value" id="detailStudio">Studio Name</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Start Date</div>
+                        <div class="info-value" id="detailStartDate">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Session Date</div>
+                        <div class="info-value" id="detailSessionDate">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Session Time</div>
+                        <div class="info-value" id="detailSessionTime">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Duration</div>
+                        <div class="info-value" id="detailDuration">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Created</div>
+                        <div class="info-value" id="detailCreated">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Last Updated</div>
+                        <div class="info-value" id="detailUpdated">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3 class="info-section-title"><i class="fas fa-dollar-sign"></i> Financial Details</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Base Price</div>
+                        <div class="info-value" id="detailBasePrice">$0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Studio Cost</div>
+                        <div class="info-value" id="detailStudioCost">$0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Equipment Cost</div>
+                        <div class="info-value" id="detailEquipmentCost">$0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Total Contract</div>
+                        <div class="info-value highlight" id="detailTotalPrice">$0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-tasks">
+            <div class="task-manager">
+                <div class="tasks-header-row">
+                    <h3 class="tasks-title">Project Tasks</h3>
+                    <button type="button" class="btn-add-task-toggle role-controlled-task-btn" onclick="toggleTaskForm()" title="Add New Task">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <div class="task-stats-row" id="taskStatsRow">
+                    <div class="task-stat-item">
+                        <i class="fas fa-tasks"></i>
+                        <span class="count" id="statTotal">0</span>
+                        <span class="label">Total</span>
+                    </div>
+                    <div class="task-stat-item">
+                        <i class="fas fa-check-circle" style="color: var(--color-success);"></i>
+                        <span class="count" id="statCompleted">0</span>
+                        <span class="label">Completed</span>
+                    </div>
+                    <div class="task-stat-item">
+                        <i class="fas fa-spinner" style="color: var(--color-warning);"></i>
+                        <span class="count" id="statPending">0</span>
+                        <span class="label">Pending</span>
+                    </div>
+                    <div class="task-stat-item">
+                        <i class="fas fa-exclamation-circle" style="color: var(--color-danger);"></i>
+                        <span class="count" id="statOverdue">0</span>
+                        <span class="label">Overdue</span>
+                    </div>
+                </div>
+
+                <div id="taskFormContainer">
+                    <div class="task-input-group" style="background: rgba(255, 255, 255, 0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <h4 style="margin-bottom: 1rem; color: var(--color-gold);">New Task Details</h4>
+                        <form id="addTaskForm" onsubmit="submitTask(event)">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label class="form-label">Task Title</label>
+                                    <input type="text" class="form-control" id="taskTitle" required placeholder="e.g. Initial Rough Cut">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Assign To</label>
+                                    <input type="text" class="form-control" id="taskAssignee" placeholder="e.g. Editor Name">
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label class="form-label">Priority</label>
+                                    <select class="form-control" id="taskPriority">
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="critical">Critical</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Deadline</label>
+                                    <input type="date" class="form-control" id="taskDeadline">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="taskDesc" rows="2" placeholder="Specific instructions for this task..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-modal-pm btn-modal-pm-primary">
+                                <i class="fas fa-check"></i> Save Task
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="projectTasksList">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading tasks...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-notes">
+            <div class="info-section">
+                <h3 class="info-section-title"><i class="fas fa-sticky-note"></i> Project Notes</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Internal Notes</label>
+                    <textarea class="form-control role-controlled-input" id="projectNotes" placeholder="Add internal notes about this project..."></textarea>
+                </div>
+
+                <button type="button" class="btn-modal-pm btn-modal-pm-primary role-controlled-btn" onclick="saveNotes()">
+                    <i class="fas fa-save"></i> Save Notes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Store project data globally
+    let currentProjectData = {};
+    let projectTasks = [];
+    let currentUserRole = 'Reviewer'; // Default safety
+
+    // Tab Navigation
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show corresponding content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        });
+    });
+
+    // Enhanced Project Modal Function with Role Handling
+    function openProjectModal(id, title, client, service, status, progress, deadline, priority, userRole) {
+        document.getElementById('modalProjectId').value = id;
+        document.getElementById('modalProjectTitle').innerText = title;
+        document.getElementById('projectStatus').value = status;
+        document.getElementById('projectProgress').value = progress;
+        document.getElementById('progressValue').innerText = progress + '%';
+        document.getElementById('projectPriority').value = priority || '';
+
+        // Store role & update badge
+        currentUserRole = userRole || 'Reviewer';
+        const roleBadge = document.getElementById('modalUserRoleBadge');
+        roleBadge.innerText = `Role: ${currentUserRole}`;
+        
+        // Apply Role Logic to UI
+        applyRolePermissions();
+        
+        // Initialize Enhanced Slider Gradient
+        updateProgressDisplay();
+
+        if (deadline && deadline !== 'None') {
+            document.getElementById('projectDeadline').value = deadline;
+        }
+
+        // Fetch full project data
+        fetchProjectDetails(id);
+        updateWorkflowTimeline(status);
+        loadProjectTasks(id);
+
+        document.getElementById('projectModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function applyRolePermissions() {
+        // Define capabilities
+        const isSupervisor = currentUserRole === 'Supervisor' || currentUserRole === 'super_admin';
+        const isEditor = currentUserRole === 'Editor';
+        
+        // 1. PROJECT DETAILS (Status, Deadline, Priority, Progress, Notes)
+        // Only Supervisors can edit these. Editors cannot.
+        const inputs = document.querySelectorAll('.role-controlled-input');
+        inputs.forEach(el => {
+            el.disabled = !isSupervisor; // Disabled if NOT supervisor
+        });
+
+        // 2. "SAVE CHANGES" BUTTON
+        // Only Supervisors see this button
+        const saveBtn = document.getElementById('btnSaveChanges');
+        if (saveBtn) {
+            saveBtn.style.display = isSupervisor ? 'inline-block' : 'none';
+        }
+
+        // 3. "DELETE PROJECT" BUTTON
+        // Only Supervisors see this
+        const deleteBtn = document.getElementById('btnDeleteProject');
+        if (deleteBtn) {
+            deleteBtn.style.display = isSupervisor ? 'inline-block' : 'none';
+        }
+
+        // 4. "ADD TASK" BUTTON (+)
+        // Only Supervisors can add new tasks
+        const addTaskBtn = document.querySelector('.role-controlled-task-btn');
+        if (addTaskBtn) {
+            addTaskBtn.style.display = isSupervisor ? 'flex' : 'none';
+        }
+    }
+
+    function updateProgressDisplay() {
+        const slider = document.getElementById('projectProgress');
+        const val = slider.value;
+        const display = document.getElementById('progressValue');
+        
+        display.innerText = val + '%';
+        
+        // DYNAMIC FILL LOGIC:
+        // Creates a gradient that stops exactly at the thumb's position
+        const percentage = val + '%';
+        slider.style.background = `linear-gradient(90deg, var(--color-gold) ${percentage}, rgba(255, 255, 255, 0.1) ${percentage})`;
+        
+        // Color text based on completion
+        if(val == 100) {
+            display.style.color = 'var(--color-success)';
+        } else {
+            display.style.color = 'var(--color-gold)';
+        }
+    }
+
+    function closeProjectModal() {
+        document.getElementById('projectModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    function fetchProjectDetails(projectId) {
+        fetch(`/api/projects/${projectId}/details`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentProjectData = data.project;
+                    updateModalWithProjectData(data.project);
+                }
+            })
+            .catch(err => console.error('Error fetching project details:', err));
+    }
+
+    function updateModalWithProjectData(project) {
+        document.getElementById('modalProjectRef').innerText = project.project_reference;
+        document.getElementById('clientName').innerText = project.client_name;
+        document.getElementById('clientCompany').innerText = project.client_company || 'Individual Client';
+        document.getElementById('clientEmail').innerText = project.client_email || 'N/A';
+        document.getElementById('clientPhone').innerText = project.client_phone || 'N/A';
+        document.getElementById('overviewStatus').className = `status-badge status-${project.status}`;
+        document.getElementById('overviewStatus').innerText = project.status.replace('_', ' ').toUpperCase();
+        document.getElementById('bookingDate').innerText = project.booking_date ? new Date(project.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+        document.getElementById('contractValue').innerText = `$${parseFloat(project.total_price || 0).toLocaleString()}`;
+        
+        if (project.due_date) {
+            document.getElementById('deadlineDate').innerText = new Date(project.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const dueDate = new Date(project.due_date); dueDate.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+            
+            const daysEl = document.getElementById('daysRemaining');
+            if (diffDays < 0) {
+                daysEl.innerText = `${Math.abs(diffDays)} days overdue`;
+                daysEl.style.color = 'var(--color-danger)';
+            } else if (diffDays === 0) {
+                daysEl.innerText = 'Due today';
+                daysEl.style.color = 'var(--color-warning)';
+            } else {
+                daysEl.innerText = `${diffDays} days`;
+                daysEl.style.color = 'var(--color-text-primary)';
+            }
+        } else {
+            document.getElementById('deadlineDate').innerText = 'Not set';
+            document.getElementById('daysRemaining').innerText = '-';
+        }
+
+        document.getElementById('detailRef').innerText = project.project_reference;
+        document.getElementById('detailBookingRef').innerText = project.booking_reference || 'N/A';
+        document.getElementById('detailService').innerText = project.service_name || 'General Project';
+        document.getElementById('detailStudio').innerText = project.studio_name || 'Not specified';
+        document.getElementById('detailStartDate').innerText = project.start_date ? new Date(project.start_date).toLocaleDateString() : 'N/A';
+        document.getElementById('detailSessionDate').innerText = project.booking_date ? new Date(project.booking_date).toLocaleDateString() : 'N/A';
+        document.getElementById('detailSessionTime').innerText = project.session_time || 'N/A';
+        document.getElementById('detailDuration').innerText = project.duration_hours ? `${project.duration_hours} hours` : 'N/A';
+        document.getElementById('detailCreated').innerText = project.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A';
+        document.getElementById('detailUpdated').innerText = project.updated_at ? new Date(project.updated_at).toLocaleDateString() : 'N/A';
+        
+        document.getElementById('detailBasePrice').innerText = `$${parseFloat(project.base_price || 0).toLocaleString()}`;
+        document.getElementById('detailStudioCost').innerText = `$${parseFloat(project.studio_price || 0).toLocaleString()}`;
+        document.getElementById('detailEquipmentCost').innerText = `$${parseFloat(project.equipment_price || 0).toLocaleString()}`;
+        document.getElementById('detailTotalPrice').innerText = `$${parseFloat(project.total_price || 0).toLocaleString()}`;
+
+        document.getElementById('projectNotes').value = project.description || '';
+    }
+
+    function updateWorkflowTimeline(currentStatus) {
+        const stages = ['planning', 'pre_production', 'production', 'post_production', 'review', 'delivered'];
+        const currentIndex = stages.indexOf(currentStatus);
+
+        stages.forEach((stage, index) => {
+            const icon = document.getElementById('icon-' + stage);
+            const label = document.getElementById('label-' + stage);
+            
+            if(!icon) return; // Guard clause
+
+            icon.classList.remove('current', 'completed');
+            label.classList.remove('current', 'completed');
+            
+            if (index < currentIndex) {
+                icon.classList.add('completed');
+                label.classList.add('completed');
+            } else if (index === currentIndex) {
+                icon.classList.add('current');
+                label.classList.add('current');
+            }
+        });
+    }
+
+    function toggleTaskForm() {
+        const container = document.getElementById('taskFormContainer');
+        const btn = document.querySelector('.btn-add-task-toggle');
+        container.classList.toggle('show');
+        btn.classList.toggle('open');
+    }
+
+    function loadProjectTasks(projectId) {
+        const listContainer = document.getElementById('projectTasksList');
+        listContainer.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
+
+        // 1. Define Roles
+        const isSupervisor = (currentUserRole === 'Supervisor' || currentUserRole === 'super_admin');
+        const canToggle = (currentUserRole === 'Editor' || isSupervisor);
+
+        fetch(`/api/projects/${projectId}/tasks`)
+            .then(response => response.json())
+            .then(data => {
+                projectTasks = data.tasks || [];
+                updateTaskStats();
+
+                if (projectTasks.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="empty-state" style="padding: 1rem;">
+                            <i class="fas fa-clipboard-check"></i>
+                            <p>No tasks yet.</p>
+                        </div>`;
+                    return;
+                }
+
+                let html = '';
+                projectTasks.forEach(task => {
+                    const isCompleted = task.status === 'completed';
+                    const checked = isCompleted ? 'checked' : '';
+                    const disabledAttr = canToggle ? '' : 'disabled';
+                    const priorityClass = task.priority || 'medium';
+                    const description = task.description || 'No description provided.';
+                    
+                    // 2. Conditionally Create Delete Button
+                    let deleteButtonHtml = '';
+                    if (isSupervisor) {
+                        deleteButtonHtml = `
+                        <button class="btn-delete-task" onclick="event.stopPropagation(); deleteTask(${projectId}, ${task.id})" title="Delete Task">
+                            <i class="fas fa-trash"></i>
+                        </button>`;
+                    }
+
+                    html += `
+                    <div class="task-list-item ${isCompleted ? 'completed' : ''}" id="task-row-${task.id}">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" class="task-checkbox" 
+                                onclick="event.stopPropagation()"
+                                onchange="toggleTaskStatus(${projectId}, ${task.id}, this)" 
+                                ${checked} ${disabledAttr}>
+                        </div>
+                        <div class="task-content-wrapper" onclick="toggleTaskDescription(${task.id})">
+                            <div class="task-text">${task.title}</div>
+                            <div class="task-info-row">
+                                ${task.priority ? `<span class="priority-badge ${priorityClass}">${task.priority}</span>` : ''}
+                                ${task.assigned_to ? `<span><i class="fas fa-user"></i> ${task.assigned_to}</span>` : ''}
+                                ${task.due_date ? `<span><i class="fas fa-calendar"></i> ${task.due_date}</span>` : ''}
+                                <span style="margin-left: auto; opacity: 0.5;"><i class="fas fa-chevron-down"></i></span>
+                            </div>
+                            <div class="task-description-panel" id="task-desc-${task.id}">
+                                <strong><i class="fas fa-align-left"></i> Description:</strong><br>
+                                ${description}
+                            </div>
+                        </div>
+                        ${deleteButtonHtml}
+                    </div>`;
+                });
+                listContainer.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                listContainer.innerHTML = '<div class="empty-state"><p>Error loading tasks</p></div>';
+            });
+    }
+
+    function toggleTaskDescription(taskId) {
+        const descPanel = document.getElementById(`task-desc-${taskId}`);
+        if (descPanel) {
+            descPanel.classList.toggle('open');
+        }
+    }
+
+    function updateTaskStats() {
+        const total = projectTasks.length;
+        const completed = projectTasks.filter(t => t.status === 'completed').length;
+        const pending = total - completed;
+        
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const overdue = projectTasks.filter(t => {
+            if (t.status === 'completed' || !t.due_date) return false;
+            const dueDate = new Date(t.due_date); dueDate.setHours(0, 0, 0, 0);
+            return dueDate < today;
+        }).length;
+
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statCompleted').innerText = completed;
+        document.getElementById('statPending').innerText = pending;
+        document.getElementById('statOverdue').innerText = overdue;
+        
+        document.getElementById('tasksProgress').innerText = `${completed}/${total}`;
+    }
+
+    function toggleTaskStatus(projectId, taskId, checkbox) {
+        const isChecked = checkbox.checked;
+        const row = document.getElementById(`task-row-${taskId}`);
+        
+        if (isChecked) row.classList.add('completed');
+        else row.classList.remove('completed');
+
+        fetch(`/api/projects/${projectId}/tasks/${taskId}/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: isChecked ? 'completed' : 'pending' })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                checkbox.checked = !isChecked;
+                row.classList.toggle('completed');
+                alert(data.error || 'Failed to update task status');
+            } else {
+                const task = projectTasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = isChecked ? 'completed' : 'pending';
+                    updateTaskStats();
+                }
+            }
+        });
+    }
+
+    function submitTask(e) {
+        e.preventDefault();
+        const projectId = document.getElementById('modalProjectId').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        const formData = new FormData();
+        formData.append('title', document.getElementById('taskTitle').value);
+        formData.append('description', document.getElementById('taskDesc').value);
+        formData.append('assigned_to', document.getElementById('taskAssignee').value);
+        formData.append('priority', document.getElementById('taskPriority').value);
+        formData.append('due_date', document.getElementById('taskDeadline').value);
+
+        fetch(`/api/projects/${projectId}/tasks`, { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('addTaskForm').reset();
+                toggleTaskForm();
+                loadProjectTasks(projectId);
+            } else {
+                alert('Error creating task');
+            }
+        })
+        .catch(err => console.error(err))
+        .finally(() => { btn.disabled = false; btn.innerHTML = originalText; });
+    }
+    
+    function deleteTask(projectId, taskId) {
+        if (!confirm('⚠️ Are you sure you want to permanently delete this task?')) return;
+
+        // Show deleting state (optional visual feedback)
+        const row = document.getElementById(`task-row-${taskId}`);
+        if(row) row.style.opacity = '0.5';
+
+        fetch(`/api/projects/${projectId}/tasks/${taskId}/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload tasks to refresh the list
+                loadProjectTasks(projectId);
+            } else {
+                alert(data.error || 'Error deleting task');
+                if(row) row.style.opacity = '1';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Server error while deleting task');
+            if(row) row.style.opacity = '1';
+        });
+    }
+
+    function saveNotes() {
+        const projectId = document.getElementById('modalProjectId').value;
+        const notes = document.getElementById('projectNotes').value;
+        
+        fetch(`/api/projects/${projectId}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notes: notes })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) alert('Notes saved successfully!');
+            else alert('Error saving notes');
+        });
+    }
+
+    function deleteCurrentProject() {
+        const projectId = document.getElementById('modalProjectId').value;
+        const title = document.getElementById('modalProjectTitle').innerText;
+        
+        if(confirm(`⚠️ PERMANENT DELETE\n\nAre you sure you want to delete '${title}'?\nThis cannot be undone.`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/projects/delete/${projectId}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Filter Logic for Kanban Columns
+    document.getElementById('projectSearch').addEventListener('input', filterKanban);
+    document.getElementById('priorityFilter').addEventListener('change', filterKanban);
+
+    function filterKanban() {
+        const term = document.getElementById('projectSearch').value.toLowerCase();
+        const prio = document.getElementById('priorityFilter').value;
+
+        // Iterate cards
+        document.querySelectorAll('.project-card').forEach(card => {
+            const title = card.querySelector('.project-card-title').innerText.toLowerCase();
+            const sub = card.querySelector('.project-card-subtitle').innerText.toLowerCase();
+            const ref = card.querySelector('.project-ref').innerText.toLowerCase();
+            const bookingRef = card.querySelector('.booking-ref-hidden').innerText.toLowerCase();
+            
+            const matchesSearch = title.includes(term) || sub.includes(term) || ref.includes(term) || bookingRef.includes(term);
+            const matchesPrio = prio === '' || card.querySelector('.priority-indicator').classList.contains(prio);
+
+            if (matchesSearch && matchesPrio) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Hide empty columns based on visible cards
+        document.querySelectorAll('.status-section').forEach(section => {
+            const visibleCards = Array.from(section.querySelectorAll('.project-card')).filter(c => c.style.display !== 'none');
+            // Show empty message if no search results match in this column, but keep column visible
+            let emptyMsg = section.querySelector('.empty-column-state');
+            if(visibleCards.length === 0 && term !== '') {
+                if(!emptyMsg) {
+                    emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-column-state';
+                    emptyMsg.innerText = 'No matches';
+                    section.querySelector('.projects-grid').appendChild(emptyMsg);
+                }
+                emptyMsg.style.display = 'block';
+            } else if (emptyMsg) {
+                 emptyMsg.style.display = 'none';
+            }
+        });
+    }
+
+    // Modal Interactions
+    document.getElementById('projectModal').addEventListener('click', function(e) {
+        if (e.target === this) closeProjectModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('projectModal').classList.contains('active')) {
+            closeProjectModal();
+        }
+    });
+</script>
+{% endblock %}

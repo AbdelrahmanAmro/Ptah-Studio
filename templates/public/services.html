@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('Our Services - Ptah Studios') }}</title>
+</head>
+{% extends "base.html" %}
+
+{% block title %}{{ _('Our Services - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       CSS Variables & Reset
+       =========================== */
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-navy-medium: #112240;
+        --color-navy-light: #233554;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --color-gray-400: #ADB5BD;
+        
+        --font-heading: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', -apple-system, sans-serif;
+    }
+    
+    body {
+        cursor: default;
+        background: var(--color-navy-dark);
+        /* Critical: Ensure standard scroll behavior */
+        overflow-y: auto; 
+    }
+    
+    /* REMOVED: .grain-overlay (Major performance killer) */
+    
+    /* ===========================
+       Preloader
+       =========================== */
+    .preloader {
+        position: fixed;
+        inset: 0;
+        background: var(--color-navy-darkest);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s, visibility 0.8s;
+    }
+    
+    .preloader.loaded {
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .preloader-logo { width: 150px; height: 150px; }
+    .preloader-logo svg { width: 100%; height: 100%; }
+    
+    .logo-path {
+        fill: none;
+        stroke: var(--color-gold);
+        stroke-width: 2;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: drawLogo 2s ease-out forwards;
+    }
+    @keyframes drawLogo { to { stroke-dashoffset: 0; } }
+
+    /* ===========================
+       Hero Section
+       =========================== */
+    .page-hero {
+        position: relative; 
+        min-height: 45vh;
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        padding: 1.5rem 2rem 2rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        /* Promote to layer to prevent repaints */
+        transform: translateZ(0);
+    }
+    #particle-canvas-services { position: absolute; inset: 0; z-index: 0; opacity: 0.3; }
+    .page-hero-content { position: relative; z-index: 2; text-align: center; max-width: 700px; }
+    
+    .page-hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem;
+        background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50px; font-size: 0.65rem; color: var(--color-gold);
+        text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; opacity: 0;
+    }
+    .page-hero-title {
+        font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700; line-height: 1.1; margin-bottom: 1rem; color: #fff;
+    }
+    .page-hero-title .word { display: inline-block; opacity: 0; }
+    .page-hero-text {
+        font-size: clamp(0.85rem, 1.2vw, 1rem); color: var(--color-text-light);
+        line-height: 1.6; margin-bottom: 2rem; opacity: 0; max-width: 550px;
+        margin-left: auto; margin-right: auto;
+    }
+    .page-hero-actions { display: flex; gap: 1rem; opacity: 0; justify-content: center; flex-wrap: wrap; }
+    
+    .btn {
+        padding: 0.75rem 2rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 1px; border: none; cursor: pointer; transition: all 0.4s;
+        position: relative; overflow: hidden; border-radius: 6px;
+        display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-dark); box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5); }
+    .btn-outline { background: transparent; border: 2px solid var(--color-gold); color: var(--color-gold); }
+    .btn-outline:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-3px); }
+
+    /* ===========================
+       Services Grid
+       =========================== */
+    .services-section { padding: 3rem 1.5rem; background: var(--color-navy-dark); }
+    .services-header { text-align: center; margin-bottom: 3rem; }
+    .services-header .section-label {
+        display: inline-block; font-size: 0.7rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 2px; color: var(--color-gold); margin-bottom: 0.75rem;
+    }
+    .services-header h2 {
+        font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 3rem);
+        color: #fff; margin-bottom: 0.75rem;
+    }
+    .services-header p {
+        font-size: 0.95rem; color: var(--color-text-light);
+        max-width: 600px; margin: 0 auto; line-height: 1.6;
+    }
+    
+    .services-grid {
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 1rem; 
+        max-width: 1400px; 
+        margin: 0 auto;
+    }
+    
+    /* Standard Card - PERFORMANCE OPTIMIZED */
+    .service-card {
+        /* CHANGED: Replaced backdrop-filter with solid high-opacity color for speed */
+        background: rgba(17, 34, 64, 0.95); 
+        /* REMOVED: backdrop-filter: blur(10px); */
+        
+        border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px;
+        padding: 1.25rem;
+        position: relative; overflow: hidden;
+        
+        /* Simplified transition */
+        transition: transform 0.3s ease-out, border-color 0.3s, box-shadow 0.3s;
+        
+        display: flex; flex-direction: column; 
+        min-height: 220px;
+        
+        /* Removed will-change to prevent excessive memory usage on mobile */
+    }
+    
+    .service-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(212, 175, 55, 0.15) 0%, transparent 50%);
+        opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .service-card:hover {
+        transform: translateY(-5px); border-color: rgba(212, 175, 55, 0.5);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+    .service-card:hover::before { opacity: 1; }
+    
+    /* Premium Gold Card Overrides */
+    .service-card.premium-gold {
+        background: linear-gradient(135deg, #D4AF37 0%, #F4D06F 100%);
+        border: none;
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        border-radius: 4px 30px 4px 30px; 
+        transform: scale(1.01);
+        z-index: 10;
+        overflow: hidden;
+    }
+    
+    /* Use simple opacity animation instead of complex shimmer for performance */
+    .service-card.premium-gold::before {
+        content: '';
+        background: rgba(255, 255, 255, 0.4);
+        opacity: 0;
+        transition: opacity 0.5s;
+        inset: 0;
+        width: 100%; height: 100%;
+        animation: none; /* Disable infinite shimmer animation */
+    }
+    .service-card.premium-gold:hover::before { opacity: 0.1; }
+
+    /* Coloring Overrides for Contrast */
+    .service-card.premium-gold .service-title,
+    .service-card.premium-gold .service-description,
+    .service-card.premium-gold .service-category,
+    .service-card.premium-gold .service-features li { color: #050d1a !important; text-shadow: none; }
+    
+    .service-card.premium-gold .service-features li i { color: #050d1a !important; }
+
+    .service-card.premium-gold .service-icon {
+        background: #050d1a; color: #D4AF37; box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .service-card.premium-gold .service-icon-bg { color: rgba(5, 13, 26, 0.1); }
+    .service-card.premium-gold .service-price { border-top: 1px solid rgba(5, 13, 26, 0.2); }
+    
+    .service-card.premium-gold .price-label,
+    .service-card.premium-gold .price-value,
+    .service-card.premium-gold .price-unit { color: #050d1a !important; }
+
+    .service-card.premium-gold .btn-service { border-color: #050d1a; color: #050d1a; }
+    .service-card.premium-gold .btn-service:hover { background: #050d1a; color: #D4AF37; }
+
+    /* Standard Elements */
+    .service-icon-wrapper { position: relative; margin-bottom: 0.5rem; }
+    
+    .service-icon {
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 6px; display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; 
+        color: #000000; position: relative; z-index: 2; transition: transform 0.4s;
+    }
+    .service-card:hover .service-icon { transform: scale(1.1) rotate(5deg); }
+    .service-icon-bg {
+        position: absolute; top: 0; right: 0; font-size: 3rem; 
+        color: rgba(212, 175, 55, 0.05); z-index: 1;
+    }
+    
+    .service-category {
+        display: inline-block; font-size: 0.55rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 1px; color: var(--color-gold); margin-bottom: 0.15rem;
+    }
+    .service-title {
+        font-family: var(--font-heading); font-size: 1rem;
+        margin-bottom: 0.15rem; color: #fff; position: relative; z-index: 2;
+    }
+    
+    .service-description {
+        text-align: start; margin-top: 0.25rem; margin-bottom: 0.5rem;
+        font-family: var(--font-heading); font-size: 0.75rem;
+        line-height: 1.3; color: var(--color-text-light); position: relative; z-index: 2;
+        letter-spacing: 0.2px;
+    }
+    
+    .service-features {
+        display: flex !important; flex-direction: column !important; 
+        align-items: flex-start !important; width: 100%; margin: 0.25rem 0; 
+        padding-inline-start: 0;; list-style: none; position: relative; z-index: 2;
+    }
+
+    .service-features li {
+        display: flex; align-items: flex-start; justify-content: flex-start;
+        width: 100%; margin-bottom: 0; gap: 0.35rem; 
+        color: var(--color-text-light); font-size: 0.7rem; line-height: 1.2;
+    }
+    .service-features li i { color: var(--color-gold); flex-shrink: 0; margin-top: 2px; font-size: 0.6rem; }
+    
+    .service-price {
+        margin-top: 0.5rem; padding-top: 0.5rem; 
+        border-top: 1px solid rgba(212, 175, 55, 0.2); position: relative; z-index: 2;
+    }
+    .service-price .price-label {
+        font-size: 0.55rem; color: var(--color-gray-400); text-transform: uppercase;
+        letter-spacing: 1px; margin-bottom: 0.1rem; display: block;
+    }
+    .service-price .price-value {
+        font-family: var(--font-heading); font-size: 1.1rem;
+        color: var(--color-gold); font-weight: 700;
+    }
+    .price-unit { font-size: 0.65rem; color: var(--color-gray-400); font-weight: 400; }
+    
+    .service-cta {
+        margin-top: 0.5rem; opacity: 0; transform: translateY(5px);
+        transition: all 0.4s; position: relative; z-index: 2;
+    }
+    .service-card:hover .service-cta { opacity: 1; transform: translateY(0); }
+    
+    .btn-service {
+        display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.6rem;
+        background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);
+        border-radius: 4px; font-size: 0.65rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;
+        cursor: pointer; text-decoration: none;
+    }
+    .btn-service:hover {
+        background: var(--color-gold); color: var(--color-navy-dark); transform: translateX(5px);
+    }
+
+    /* ===========================
+       Responsive & Mobile Styles
+       =========================== */
+    @media (max-width: 900px) {
+        .page-hero { padding: 5rem 1rem 2rem; }
+        .services-section { padding: 2rem 1rem; }
+        .services-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+        .services-header { margin-bottom: 1.5rem; }
+        .services-header h2 { font-size: 1.5rem; }
+        .services-header p { font-size: 0.85rem; padding: 0 0.5rem; }
+        .service-card { min-height: auto; padding: 1rem; }
+        .service-icon { width: 30px; height: 30px; font-size: 0.8rem; }
+        .service-title { font-size: 0.95rem; }
+        .service-description { font-size: 0.7rem; }
+    }
+    
+    @media (max-width: 480px) {
+        .page-hero-title { font-size: 1.5rem; }
+        .page-hero-badge { padding: 0.25rem 0.6rem; font-size: 0.55rem; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="page-hero" id="hero">
+        <canvas id="particle-canvas-services"></canvas>
+        <div class="page-hero-content">
+            <div class="page-hero-badge">
+                <i class="fas fa-sparkles badge-icon"></i> {{ _('Premium Services') }}
+            </div>
+            <h1 class="page-hero-title">
+                <span class="word">{{ _('Our') }}</span>
+                <span class="word text-gold">{{ _('Services') }}</span>
+            </h1>
+            <p class="page-hero-text">
+                {{ _('Professional creative production solutions tailored to your unique vision. From podcast production to cinematic video, we bring your ideas to life.') }}
+            </p>
+            <div class="page-hero-actions">
+                <a href="{{ url_for('booking') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> {{ _('Book a Session') }} 
+                </a>
+                <a href="{{ url_for('contact') }}" class="btn btn-outline">
+                    {{ _('Get in Touch') }}
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="services-section" id="services">
+        <div class="services-header">
+            <span class="section-label">{{ _('What We Offer') }}</span>
+            <h2>{{ _('Premium') }} <span class="text-gold">{{ _('Production Services') }}</span></h2>
+            <p>{{ _('Professional creative solutions tailored to bring your vision to life with studio-quality results.') }}</p>
+        </div>
+        
+        <div class="services-grid">
+            {% for service in services %}
+            {# Dynamic Class Application for Premium Card #}
+            <div class="service-card {% if service.slug == 'custom-package' %}premium-gold{% endif %}">
+                
+                <div class="service-icon-wrapper">
+                    <div class="service-icon">
+                        <i class="fas fa-{{ service.icon }}"></i>
+                    </div>
+                    <i class="fas fa-{{ service.icon }} service-icon-bg"></i>
+                </div>
+                
+                <span class="service-category">{{ _(service.category|replace('_', ' ')|title) }}</span>
+                
+                <h3 class="service-title">
+                    {{ service.name_ar or service.name if get_locale() == 'ar' else service.name }}
+                </h3>
+                
+                <p class="service-description">
+                    {{ service.description_ar or service.description if get_locale() == 'ar' else service.description }}
+                </p>
+                
+                <ul class="service-features">
+                    {% set features_text = service.features_ar if get_locale() == 'ar' and service.features_ar else service.features %}
+                    
+                    {% if features_text %}
+                        {% for feature in features_text.split('|') %}
+                        <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                        {% endfor %}
+                    {% else %}
+                        {# Fallback features - Ensure these are in your .po file #}
+                        <li><i class="fas fa-check-circle"></i> {{ _('Professional Equipment') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ _('Expert Team') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ _('Quick Turnaround') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ _('Unlimited Revisions') }}</li>
+                    {% endif %}
+                </ul>
+                
+                
+                <div class="service-cta">
+                    {% if service.slug == 'custom-package' %}
+                        <a href="{{ url_for('booking') }}#custom-section" class="btn-service">
+                            {{ _('Build Package') }} <i class="fas fa-arrow-right"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('service_detail', slug=service.slug) }}" class="btn-service">
+                            {{ _('View Details') }} <i class="fas fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Preloader Logic
+            const preloader = document.querySelector('.preloader');
+            animateHero();
+            
+            function animateHero() {
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (prefersReducedMotion) {
+                    document.querySelectorAll('.page-hero-badge, .page-hero-title .word, .page-hero-text, .page-hero-actions').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                    });
+                    return;
+                }
+                
+                const badge = document.querySelector('.page-hero-badge');
+                const words = document.querySelectorAll('.page-hero-title .word');
+                const text = document.querySelector('.page-hero-text');
+                const actions = document.querySelector('.page-hero-actions');
+                
+                if (badge) { badge.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out'; badge.style.opacity = '1'; }
+                words.forEach((word, index) => {
+                    word.style.transition = `opacity 0.8s ease-out ${index * 0.15 + 0.4}s, transform 0.8s ease-out ${index * 0.15 + 0.4}s`;
+                    word.style.opacity = '1';
+                });
+                if (text) { text.style.transition = 'opacity 0.8s ease-out 0.8s, transform 0.8s ease-out 0.8s'; text.style.opacity = '1'; }
+                if (actions) { actions.style.transition = 'opacity 0.8s ease-out 1s, transform 0.8s ease-out 1s'; actions.style.opacity = '1'; }
+            }
+            
+            // 2. Particle Canvas Logic - OPTIMIZED WITH PAUSE ON SCROLL
+            const canvas = document.getElementById('particle-canvas-services');
+            if (canvas) {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight * 0.6);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                camera.position.z = 5;
+                
+                const particleCount = 800;
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const goldColor = new THREE.Color(0xD4AF37);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 1] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 2] = (Math.random() - 0.5) * 10;
+                    
+                    const colorVariation = 0.8 + Math.random() * 0.4;
+                    colors[i3] = goldColor.r * colorVariation;
+                    colors[i3 + 1] = goldColor.g * colorVariation;
+                    colors[i3 + 2] = goldColor.b * colorVariation;
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.02, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+                });
+                
+                const particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+                
+                let mouseX = 0, mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+                
+                let animationId;
+                let isAnimating = true;
+
+                const animate = () => {
+                    if(!isAnimating) return;
+                    
+                    animationId = requestAnimationFrame(animate);
+                    particles.rotation.y += 0.001;
+                    particles.rotation.x = mouseY * 0.1;
+                    particles.rotation.z = mouseX * 0.05;
+                    renderer.render(scene, camera);
+                };
+                animate();
+                
+                // PERFORMANCE FIX: Stop animating when canvas is not in view
+                const heroSection = document.getElementById('hero');
+                const heroObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            if (!isAnimating) {
+                                isAnimating = true;
+                                animate();
+                            }
+                        } else {
+                            isAnimating = false;
+                            cancelAnimationFrame(animationId);
+                        }
+                    });
+                }, { threshold: 0 });
+                if(heroSection) heroObserver.observe(heroSection);
+                
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight * 0.6);
+                });
+            }
+            
+            // 3. Lightweight Fade In
+            const observerOptions = { threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1'; 
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.service-card').forEach((card, index) => {
+                card.style.opacity = '0'; 
+                card.style.transform = 'translateY(30px)';
+                card.style.transitionDelay = `${index * 0.1}s`; 
+                observer.observe(card);
+            });
+            
+            // 4. Magnetic Buttons
+            const magneticElements = document.querySelectorAll('.magnetic-wrap');
+            magneticElements.forEach(wrap => {
+                const button = wrap.querySelector('a, button, .btn');
+                if (!button) return;
+
+                wrap.addEventListener('mousemove', (e) => {
+                    const rect = wrap.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    gsap.to(button, {
+                        x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out'
+                    });
+                });
+                
+                wrap.addEventListener('mouseleave', () => {
+                    gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                });
+            });
+            
+            // 5. Card Mouse Move Effect (Throttled)
+            const serviceCards = document.querySelectorAll('.service-card');
+            let mouseMoveThrottled = false;
+            serviceCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    if (mouseMoveThrottled) return;
+                    mouseMoveThrottled = true;
+                    requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = ((e.clientX - rect.left) / rect.width) * 100;
+                        const y = ((e.clientY - rect.top) / rect.height) * 100;
+                        card.style.setProperty('--mouse-x', `${x}%`);
+                        card.style.setProperty('--mouse-y', `${y}%`);
+                        mouseMoveThrottled = false;
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}
+</html>

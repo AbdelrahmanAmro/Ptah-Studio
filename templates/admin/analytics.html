@@ -1,0 +1,759 @@
+{% extends "admin/base.html" %}
+
+{% block title %}PTAH STUDIOS - Analytics{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .analytics-container {
+        animation: fadeInUp 0.5s ease-out;
+        position: relative;
+    }
+
+    /* Ambient Background Effects */
+    .analytics-container::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.02) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* --- KPI CARDS WITH GLASSMORPHISM --- */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .kpi-card {
+        background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(11, 17, 32, 0.98) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1.75rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 160px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+        transition: left 0.5s;
+    }
+
+    .kpi-card:hover::before { left: 100%; }
+
+    .kpi-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.1);
+    }
+
+    /* Glowing accent line on top */
+    .kpi-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+
+    .kpi-card:hover::after { opacity: 1; }
+
+    .kpi-green { --accent-color: #10B981; }
+    .kpi-blue { --accent-color: #3B82F6; }
+    .kpi-yellow { --accent-color: #F59E0B; }
+    .kpi-purple { --accent-color: #8B5CF6; }
+
+    /* Header Row: Title + Icon */
+    .kpi-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .kpi-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+
+    .kpi-card:hover .kpi-title { opacity: 1; }
+
+    .kpi-icon {
+        font-size: 1.5rem;
+        opacity: 0.7;
+        transition: all 0.4s;
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    .kpi-card:hover .kpi-icon {
+        opacity: 1;
+        transform: scale(1.15) rotate(5deg);
+        filter: drop-shadow(0 0 12px currentColor);
+    }
+
+    /* Specific Colors for Each Card */
+    .kpi-green .kpi-title, .kpi-green .kpi-icon { color: #10B981; }
+    .kpi-blue .kpi-title, .kpi-blue .kpi-icon { color: #3B82F6; }
+    .kpi-yellow .kpi-title, .kpi-yellow .kpi-icon { color: #F59E0B; }
+    .kpi-purple .kpi-title, .kpi-purple .kpi-icon { color: #8B5CF6; }
+
+    /* Value Styling */
+    .kpi-value {
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #FFFFFF 0%, rgba(255, 255, 255, 0.7) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+        letter-spacing: -1px;
+    }
+
+    .kpi-subtext {
+        font-size: 0.8rem;
+        color: #94A3B8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+    }
+
+    .trend-down { color: #EF4444; animation: pulse 2s infinite; }
+    .trend-up { color: #10B981; animation: pulse 2s infinite; }
+
+    /* --- CHARTS STYLING --- */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .chart-card {
+        background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(11, 17, 32, 0.95) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 1.75rem;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chart-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+
+    .chart-card:hover::before { opacity: 1; }
+    .chart-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3), 0 0 30px rgba(212, 175, 55, 0.05);
+    }
+
+    .chart-card.full-width { grid-column: 1 / -1; }
+
+    .chart-header {
+        position: relative;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .chart-header::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #D4AF37, transparent);
+    }
+
+    .chart-header h3 {
+        font-size: 1.1rem;
+        color: #E2E8F0;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Fixed Heights for Charts */
+    .chart-container-lg {
+        position: relative;
+        height: 280px;
+        width: 100%;
+    }
+
+    .chart-container-sm {
+        position: relative;
+        height: 220px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* --- EXPORT BAR --- */
+    .export-bar {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(17, 24, 39, 0.7) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(10px);
+    }
+
+    .export-bar span {
+        font-size: 0.95rem;
+        color: #CBD5E1;
+        margin-right: auto;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .export-bar span i { color: #D4AF37; font-size: 1.1rem; }
+
+    .export-bar select {
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        background: rgba(30, 41, 59, 0.8);
+        color: #E2E8F0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        outline: none;
+    }
+
+    .export-bar select:hover { background: rgba(30, 41, 59, 1); border-color: rgba(212, 175, 55, 0.3); }
+
+    .export-btn {
+        background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
+        color: #000;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+    }
+
+    /* --- SUMMARY METRICS (NEW) --- */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .summary-card {
+        background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(11, 17, 32, 0.95) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 1.75rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .summary-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        transition: background 0.2s;
+    }
+
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row:hover { background: rgba(255,255,255,0.02); padding-left: 0.5rem; padding-right: 0.5rem; border-radius: 8px; }
+
+    .summary-label { color: #94A3B8; font-size: 0.9rem; font-weight: 500; }
+    .summary-value { color: #fff; font-weight: 700; font-size: 1rem; font-family: var(--font-heading); }
+
+    .val-green { color: #10B981; }
+    .val-yellow { color: #F59E0B; }
+    .val-blue { color: #3B82F6; }
+    .val-purple { color: #8B5CF6; }
+
+    /* Header styling */
+    .dashboard-header { margin-bottom: 2rem !important; position: relative; z-index: 1; }
+    .header-title h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #FFFFFF 0%, #D4AF37 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .header-title h1 span {
+        background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    @media (max-width: 1024px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .summary-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .charts-grid { grid-template-columns: 1fr; }
+        .kpi-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="analytics-container">
+    <header class="dashboard-header">
+        <div class="header-title">
+            <h1>Analytics & <span>Reports</span></h1>
+        </div>
+    </header>
+
+    <div class="kpi-grid">
+        <div class="kpi-card kpi-green">
+            <div class="kpi-top">
+                <span class="kpi-title">This Month Revenue</span>
+                <i class="fas fa-dollar-sign kpi-icon"></i>
+            </div>
+            <div class="kpi-value">${{ "{:,.0f}".format(monthly_revenue) }}</div>
+            <div class="kpi-subtext {{ 'trend-up' if revenue_growth >= 0 else 'trend-down' }}">
+                <i class="fas fa-arrow-{{ 'up' if revenue_growth >= 0 else 'down' }}"></i>
+                <span>{{ "%.1f"|format(revenue_growth|abs) }}% vs last month</span>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+            <div class="kpi-top">
+                <span class="kpi-title">Total Bookings</span>
+                <i class="far fa-calendar-alt kpi-icon"></i>
+            </div>
+            <div class="kpi-value">{{ total_bookings_count }}</div>
+            <div class="kpi-subtext">Lifetime volume</div>
+        </div>
+
+        <div class="kpi-card kpi-yellow">
+            <div class="kpi-top">
+                <span class="kpi-title">Conversion Rate</span>
+                <i class="fas fa-chart-line kpi-icon"></i>
+            </div>
+            <div class="kpi-value">{{ conversion_rate }}%</div>
+            <div class="kpi-subtext">Leads to Clients</div>
+        </div>
+
+        <div class="kpi-card kpi-purple">
+            <div class="kpi-top">
+                <span class="kpi-title">Active Projects</span>
+                <i class="fas fa-wave-square kpi-icon"></i>
+            </div>
+            <div class="kpi-value">{{ active_projects_count }}</div>
+            <div class="kpi-subtext">In Progress</div>
+        </div>
+    </div>
+
+    <div class="export-bar">
+        <span><i class="fas fa-file-export"></i> Export Data Reports</span>
+        
+        <form action="{{ url_for('export_report') }}" method="GET" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            
+            <select name="type" aria-label="Report Type">
+                <option value="financial">Financial Report</option>
+                <option value="leads">Leads Report</option>
+                <option value="projects">Projects Report</option>
+            </select>
+
+            <select name="year" aria-label="Year">
+                {% set current_year = now.year %}
+                {% for y in range(2025, 2029) %}
+                    <option value="{{ y }}" {{ 'selected' if y == current_year else '' }}>{{ y }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="scope" id="scopeSelect" onchange="toggleExportInputs()">
+                <option value="year">Full Year</option>
+                <option value="quarter">By Quarter</option>
+                <option value="month">By Month</option>
+            </select>
+
+            <select name="quarter" id="quarterSelect" style="display:none;">
+                <option value="1">Q1 (Jan - Mar)</option>
+                <option value="2">Q2 (Apr - Jun)</option>
+                <option value="3">Q3 (Jul - Sep)</option>
+                <option value="4">Q4 (Oct - Dec)</option>
+            </select>
+
+            <select name="month" id="monthSelect" style="display:none;">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <button type="submit" class="export-btn">Download CSV</button>
+        </form>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card full-width">
+            <div class="chart-header"><h3>Revenue Trend</h3></div>
+            <div class="chart-container-lg"><canvas id="revenueChart"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header"><h3>Bookings by Service</h3></div>
+            <div class="chart-container-sm"><canvas id="serviceChart"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header"><h3>Converted Leads by Source</h3></div>
+            <div class="chart-container-sm"><canvas id="sourceChart"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header"><h3>Lead Conversion Funnel</h3></div>
+            <div class="chart-container-sm"><canvas id="funnelChart"></canvas></div>
+        </div>
+
+        <div class="chart-card full-width">
+            <div class="chart-header"><h3>Project Completion Trends</h3></div>
+            <div class="chart-container-lg"><canvas id="projectChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-header">Revenue Summary</div>
+            <div class="summary-row">
+                <span class="summary-label">Total Revenue</span>
+                <span class="summary-value val-green">${{ "{:,.0f}".format(total_revenue_lifetime) }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Avg. Booking Value</span>
+                <span class="summary-value val-yellow">${{ "{:,.0f}".format(avg_booking_val) }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Total Bookings</span>
+                <span class="summary-value val-blue">{{ total_bookings_count }}</span>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-header">Lead Performance</div>
+            <div class="summary-row">
+                <span class="summary-label">Total Leads</span>
+                <span class="summary-value">{{ total_leads_count }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Conversion Rate</span>
+                <span class="summary-value val-green">{{ conversion_rate }}%</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Qualified Leads</span>
+                <span class="summary-value val-blue">{{ qualified_leads_count }}</span>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-header">Project Metrics</div>
+            <div class="summary-row">
+                <span class="summary-label">Active Projects</span>
+                <span class="summary-value val-purple">{{ active_projects_count }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Delivered</span>
+                <span class="summary-value val-green">{{ delivered_projects_total }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Completion Rate</span>
+                <span class="summary-value val-yellow">{{ project_completion_rate }}%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- EXPORT DROPDOWN TOGGLE LOGIC ---
+    function toggleExportInputs() {
+        const scope = document.getElementById('scopeSelect').value;
+        const quarterSelect = document.getElementById('quarterSelect');
+        const monthSelect = document.getElementById('monthSelect');
+
+        // Reset visibility
+        quarterSelect.style.display = 'none';
+        monthSelect.style.display = 'none';
+
+        // Show relevant input
+        if (scope === 'quarter') {
+            quarterSelect.style.display = 'inline-block';
+        } else if (scope === 'month') {
+            monthSelect.style.display = 'inline-block';
+        }
+    }
+
+    // --- CHART CONFIGURATION ---
+    Chart.defaults.color = '#94A3B8';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { 
+                labels: { 
+                    boxWidth: 12, 
+                    padding: 15,
+                    color: '#CBD5E1',
+                    font: { size: 12, weight: '600' }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                titleColor: '#F1F5F9',
+                bodyColor: '#CBD5E1',
+                borderColor: 'rgba(212, 175, 55, 0.3)',
+                borderWidth: 1,
+                padding: 12,
+                displayColors: true,
+                boxPadding: 6,
+                cornerRadius: 8
+            }
+        }
+    };
+
+    // 1. Revenue
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 250);
+    revenueGradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+    revenueGradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: {{ rev_labels | safe }},
+            datasets: [{
+                label: 'Revenue ($)',
+                data: {{ rev_values | safe }},
+                borderColor: '#10B981',
+                backgroundColor: revenueGradient,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.03)', drawBorder: false } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Services
+    new Chart(document.getElementById('serviceChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ serv_labels | safe }},
+            datasets: [{
+                data: {{ serv_values | safe }},
+                backgroundColor: ['#D4AF37', '#3B82F6', '#10B981', '#8B5CF6', '#EF4444'],
+                borderWidth: 3,
+                borderColor: 'rgba(11, 17, 32, 0.8)'
+            }]
+        },
+        options: { ...commonOptions, cutout: '70%' }
+    });
+
+    // 3. Source
+    const sourceData = {{ source_values | safe }};
+    const sourceLabels = {{ source_labels | safe }};
+    const isSourceEmpty = sourceLabels.length === 1 && sourceLabels[0] === 'No Data';
+    const sourceColors = isSourceEmpty ? ['#334155'] : ['#10B981', '#F59E0B', '#3B82F6', '#8B5CF6'];
+
+    new Chart(document.getElementById('sourceChart'), {
+        type: 'pie',
+        data: {
+            labels: sourceLabels,
+            datasets: [{
+                data: sourceData,
+                backgroundColor: sourceColors,
+                borderWidth: 3,
+                borderColor: 'rgba(11, 17, 32, 0.8)'
+            }]
+        },
+        options: commonOptions
+    });
+
+    // 4. Funnel
+    new Chart(document.getElementById('funnelChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ funnel_labels | safe }},
+            datasets: [{
+                label: 'Leads',
+                data: {{ funnel_values | safe }},
+                backgroundColor: '#3B82F6',
+                borderRadius: 8,
+                borderWidth: 2,
+                borderColor: 'rgba(59, 130, 246, 0.3)'
+            }]
+        },
+        options: {
+            ...commonOptions,
+            indexAxis: 'y',
+            plugins: { legend: { display: false }, tooltip: commonOptions.plugins.tooltip },
+            scales: { x: { grid: { display: false } }, y: { grid: { display: false } } }
+        }
+    });
+
+    // 5. PROJECT TRENDS - DOUBLE BAR CHART
+    new Chart(document.getElementById('projectChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ proj_labels | safe }},
+            datasets: [
+                {
+                    label: 'Projects Started',
+                    data: {{ proj_started_values | safe }},
+                    backgroundColor: '#F59E0B',
+                    borderRadius: 6,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Projects Delivered',
+                    data: {{ proj_delivered_values | safe }},
+                    backgroundColor: '#10B981',
+                    borderRadius: 6,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
+        options: {
+            ...commonOptions,
+            plugins: { 
+                legend: { position: 'bottom', labels: { usePointStyle: true, color: '#CBD5E1' } },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.1)', borderDash: [5, 5] },
+                    ticks: { color: '#94A3B8' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94A3B8' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

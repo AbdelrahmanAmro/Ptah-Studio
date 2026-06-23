@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('About Us - Ptah Studios') }}</title>
+</head>
+{% extends "base.html" %}
+
+{% block title %}{{ _('About Us - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       CSS Variables & Shared Styles
+       =========================== */
+    /* IMPORTING PREMIUM FONTS (From Index) */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-navy-medium: #112240;
+        --color-navy-light: #233554;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --color-gray-300: #D1D5DB;
+        --color-gray-400: #ADB5BD;
+        --color-white: #FFFFFF;
+        
+        --font-heading: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', -apple-system, sans-serif;
+        --font-premium-title: 'Cinzel', serif;
+        --font-premium-text: 'Cormorant Garamond', serif;
+    }
+    
+    body {
+        cursor: default;
+        overflow-x: hidden;
+        background: var(--color-navy-darkest);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-y: auto; /* Ensure native scroll */
+    }
+
+    /* Grain overlay removed for performance */
+
+    .text-gold {
+        background: linear-gradient(135deg, var(--color-gold) 0%, #F4D06F 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: var(--color-gold);
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===========================
+       Hero Section (DECREASED SIZE)
+       =========================== */
+    .hero {
+        position: relative;
+        min-height: 50vh; /* Reduced from 80vh */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 2rem 3rem; /* Reduced padding */
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        overflow: hidden;
+        transform: translateZ(0); /* Force GPU layer */
+    }
+    
+    #hero-particles { position: absolute; inset: 0; z-index: 0; opacity: 0.3; }
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 800px; }
+    
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem;
+        background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50px; font-size: 0.65rem; /* Reduced font */
+        color: var(--color-gold);
+        text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem; opacity: 0;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .hero-content h1 {
+        font-family: var(--font-heading); 
+        font-size: clamp(2rem, 4vw, 3rem); /* Reduced max size */
+        color: var(--color-white);
+        margin-bottom: 1rem; line-height: 1.1; opacity: 0;
+        animation: fadeInUp 0.6s ease-out 0.1s backwards;
+    }
+    
+    .hero-content p {
+        font-size: clamp(0.9rem, 1.5vw, 1rem); /* Reduced font */
+        color: var(--color-gray-300); max-width: 650px;
+        margin: 0 auto 2rem; line-height: 1.6; opacity: 0;
+        animation: fadeInUp 0.6s ease-out 0.2s backwards;
+    }
+
+    /* ===========================
+       Story Section (DECREASED SIZE)
+       =========================== */
+    .story-section {
+        padding: 4rem 2rem; /* Reduced padding */
+        background: var(--color-navy-dark);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .story-section::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .story-container {
+        max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr;
+        gap: 2.5rem; /* Reduced gap */
+        align-items: center; position: relative; z-index: 2;
+    }
+    
+    .story-content h2 {
+        font-family: var(--font-heading); 
+        font-size: clamp(1.8rem, 3vw, 2.5rem); /* Reduced font */
+        color: var(--color-white); margin-bottom: 1.5rem; position: relative; display: inline-block;
+    }
+    
+    .story-content h2::after {
+        content: ''; position: absolute; bottom: -8px; left: 0; width: 60px; height: 2px;
+        background: linear-gradient(90deg, var(--color-gold), transparent);
+    }
+    
+    .story-content p {
+        color: var(--color-gray-300); font-size: 0.95rem; /* Reduced font */
+        line-height: 1.6; margin-bottom: 1rem;
+    }
+    
+    .story-image-wrapper {
+        position: relative; border-radius: 12px; overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .story-image-wrapper::before {
+        content: ''; position: absolute; inset: -3px;
+        background: linear-gradient(135deg, var(--color-gold), transparent, var(--color-gold));
+        border-radius: 12px; z-index: -1; opacity: 0.4;
+    }
+    
+    .story-image { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+
+    /* ===========================
+       Mission & Vision & Values
+       =========================== */
+    .premium-theme {
+        padding: 5rem 8%; /* Kept original */
+        background: radial-gradient(circle at center, #0a192f 0%, #050d1a 100%);
+    }
+    
+    .mv-container {
+        display: flex; justify-content: space-between; gap: 4rem; margin-bottom: 2rem;
+    }
+    
+    .mv-item { flex: 1; text-align: center; }
+    
+    .mv-label {
+        font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--color-gold);
+        letter-spacing: 5px; text-transform: uppercase;
+    }
+    
+    .mv-line {
+        width: 40px; height: 1px; background: var(--color-gold); margin: 1rem auto; opacity: 0.6;
+    }
+    
+    .mv-full-text {
+        font-family: 'Cinzel', serif !important; font-weight: 400; color: #e0e0e0;
+        line-height: 1.6; font-size: 1.25rem; max-width: 550px; margin: 0 auto;
+    }
+    
+    .mv-vertical-divider {
+        width: 1px; background: linear-gradient(to bottom, transparent, var(--color-gold), transparent); opacity: 0.3;
+    }
+    
+    .mv-values-divider {
+        position: relative; width: 100%; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+        margin: 1.5rem 0 2.5rem; opacity: 0.4;
+    }
+    
+    .mv-values-divider::after {
+        content: '◈'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        color: var(--color-gold); background: var(--color-navy-darkest); padding: 0 15px; font-size: 0.8rem;
+    }
+    
+    .values-premium { padding-top: 0; }
+    
+    .values-section-title {
+        display: block; text-align: center; font-family: 'Cinzel', serif; font-size: 1.5rem;
+        letter-spacing: 6px; color: var(--color-gold); margin-bottom: 1.5rem; opacity: 0.8;
+    }
+    
+    .values-detailed-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem;
+    }
+    
+    .value-card {
+        text-align: center; padding: 1rem; transition: transform 0.3s ease;
+    }
+    .value-card:hover { transform: translateY(-5px); }
+    
+    .v-num {
+        font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--color-gold);
+        opacity: 0.4; display: block; margin-bottom: 0.5rem;
+    }
+    
+    .v-title {
+        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem;
+        color: #fff; margin-bottom: 0.5rem; letter-spacing: 0.5px;
+    }
+    
+    .v-desc {
+        font-family: 'Cinzel', serif !important; font-weight: 400; color: #e0e0e0;
+        line-height: 1.6; font-size: 0.95rem; opacity: 0.9; padding-top: 0.5rem;
+    }
+
+    /* ===========================
+       Testimonials Section
+       =========================== */
+    .testimonials-section {
+        padding: 3rem 10%; /* Reduced from 8rem */
+        background: linear-gradient(180deg, var(--color-navy-darkest) 0%, #000000 100%);
+        position: relative;
+        z-index: 5;
+    }
+
+    .testimonials-header {
+        text-align: center;
+        margin-bottom: 2rem; /* Reduced from 5rem */
+    }
+
+    .testimonials-header h2 {
+        font-family: var(--font-heading);
+        font-size: clamp(1.8rem, 4vw, 2.5rem); /* Scaled down */
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .testimonials-header p {
+        font-size: 0.9rem; /* Smaller text */
+        color: var(--color-text-light);
+        margin: 0 auto;
+        opacity: 0.7;
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Smaller min-width */
+        gap: 1.25rem; /* Tighter gap */
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .testimonial-card {
+        background: rgba(17, 34, 64, 0.8); /* Replaced backdrop-filter with high opacity solid */
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem; /* Reduced from 2.5rem */
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(212, 175, 55, 0.4);
+        background: rgba(17, 34, 64, 0.95);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .testimonial-stars {
+        color: var(--color-gold);
+        font-size: 0.7rem; /* Smaller stars */
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 3px;
+    }
+
+    .quote-icon-large {
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        color: rgba(212, 175, 55, 0.05);
+        line-height: 1;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        pointer-events: none;
+    }
+
+    .testimonial-text {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: var(--color-text-light);
+        margin-bottom: 1.5rem;
+        font-style: italic;
+        position: relative;
+        z-index: 1;
+        flex-grow: 1;
+    }
+
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: auto;
+        border-top: 1px solid rgba(212, 175, 55, 0.1);
+        padding-top: 1.5rem;
+    }
+
+    .client-avatar {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--color-navy-darkest);
+        flex-shrink: 0;
+    }
+
+    .client-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .client-name {
+        font-family: var(--font-heading);
+        font-size: 0.95rem;
+        color: #fff;
+        margin-bottom: 0.2rem;
+    }
+
+    .client-role {
+        font-size: 0.65rem;
+        color: var(--color-gray-400);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* ===========================
+       CTA Section
+       =========================== */
+    .cta-section {
+        padding: 5rem 2rem; /* Reduced from 10rem */
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .cta-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+    .cta-content h2 {
+        font-family: var(--font-heading); 
+        font-size: clamp(2rem, 4vw, 3rem); /* Reduced */
+        color: var(--color-white); margin-bottom: 1rem; line-height: 1.1;
+    }
+    .cta-content p { color: var(--color-gray-300); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; }
+    
+    .btn-gold {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-dark); font-weight: 700; 
+        padding: 1rem 2.5rem; /* Reduced padding */
+        border-radius: 8px; display: inline-flex; align-items: center; gap: 0.5rem;
+        text-decoration: none; transition: all 0.3s; box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+        font-size: 0.9rem; /* Reduced font */
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .btn-gold:hover { transform: translateY(-3px) scale(1.02); }
+
+    /* ===========================
+       Responsive Styles
+       =========================== */
+    @media (max-width: 1024px) {
+        .story-container { grid-template-columns: 1fr; gap: 2rem; }
+        .story-image-wrapper { order: -1; max-width: 400px; margin: 0 auto; }
+        .values-detailed-grid { grid-template-columns: repeat(2, 1fr); }
+        .mv-container { flex-direction: column; align-items: center; }
+        .mv-vertical-divider { display: none; }
+    }
+    
+    @media (max-width: 900px) {
+        .hero, .story-section, .cta-section { padding: 3rem 1.5rem; }
+        .hero { padding-top: 5rem; min-height: auto; }
+        .value-card { padding: 0.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="hero" id="hero-section">
+        <canvas id="hero-particles"></canvas>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i>
+                {{ _('Temple of Creation') }}
+            </div>
+            <h1>{{ _('Our') }} <span class="text-gold">{{ _('Story') }}</span></h1>
+            <p>{{ _("Where ancient Egyptian craftsmanship meets modern content creation excellence. Discover the story behind Cairo's premier production studio.") }}</p>
+        </div>
+    </section>
+
+    <section class="story-section">
+        <div class="story-container">
+            <div class="story-content">
+                <h2>{{ _('Born from') }} <span class="text-gold">{{ _('Craftsmanship') }}</span></h2>
+                <p>{{ _('In the heart of Cairo, where ancient craftsmanship meets modern innovation, PTAH Studios was born. Named after the revered Egyptian god of creation and craftsmen, our studio embodies the timeless pursuit of excellence that has defined Egyptian artistry for millennia.') }}</p>
+                <p>{{ _("What started as a passion project has grown into a full-service production facility, equipped with cutting-edge technology and staffed by industry veterans who share our commitment to quality. From podcasters and content creators to corporate clients and advertising agencies, we've helped hundreds bring their visions to life.") }}</p>
+                <p>{{ _("Today, PTAH Studios stands as a testament to what happens when creative passion meets technical excellence. We're not just a rental facility – we're your creative partners, dedicated to crafting content that resonates and inspires.") }}</p>
+            </div>
+            <div class="story-image-wrapper">
+                <img src="{{ url_for('static', filename='img/hero-statue2.jpg') }}" alt="{{ _('PTAH Studios Interior') }}" class="story-image">
+            </div>
+        </div>
+    </section>
+
+    <section class="mission-vision-values premium-theme">
+        <div class="mv-container">
+            <div class="mv-item">
+                <span class="mv-label">{{ _('PTAH Vision') }}</span>
+                <div class="mv-line"></div>
+                <p class="mv-full-text">
+                    {{ _('"To redefine the horizon of digital media, transforming fleeting moments into timeless, high-impact cinematic experiences."') }}
+                </p>
+            </div>
+    
+            <div class="mv-vertical-divider"></div>
+    
+            <div class="mv-item">
+                <span class="mv-label">{{ _('PTAH Mission') }}</span>
+                <div class="mv-line"></div>
+                <p class="mv-full-text">
+                    {{ _('"We architect visual legacies by fusing authentic storytelling with strategic precision, crafting content that doesn\'t just engage—it captivates."') }}
+                </p>
+            </div>
+        </div>
+    
+        <div class="mv-values-divider"></div>
+    
+        <div class="values-premium">
+            <span class="values-section-title">{{ _('Our Values') }}</span>
+            <div class="values-detailed-grid">
+                <div class="value-card">
+                    <span class="v-num">I</span>
+                    <h4 class="v-title">{{ _('Creativity First') }}</h4>
+                    <p class="v-desc">{{ _('We believe in pushing creative boundaries and bringing unique visions to life.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">II</span>
+                    <h4 class="v-title">{{ _('Excellence') }}</h4>
+                    <p class="v-desc">{{ _('Delivering premium quality in every project, from concept to final delivery.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">III</span>
+                    <h4 class="v-title">{{ _('Collaboration') }}</h4>
+                    <p class="v-desc">{{ _('Working closely with clients as partners to achieve their creative goals.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">IV</span>
+                    <h4 class="v-title">{{ _('Integrity') }}</h4>
+                    <p class="v-desc">{{ _('Transparent pricing, honest timelines, and professional service every time.') }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section" id="testimonials">
+        <div class="testimonials-header">
+            <h2 class="section-title">{{ _('What Our') }} <span class="text-gold">{{ _('Clients Say') }}</span></h2>
+            <p>{{ _('Professional feedback from our creative partners.') }}</p>
+        </div>
+    
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"PTAH Studios exceeded our expectations! Their podcast production service is top-notch. The team\'s professionalism and attention to detail made our corporate podcast series a huge success."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">AH</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Ahmed Hassan') }}</span>
+                        <span class="client-role">{{ _('Marketing Director, TechVision Egypt') }}</span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"The social media content PTAH created for us went viral! Their creative team knows exactly how to capture attention and engage audiences. Highly recommend!"') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">OK</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Omar Kamal') }}</span>
+                        <span class="client-role">{{ _('CEO, StartHub Cairo') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"From concept to final edit, PTAH Studios demonstrated unmatched professionalism. Their team guided us through every step, and the final corporate video exceeded all expectations."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">NE</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Nadia El-Sayed') }}</span>
+                        <span class="client-role">{{ _('HR Manager, Global Finance Corp') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"We\'ve worked with many studios, but PTAH is in a league of their own. The quality of equipment, the expertise of the team, and the final output are simply outstanding."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">MR</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Mohamed Rashad') }}</span>
+                        <span class="client-role">{{ _('Founder, Digital Dreams Agency') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"PTAH Studios transformed our brand identity with a stunning promotional video. Their attention to detail and creative vision brought our story to life in ways we never imagined."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">LM</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Layla Mahmoud') }}</span>
+                        <span class="client-role">{{ _('Brand Manager, Luxe Retail Egypt') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script>
+        // CRITICAL FIX: Stop ScrollTrigger from refreshing when mobile address bar hides/shows
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        class PtahAbout {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                // Initialize core functions
+                this.initMagneticElements();
+                this.animateHero();
+                this.initParticles();
+                this.initScrollAnimations();
+                ScrollTrigger.refresh();
+            }
+        
+            
+            animateHero() {
+                if (prefersReducedMotion) {
+                    gsap.set(['.hero-badge', '.hero-content h1', '.hero-content p'], { opacity: 1, y: 0 });
+                    return;
+                }
+                const tl = gsap.timeline();
+                tl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+                  .to('.hero-content h1', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+                  .to('.hero-content p', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4');
+            }
+            
+            initMagneticElements() {
+                const magneticElements = document.querySelectorAll('.magnetic-wrap');
+                magneticElements.forEach(wrap => {
+                    const button = wrap.querySelector('a, button, .btn-gold');
+                    if (!button) return;
+
+                    wrap.addEventListener('mousemove', (e) => {
+                        const rect = wrap.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        
+                        if (!prefersReducedMotion) {
+                            gsap.to(button, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+                        }
+                    });
+                    
+                    wrap.addEventListener('mouseleave', () => {
+                        if (!prefersReducedMotion) {
+                            gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                        }
+                    });
+                });
+            }
+            
+            initParticles() {
+                const canvas = document.getElementById('hero-particles');
+                if (!canvas) return;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                camera.position.z = 5;
+                
+                const particleCount = 1200; 
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const goldColor = new THREE.Color(0xD4AF37);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 1] = (Math.random() - 0.5) * 10;
+                    positions[i3 + 2] = (Math.random() - 0.5) * 10;
+                    
+                    const colorVariation = 0.8 + Math.random() * 0.4;
+                    colors[i3] = goldColor.r * colorVariation;
+                    colors[i3 + 1] = goldColor.g * colorVariation;
+                    colors[i3 + 2] = goldColor.b * colorVariation;
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.02, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+                });
+                
+                const particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+                
+                let mouseX = 0, mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+                
+                // PERFORMANCE FIX: Pause animation when not in view
+                let isAnimating = true;
+                const animate = () => {
+                    if (!isAnimating) return;
+                    requestAnimationFrame(animate);
+                    if (!prefersReducedMotion) {
+                        particles.rotation.y += 0.001;
+                        particles.rotation.x = mouseY * 0.1;
+                        particles.rotation.z = mouseX * 0.05;
+                    }
+                    renderer.render(scene, camera);
+                };
+                animate();
+
+                // Observer to toggle animation state
+                const heroSection = document.getElementById('hero-section');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            if (!isAnimating) {
+                                isAnimating = true;
+                                animate();
+                            }
+                        } else {
+                            isAnimating = false;
+                        }
+                    });
+                }, { threshold: 0 });
+                if(heroSection) observer.observe(heroSection);
+                
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+            
+            initScrollAnimations() {
+                 const cards = document.querySelectorAll('.value-card, .testimonial-card');
+                 cards.forEach(card => {
+                    ScrollTrigger.create({
+                        trigger: card,
+                        start: 'top 85%',
+                        onEnter: () => {
+                             if(!prefersReducedMotion) {
+                                gsap.fromTo(card, {opacity:0, y:30}, {opacity:1, y:0, duration:0.6});
+                             }
+                        }
+                    });
+                 });
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new PtahAbout());
+        } else {
+            new PtahAbout();
+        }
+    </script>
+{% endblock %}
+</html>
