@@ -1,0 +1,563 @@
+{% extends "admin/base.html" %}
+
+{% block title %}PTAH STUDIOS - Manage Payments{% endblock %}
+
+{% block content %}
+<style>
+    /* PAYMENT DASHBOARD SPECIFIC STYLES */
+    .payments-dashboard {
+        padding: 1rem 0;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .page-header-alt {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        gap: 1rem;
+    }
+
+    .header-left-alt h1 {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--color-text-primary);
+    }
+
+    .header-left-alt h1 span {
+        color: var(--color-gold);
+    }
+
+    .header-left-alt p {
+        color: var(--color-text-secondary);
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Summary Stats Layout */
+    .stats-grid-alt {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card-alt {
+        background: var(--color-navy-glass);
+        backdrop-filter: blur(20px);
+        border: var(--border-glass);
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition-smooth);
+        gap: 1rem;
+    }
+
+    .stat-card-alt:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212, 175, 55, 0.3);
+        box-shadow: var(--shadow-card);
+    }
+
+    .stat-label-alt {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value-alt {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        line-height: 1;
+    }
+
+    .stat-card-alt.collected { border-left: 4px solid var(--color-success); }
+    .stat-card-alt.collected .stat-label-alt { color: var(--color-success); }
+    
+    .stat-card-alt.pending { border-left: 4px solid var(--color-warning); }
+    .stat-card-alt.pending .stat-label-alt { color: var(--color-warning); }
+
+    .stat-icon-alt {
+        font-size: 1.5rem;
+        opacity: 0.6;
+        flex-shrink: 0;
+    }
+
+    /* Table Controls */
+    .table-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: rgba(10, 25, 47, 0.4);
+        border-radius: 12px;
+        border: var(--border-glass);
+    }
+
+    .search-box {
+        width: 100%;
+        position: relative;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+    }
+
+    .search-box input {
+        width: 100%;
+        background: var(--color-navy-darkest);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border-radius: 8px;
+        color: white;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+    }
+
+    /* Table Styling */
+    .payment-table-container {
+        background: var(--color-navy-glass);
+        border-radius: 12px;
+        border: var(--border-glass);
+        overflow: hidden;
+    }
+
+    .payment-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+    }
+
+    .payment-table th {
+        text-align: left;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--color-text-secondary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .payment-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .client-cell {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .client-cell strong {
+        font-weight: 600;
+        color: var(--color-text-primary);
+        font-size: 0.9rem;
+    }
+
+    .client-cell span {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+    }
+
+    .price-highlight {
+        font-weight: 700;
+        color: var(--color-gold);
+        font-size: 1rem;
+    }
+
+    .date-cell {
+        color: var(--color-text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .ref-cell {
+        font-family: monospace;
+        color: var(--color-text-muted);
+        font-size: 0.8rem;
+    }
+
+    /* DETAILS MODAL STYLES */
+    .modal-overlay-p {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 1rem;
+    }
+
+    .modal-overlay-p.active { display: flex; }
+
+    .payment-modal-box {
+        background: var(--color-navy-dark);
+        border: var(--border-glass);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 500px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-card), 0 0 40px rgba(212, 175, 55, 0.1);
+        position: relative;
+        animation: modalFadeUp 0.3s ease-out;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-close-icon {
+        position: absolute;
+        top: 1rem; right: 1rem;
+        color: var(--color-text-muted);
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        padding: 0.5rem;
+    }
+    .modal-close-icon:hover { color: var(--color-gold); }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-item:last-of-type {
+        border-bottom: none;
+        margin-top: 0.5rem;
+    }
+
+    .detail-label { color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .detail-value { font-weight: 600; color: var(--color-text-primary); font-size: 0.9rem; text-align: right; }
+    .detail-value.gold { color: var(--color-gold); font-size: 1.25rem; }
+
+    .btn-action-view {
+        background: transparent;
+        color: var(--color-gold);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-action-view:hover {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: var(--color-gold);
+    }
+
+    @keyframes modalFadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===========================
+       RESPONSIVE STYLES (< 768px)
+       =========================== */
+    @media (max-width: 768px) {
+        .payments-dashboard {
+            padding: 0.5rem 0;
+        }
+
+        .page-header-alt {
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-left-alt h1 {
+            font-size: 1.75rem;
+        }
+
+        .header-left-alt p {
+            font-size: 0.85rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid-alt {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat-card-alt {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1rem;
+            border-left: 4px solid;
+        }
+
+        .stat-card-alt.collected.collected { border-left-color: var(--color-success); }
+        .stat-card-alt.pending { border-left-color: var(--color-warning); }
+        .stat-card-alt:last-child { border-left-color: var(--color-gold); }
+
+        .stat-value-alt {
+            font-size: 1.5rem;
+        }
+
+        .stat-icon-alt {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+        }
+
+        .stat-card-alt {
+            position: relative;
+            padding-right: 2.5rem;
+        }
+
+        /* Table Controls */
+        .table-controls {
+            padding: 0.75rem;
+            gap: 0.75rem;
+        }
+
+        /* Table Container - Horizontal Scroll */
+        .payment-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .payment-table {
+            min-width: 600px;
+        }
+
+        .payment-table th,
+        .payment-table td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Modal */
+        .payment-modal-box {
+            padding: 1.25rem;
+            max-width: 100%;
+        }
+
+        .payment-modal-box h3 {
+            font-size: 1.35rem;
+            margin-bottom: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .detail-item {
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.75rem 0;
+        }
+
+        .detail-value {
+            text-align: left;
+        }
+
+        .detail-value.gold {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid-alt {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-value-alt {
+            font-size: 1.35rem;
+        }
+    }
+</style>
+
+<div class="payments-dashboard">
+    <header class="page-header-alt">
+        <div class="header-left-alt">
+            <h1>Manage <span>Payments</span></h1>
+            <p>Financial oversight and transaction history</p>
+        </div>
+    </header>
+
+    <div class="stats-grid-alt">
+        <div class="stat-card-alt collected">
+            <div>
+                <div class="stat-label-alt">Total Collected</div>
+                <div class="stat-value-alt">${{ "{:,.0f}".format(total_collected) }}</div>
+            </div>
+            <i class="fas fa-check-circle stat-icon-alt" style="color: var(--color-success)"></i>
+        </div>
+
+        <div class="stat-card-alt pending">
+            <div>
+                <div class="stat-label-alt">Pending Collection</div>
+                <div class="stat-value-alt">${{ "{:,.0f}".format(pending_collection) }}</div>
+            </div>
+            <i class="fas fa-clock stat-icon-alt" style="color: var(--color-warning)"></i>
+        </div>
+
+        <div class="stat-card-alt">
+            <div>
+                <div class="stat-label-alt">Completed</div>
+                <div class="stat-value-alt">{{ completed_count }}</div>
+            </div>
+            <i class="fas fa-credit-card stat-icon-alt" style="color: var(--color-gold);"></i>
+        </div>
+    </div>
+
+    <div class="table-controls">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="transactionSearch" placeholder="Search by client name, email, or reference...">
+        </div>
+    </div>
+
+    <div class="payment-table-container">
+        <table class="payment-table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if payments %}
+                    {% for payment in payments %}
+                    <tr>
+                        <td>
+                            <div class="client-cell">
+                                <span style="font-weight: 600;">{{ payment.client.full_name }}</span>
+                                <span style="font-size: 0.75rem; color: var(--color-text-muted);">{{ payment.client.email }}</span>
+                            </div>
+                        </td>
+                        <td class="date-cell">{{ payment.booking_date.strftime('%b %d, %Y') }}</td>
+                        <td class="ref-cell">{{ payment.booking_reference }}</td>
+                        <td class="price-highlight">${{ "{:,.0f}".format(payment.total_price) }}</td>
+                        <td>
+                            <span class="status-badge status-{{ payment.status }}">{{ payment.status }}</span>
+                        </td>
+                        <td>
+                            <button class="btn-action-view" 
+                                onclick="showPaymentModal('{{ payment.client.full_name }}', '{{ payment.client.email }}', '{{ payment.booking_date.strftime('%B %d, %Y') }}', '{{ payment.booking_reference }}', '${{ "{:,.2f}".format(payment.total_price) }}', '{{ payment.status }}', '{{ payment.client.phone or 'N/A' }}')">
+                                View Detail
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; opacity: 0.5;">
+                            <i class="fas fa-receipt" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>No transactions found.</p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay-p" id="detailsOverlay">
+    <div class="payment-modal-box">
+        <div class="modal-close-icon" onclick="hidePaymentModal()"><i class="fas fa-times"></i></div>
+        
+        <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--color-gold);">
+            Payment Information
+        </h3>
+
+        <div class="detail-item">
+            <span class="detail-label">Client</span>
+            <span class="detail-value" id="m-name">---</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Email</span>
+            <span class="detail-value" id="m-email">---</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Phone</span>
+            <span class="detail-value" id="m-phone">---</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Date</span>
+            <span class="detail-value" id="m-date">---</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Reference</span>
+            <span class="detail-value" id="m-ref" style="font-family: monospace;">---</span>
+        </div>
+        <div class="detail-item" style="border-bottom: none; margin-top: 0.5rem;">
+            <span class="detail-label">Amount Paid</span>
+            <span class="detail-value gold" id="m-amount">---</span>
+        </div>
+        
+        <div id="m-status-box" style="margin-top: 1.5rem; text-align: center;">
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Transaction Detail Modal Logic
+    function showPaymentModal(name, email, date, ref, amount, status, phone) {
+        document.getElementById('m-name').innerText = name;
+        document.getElementById('m-email').innerText = email;
+        document.getElementById('m-phone').innerText = phone;
+        document.getElementById('m-date').innerText = date;
+        document.getElementById('m-ref').innerText = ref;
+        document.getElementById('m-amount').innerText = amount;
+        
+        const badge = `<span class="status-badge status-${status}" style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">${status.toUpperCase()}</span>`;
+        document.getElementById('m-status-box').innerHTML = badge;
+
+        document.getElementById('detailsOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hidePaymentModal() {
+        document.getElementById('detailsOverlay').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // 2. Real-time Search Logic
+    document.getElementById('transactionSearch').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.payment-table tbody tr');
+        
+        rows.forEach(row => {
+            const content = row.textContent.toLowerCase();
+            row.style.display = content.includes(term) ? '' : 'none';
+        });
+    });
+
+    // Close modal on escape or backdrop click
+    window.onclick = function(event) {
+        const overlay = document.getElementById('detailsOverlay');
+        if (event.target == overlay) hidePaymentModal();
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') hidePaymentModal();
+    });
+</script>
+{% endblock %}

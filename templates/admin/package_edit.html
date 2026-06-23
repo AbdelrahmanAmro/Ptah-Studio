@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit {{ item.name }}{% else %}Add New Package{% endif %} - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy (Body Background) */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08); /* Subtle borders */
+            
+            --color-gold: #D4AF37;          /* Primary Accent */
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           LAYOUT CONTAINER
+           =========================== */
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           FORM STYLES
+           =========================== */
+        .form-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-full { grid-column: 1 / -1; }
+
+        .form-group { margin-bottom: 0.5rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required { color: var(--color-gold); }
+
+        /* Inputs */
+        .form-control {
+            width: 100%;
+            background: var(--color-bg-dark); 
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control::placeholder { color: rgba(136, 146, 176, 0.4); }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select.form-control { cursor: pointer; }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            height: 100%; 
+        }
+
+        .checkbox-group:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-gold);
+            cursor: pointer;
+        }
+
+        .checkbox-group span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        .btn-save {
+            background: var(--color-gold);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background: var(--color-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+
+        /* Dual Input Row */
+        .dual-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .dual-input-row { grid-template-columns: 1fr; }
+            .btn-cancel, .btn-save { width: 100%; justify-content: center; }
+            .form-actions { flex-direction: column-reverse; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    {% if item %}
+                        Edit <span>{{ item.name }}</span>
+                    {% else %}
+                        Add New <span>Package</span>
+                    {% endif %}
+                </h1>
+                <p class="page-subtitle">Manage promotional packages and offers (English & Arabic).</p>
+            </div>
+            <a href="{{ url_for('admin_packages') }}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form method="POST">
+                
+                <h3 class="section-title">
+                    <i class="fas fa-gift"></i> Package Details
+                </h3>
+
+                <div class="form-grid">
+                    
+                    <div class="form-group form-full">
+                        <label>Package Name <span class="required">*</span></label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ item.name if item else '' }}" 
+                                       placeholder="English Name (e.g., Starter Pack)"
+                                       required>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <input type="text" name="name_ar" class="form-control" 
+                                       value="{{ item.name_ar if item and item.name_ar else '' }}" 
+                                       placeholder="Arabic Name (e.g., باقة البداية)"
+                                       dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Original Price (EGP)</label>
+                        <input type="number" name="original_price" class="form-control" 
+                               value="{{ item.original_price if item else 0 }}" 
+                               step="0.01" min="0" placeholder="0.00">
+                        <div class="form-hint">Shown as struck-through price.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Package Price (EGP) <span class="required">*</span></label>
+                        <input type="number" name="package_price" class="form-control" 
+                               value="{{ item.package_price if item else 0 }}" 
+                               step="0.01" min="0" placeholder="0.00" required>
+                        <div class="form-hint">The actual discounted price.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Duration (Hours) <span class="required">*</span></label>
+                        <input type="number" name="duration_hours" class="form-control" 
+                               value="{{ item.duration_hours if item else 0 }}" 
+                               step="0.5" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <select name="icon" class="form-control">
+                            <option value="gift" {% if item and item.icon == 'gift' %}selected{% endif %}>Gift</option>
+                            <option value="crown" {% if item and item.icon == 'crown' %}selected{% endif %}>Crown</option>
+                            <option value="video" {% if item and item.icon == 'video' %}selected{% endif %}>Video</option>
+                            <option value="camera" {% if item and item.icon == 'camera' %}selected{% endif %}>Camera</option>
+                            <option value="star" {% if item and item.icon == 'star' %}selected{% endif %}>Star</option>
+                            <option value="percentage" {% if item and item.icon == 'percentage' %}selected{% endif %}>Percentage/Deal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control" 
+                               value="{{ item.display_order if item else 0 }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="is_active" id="is_active"
+                                   {% if item and item.is_active %}checked{% endif %}
+                                   {% if not item %}checked{% endif %}>
+                            <span>Active (Visible on Homepage)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-align-left"></i> Description & Features
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Short Description</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="description" class="form-control" 
+                                          placeholder="Brief summary of the package (English)...">{{ item.description if item else '' }}</textarea>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <textarea name="description_ar" class="form-control" 
+                                          placeholder="وصف مختصر للباقة (عربي)..."
+                                          dir="rtl">{{ item.description_ar if item and item.description_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label>Features (Pipe-separated |)</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="features" class="form-control" 
+                                          placeholder="Full HD Video|Professional Editing|Color Grading">{{ item.features if item else '' }}</textarea>
+                                <div class="form-hint">English (e.g. Feature 1 | Feature 2)</div>
+                            </div>
+                            <div>
+                                <textarea name="features_ar" class="form-control" 
+                                          placeholder="فيديو عالي الجودة|مونتاج احترافي|تصحح ألوان"
+                                          dir="rtl">{{ item.features_ar if item and item.features_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (e.g. ميزة 1 | ميزة 2)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_packages') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        {% if item %}Save Changes{% else %}Create Package{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</body>
+</html>

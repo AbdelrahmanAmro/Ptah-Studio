@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit {{ item.name }}{% else %}Add General Service{% endif %} - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Exact CSS from service_edit.html */
+        :root { --color-bg-dark: #050d1a; --color-card-bg: #0A192F; --color-border: rgba(255, 255, 255, 0.08); --color-gold: #D4AF37; --color-gold-hover: #bfa13f; --color-text-main: #FFFFFF; --color-text-muted: #8892B0; --color-danger: #ef4444; --color-success: #10b981; --font-heading: 'Playfair Display', serif; --font-body: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background-color: var(--color-bg-dark); color: var(--color-text-main); min-height: 100vh; padding: 2rem; line-height: 1.5; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        .admin-container { max-width: 1100px; margin: 0 auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); }
+        .page-title { font-family: var(--font-body); font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .page-title span { color: var(--color-gold); }
+        .page-subtitle { color: var(--color-text-muted); font-size: 0.9rem; }
+        .form-card { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .section-title { font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-gold); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+        .form-full { grid-column: 1 / -1; }
+        .form-group { margin-bottom: 0.5rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group label .required { color: var(--color-gold); }
+        .form-control { width: 100%; background: var(--color-bg-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 0.875rem 1rem; color: var(--color-text-main); font-family: inherit; font-size: 0.95rem; transition: all 0.3s ease; }
+        .form-control:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1); }
+        .form-control::placeholder { color: rgba(136, 146, 176, 0.4); }
+        textarea.form-control { min-height: 120px; resize: vertical; line-height: 1.6; }
+        select.form-control { cursor: pointer; }
+        .form-hint { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.5rem; font-style: italic; }
+        .checkbox-group { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: 0.3s; height: 100%; }
+        .checkbox-group:hover { border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05); }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-gold); cursor: pointer; }
+        .checkbox-group span { font-size: 0.9rem; font-weight: 500; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-border); }
+        .btn-cancel { background: transparent; color: var(--color-text-muted); border: 1px solid var(--color-border); padding: 0.8rem 1.5rem; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
+        .btn-cancel:hover { color: var(--color-gold); border-color: var(--color-gold); }
+        .btn-save { background: var(--color-gold); color: #000; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .btn-save:hover { background: var(--color-gold-hover); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
+        .alert { padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+        code.slug-code { color: var(--color-gold); background: rgba(255, 255, 255, 0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        
+        /* Dual Input Row for Languages */
+        .dual-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        @media (max-width: 768px) { 
+            body { padding: 1rem; } 
+            .page-header { flex-direction: column; align-items: flex-start; } 
+            .form-grid { grid-template-columns: 1fr; } 
+            .dual-input-row { grid-template-columns: 1fr; }
+            .btn-save { width: 100%; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    {% if item %}
+                        Edit <span>{{ item.name }}</span>
+                    {% else %}
+                        Add <span>General Service</span>
+                    {% endif %}
+                </h1>
+                <p class="page-subtitle">Manage service details for the public website (Marketing Content).</p>
+            </div>
+            <a href="{{ url_for('admin_general_services') }}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form method="POST">
+                
+                <h3 class="section-title">
+                    <i class="fas fa-bullhorn"></i> Marketing Details
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Service Name <span class="required">*</span></label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ item.name if item else '' }}" 
+                                       placeholder="English Name (e.g., Cinematic Video Production)"
+                                       required>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <input type="text" name="name_ar" class="form-control" 
+                                       value="{{ item.name_ar if item and item.name_ar else '' }}" 
+                                       placeholder="Arabic Name (e.g., إنتاج فيديو سينمائي)"
+                                       dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL Slug</label>
+                        <input type="text" name="slug" class="form-control" 
+                               value="{{ item.slug if item else '' }}"
+                               placeholder="auto-generated">
+                        <div class="form-hint">Preview: <code id="slugPreview" class="slug-code">/services/{{ item.slug if item else '...' }}</code></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category <span class="required">*</span></label>
+                        <select name="category" class="form-control" required>
+                            <option value="">Select a category...</option>
+                            <option value="audio" {% if item and item.category == 'audio' %}selected{% endif %}>Audio/Podcast</option>
+                            <option value="video" {% if item and item.category == 'video' %}selected{% endif %}>Video Production</option>
+                            <option value="advertising" {% if item and item.category == 'advertising' %}selected{% endif %}>Advertising</option>
+                            <option value="corporate" {% if item and item.category == 'corporate' %}selected{% endif %}>Corporate</option>
+                            <option value="social" {% if item and item.category == 'social' %}selected{% endif %}>Social Media</option>
+                            <option value="post_production" {% if item and item.category == 'post_production' %}selected{% endif %}>Post-Production</option>
+                            <option value="exclusive" {% if item and item.category == 'exclusive' %}selected{% endif %}>Exclusive/Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <select name="icon" class="form-control">
+                            <option value="film" {% if item and item.icon == 'film' %}selected{% endif %}>Film/Movie</option>
+                            <option value="microphone" {% if item and item.icon == 'microphone' %}selected{% endif %}>Microphone</option>
+                            <option value="video" {% if item and item.icon == 'video' %}selected{% endif %}>Video Camera</option>
+                            <option value="camera" {% if item and item.icon == 'camera' %}selected{% endif %}>Photo Camera</option>
+                            <option value="headphones" {% if item and item.icon == 'headphones' %}selected{% endif %}>Headphones</option>
+                            <option value="hashtag" {% if item and item.icon == 'hashtag' %}selected{% endif %}>Hashtag (Social)</option>
+                            <option value="star" {% if item and item.icon == 'star' %}selected{% endif %}>Star</option>
+                            <option value="wand-magic-sparkles" {% if item and item.icon == 'wand-magic-sparkles' %}selected{% endif %}>Magic Wand</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control" 
+                               value="{{ item.display_order if item else 0 }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link to Booking Service</label>
+                        <select name="linked_booking_service_id" class="form-control">
+                            <option value="0">None (Information Only)</option>
+                            {% if booking_services %}
+                                {% for s in booking_services %}
+                                <option value="{{ s.id }}" {% if item and item.linked_booking_service_id == s.id %}selected{% endif %}>
+                                    {{ s.name }}
+                                </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <div class="form-hint">Connects "Book Now" button to specific wizard service.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="is_active" id="is_active"
+                                   {% if item and item.is_active %}checked{% endif %}
+                                   {% if not item %}checked{% endif %}>
+                            <span>Active (Visible on Website)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-align-left"></i> Content Details
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Description</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="description" class="form-control" 
+                                          placeholder="English description...">{{ item.description if item else '' }}</textarea>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <textarea name="description_ar" class="form-control" 
+                                          placeholder="Arabic description (الوصف)..."
+                                          dir="rtl">{{ item.description_ar if item and item.description_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label>Features (Pipe-separated |)</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="features" class="form-control" 
+                                          placeholder="4K Recording|Professional Lighting|Sound Engineer Included"
+                                          style="min-height: 100px;">{{ item.features if item else '' }}</textarea>
+                                <div class="form-hint">English (Bullet points)</div>
+                            </div>
+                            <div>
+                                <textarea name="features_ar" class="form-control" 
+                                          placeholder="تسجيل 4K|إضاءة احترافية|مهندس صوت مشمول"
+                                          style="min-height: 100px;"
+                                          dir="rtl">{{ item.features_ar if item and item.features_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (e.g., ميزة 1|ميزة 2)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_general_services') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        {% if item %}Save Changes{% else %}Create Service{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const titleInput = document.querySelector('input[name="name"]');
+        const slugInput = document.querySelector('input[name="slug"]');
+        const slugPreview = document.getElementById('slugPreview');
+
+        function generateSlug(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim('-');
+        }
+
+        titleInput.addEventListener('input', function() {
+            if (!slugInput.dataset.manual) {
+                const slug = generateSlug(this.value);
+                slugInput.value = slug;
+                slugPreview.textContent = '/services/' + slug;
+            }
+        });
+
+        slugInput.addEventListener('input', function() {
+            this.dataset.manual = 'true';
+            slugPreview.textContent = '/services/' + this.value;
+        });
+
+        if (titleInput.value && !slugInput.value) {
+            slugPreview.textContent = '/services/' + generateSlug(titleInput.value);
+        }
+    </script>
+</body>
+</html>

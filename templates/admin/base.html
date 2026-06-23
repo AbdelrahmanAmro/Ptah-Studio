@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}PTAH STUDIOS - Admin Mission Control{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='img/favicon.jpg') }}">
+    <style>
+        /* ===========================
+           GLOBAL & DASHBOARD STYLES
+           =========================== */
+        
+        /* CSS Variables - Design System */
+        :root {
+            --color-navy-darkest: #050d1a;
+            --color-navy-dark: #0A192F;
+            --color-navy-medium: #112240;
+            --color-navy-light: #1C2D4A;
+            --color-navy-glass: rgba(17, 34, 64, 0.7);
+            --color-gold: #D4AF37;
+            --color-gold-light: #F4D06F;
+            --color-gold-dark: #B8960C;
+            --color-gold-glow: rgba(212, 175, 55, 0.3);
+            --color-text-primary: #FFFFFF;
+            --color-text-secondary: #8892B0;
+            --color-text-muted: #5A6782;
+            --color-text-light: #CED4DA;
+            --color-gray-400: #ADB5BD;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-danger: #EF4444;
+            --color-info: #3B82F6;
+            --font-heading: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --border-glass: 1px solid rgba(212, 175, 55, 0.15);
+            --shadow-gold: 0 0 30px rgba(212, 175, 55, 0.15);
+            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Calendar Specific Variables */
+            --cal-bg: #050b14;          
+            --cal-card-bg: #0f1623;     
+            --cal-border: rgba(255, 255, 255, 0.08);
+            --cal-text-blue: #3b82f6;
+            --cal-text-green: #22c55e;
+            --cal-text-muted: #64748b;
+            
+            /* Mobile Header Height */
+            --header-height: 80px;
+        }
+        
+        /* Reset & Base */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--color-navy-darkest);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: 100px; 
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: inherit;
+        }
+        
+        ul, ol {
+            list-style: none;
+        }
+        
+        i {
+            font-style: normal;
+        }
+
+        /* ===========================
+           IMPORTED HEADER STYLES
+           =========================== */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            background: rgba(5, 13, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            z-index: 1002; /* Ensure logo is above mobile menu overlay */
+        }
+        
+        .logo-image {
+            width: 50px;               
+            height: 50px;
+            object-fit: contain;       
+            border-radius: 16px;       
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.4),
+                inset 0 0 20px rgba(212, 175, 55, 0.8),
+                inset 0 0 2px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo:hover .logo-image {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 35px rgba(212, 175, 55, 0.6),
+                inset 0 0 30px rgba(212, 175, 55, 1);
+            border-color: #fff;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .logo-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        /* Desktop Navigation Container */
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            margin-left: 3rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem; 
+            list-style: none;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-gold);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--color-gold);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .magnetic-wrap {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .btn-book {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.5rem;
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+            color: var(--color-navy-darkest);
+            border: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .btn-book:hover {
+            background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            cursor: pointer;
+            z-index: 1002;
+            padding: 0.5rem;
+        }
+
+        /* Mobile Overlay Background */
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===========================
+           IMPORTED FOOTER STYLES
+           =========================== */
+        .main-footer {
+            position: relative;
+            padding: 4rem 4rem;
+            background: linear-gradient(to bottom, #000000 0%, var(--color-navy-dark) 100%);
+            z-index: 10;
+            overflow: hidden;
+            margin-top: 4rem;
+        }
+        
+        .main-footer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-gold) 50%, transparent 100%);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 0 0 20px rgba(212, 175, 55, 0.4);
+            z-index: 20;
+            opacity: 0.9;
+        }
+
+        .main-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .footer-divider {
+            max-width: 1400px;
+            margin: 0 auto 5rem;
+            opacity: 0.6;
+        }
+        
+        .footer-divider svg {
+            width: 100%;
+            height: 4px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .footer-brand {
+            padding-right: 2rem;
+        }
+        
+        .footer-logo-large {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-gold);
+        }
+        
+        .footer-logo-large i {
+            font-size: 2rem;
+        }
+        
+        .footer-tagline {
+            color: var(--color-text-light);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .footer-social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gold);
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+        
+        .social-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--color-gold);
+            transform: scale(0);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-radius: 50%;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        .social-link:hover::before {
+            transform: scale(1);
+        }
+        
+        .social-link i {
+            position: relative;
+            z-index: 1;
+            transition: color 0.4s;
+        }
+        
+        .social-link:hover i {
+            color: var(--color-navy-darkest);
+        }
+        
+        .footer-section h4 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-gold), transparent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.875rem;
+        }
+        
+        .footer-links a {
+            color: var(--color-text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-links a i {
+            color: var(--color-gold);
+            opacity: 0.5;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-gold);
+            transform: translateX(5px);
+        }
+        
+        .footer-links a:hover i {
+            opacity: 1;
+        }
+        
+        .footer-contact a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .footer-contact a span {
+            flex: 1;
+        }
+        
+        .footer-bottom {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            background: transparent !important;
+        }
+        
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .footer-bottom p {
+            color: var(--color-gray-400);
+            font-size: 0.875rem;
+        }
+        
+        .footer-legal-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .footer-legal-links a {
+            color: var(--color-gray-400);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-legal-links a:hover {
+            color: var(--color-gold);
+        }
+        
+        .footer-legal-links .separator {
+            color: rgba(212, 175, 55, 0.3);
+        }
+        
+        /* ===========================
+           MISSION CONTROL DASHBOARD
+           =========================== */
+        
+        .mission-control {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--color-navy-darkest) 0%, #080d17 50%, var(--color-navy-dark) 100%);
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .mission-control::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Dashboard Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: var(--border-glass);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .header-title h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-title h1 span {
+            color: var(--color-gold);
+        }
+        
+        .header-title p {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .notification-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--color-navy-medium);
+            border: var(--border-glass);
+            color: var(--color-gold);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+        
+        .notification-btn:hover {
+            background: var(--color-navy-light);
+            box-shadow: var(--shadow-gold);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: var(--color-gold);
+            color: var(--color-navy-darkest);
+            font-size: 0.625rem;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- NOTIFICATION DROPDOWN STYLES --- */
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0; 
+            left: auto; 
+            width: 350px;
+            background: var(--color-navy-medium);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000;
+            overflow: hidden;
+            transform-origin: top right; 
+        }
+
+        .notification-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .notif-header {
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: var(--color-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Clear Button Styles */
+        .clear-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text-secondary);
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .clear-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+        }
+
+        .notif-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Notification Pulse Animation */
+        .nav-link { position: relative; }
+
+        .nav-alert-dot {
+            position: absolute;
+            top: 0px;
+            right: -5px;
+            width: 8px;
+            height: 8px;
+            background-color: #EF4444; /* Red */
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(5, 13, 26, 0.95); /* Spacing */
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+
+        .notif-item {
+            display: block;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .notif-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .notif-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .notif-client {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .notif-time {
+            color: var(--color-gold);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .notif-service {
+            color: var(--color-text-secondary);
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .notif-phone {
+            color: var(--color-text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-notif {
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .header-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-details-btn {
+            font-size: 0.75rem;
+            color: var(--color-gold);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: var(--transition-smooth);
+            font-weight: 500;
+        }
+
+        .view-details-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--color-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* KPI Cards Row */
+        .kpi-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Calendar Row */
+        .calendar-row {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+        }
+        
+        .glass-card {
+            background: var(--color-navy-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: var(--border-glass);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+        
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+        
+        .kpi-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .kpi-card.highlight {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, var(--color-navy-glass) 100%);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+        
+        .kpi-card.highlight::before {
+            opacity: 1;
+        }
+        
+        .kpi-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .kpi-icon.gold {
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+            color: var(--color-navy-darkest);
+        }
+        
+        .kpi-icon.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--color-info);
+        }
+        
+        .kpi-icon.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--color-success);
+        }
+        
+        .kpi-icon.orange {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-warning);
+        }
+        
+        .kpi-content {
+            flex: 1;
+        }
+        
+        .kpi-value {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        
+        .kpi-card.highlight .kpi-value {
+            color: var(--color-gold);
+        }
+        
+        .kpi-label {
+            font-size: 0.8125rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Calendar Customization */
+        .calendar-wrapper {
+            background: var(--cal-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .cal-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .cal-title-left {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        #calendar { 
+            font-family: var(--font-body); 
+        }
+        
+        .fc-theme-standard td, 
+        .fc-theme-standard th, 
+        .fc-theme-standard .fc-scrollgrid { 
+            border: none !important; 
+            background: transparent !important;
+        }
+        
+        .fc-col-header-cell-cushion {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding-bottom: 1rem;
+            text-decoration: none !important;
+            text-transform: capitalize;
+        }
+
+        .fc-daygrid-day-frame {
+            background-color: var(--cal-card-bg);
+            border: 1px solid var(--cal-border);
+            border-radius: 8px;
+            margin: 4px;
+            min-height: 100px;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        
+        .fc-daygrid-day-frame:hover {
+            border-color: rgba(255,255,255,0.2);
+            background-color: #161e2e;
+        }
+
+        .fc-day-custom-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 12px;
+        }
+
+        .day-number-text {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .fc-day-today .fc-daygrid-day-frame {
+            border: 1px solid var(--color-warning) !important;
+        }
+        .fc-day-today .day-number-text {
+            color: var(--color-warning);
+        }
+
+        .status-text { 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+            line-height: 1.4;
+            display: block;
+        }
+        .text-all-free { color: var(--cal-text-muted); }
+        .text-bookings { color: var(--cal-text-blue); display: block; }
+        .text-free { color: var(--cal-text-green); }
+
+        .fc-daygrid-day-events { display: none !important; }
+        
+        .fc-toolbar-chunk {
+            display: flex;
+            align-items: center;
+        }
+        .fc-toolbar-title {
+            font-size: 1.1rem !important;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 1rem !important;
+        }
+        .fc-button {
+            background: transparent !important;
+            border: none !important;
+            color: var(--color-text-secondary) !important;
+            font-size: 0.9rem !important;
+            padding: 0 !important;
+        }
+        .fc-button:hover { color: #fff !important; }
+        .fc-button:focus { box-shadow: none !important; }
+        .fc-icon { font-size: 1.2rem; }
+
+        .cal-legend { margin-top: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--color-text-secondary); }
+        .dot { width: 10px; height: 10px; border-radius: 3px; }
+        .dot.blue { background: var(--cal-text-blue); }
+        .dot.green { background: var(--cal-text-green); }
+        .dot.gold { border: 1px solid var(--color-warning); }
+        .dot.orange { background: var(--color-warning); }
+
+        /* Lists Row */
+        .lists-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .list-card {
+            min-height: 400px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: var(--border-glass);
+        }
+        
+        .card-header h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-header h3 i {
+            color: var(--color-gold);
+        }
+        
+        .card-count {
+            background: var(--color-navy-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(5, 13, 26, 0.5);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: var(--transition-smooth);
+        }
+        
+        .list-item:hover {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+            color: var(--color-navy-darkest);
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .item-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .item-title {
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin-bottom: 0.125rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-subtitle {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .item-date {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        
+        .item-price {
+            font-weight: 600;
+            color: var(--color-gold);
+            font-size: 0.875rem;
+        }
+
+
+        .nav-count-badge {
+            background: var(--color-gold);
+            color: var(--color-navy-darkest);
+            font-size: 0.625rem;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        
+        .status-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-warning);
+        }
+        
+        .status-confirmed {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--color-success);
+        }
+        
+        .status-completed {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--color-info);
+        }
+        
+        .status-planning {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8B5CF6;
+        }
+        
+        .status-in_progress {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-warning);
+        }
+        
+        .accept-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+            color: var(--color-navy-darkest);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        
+        .accept-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .bottom-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .projects-card {
+            min-height: 350px;
+        }
+        
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .project-item {
+            padding: 1rem;
+            background: rgba(5, 13, 26, 0.5);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: var(--transition-smooth);
+        }
+        
+        .project-item:hover {
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        
+        .project-title {
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .project-client {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        
+        .project-progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar-container {
+            height: 6px;
+            background: var(--color-navy-dark);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--color-text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state p {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .glass-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .glass-card:nth-child(1) { animation-delay: 0.1s; }
+        .glass-card:nth-child(2) { animation-delay: 0.2s; }
+        .glass-card:nth-child(3) { animation-delay: 0.3s; }
+        .glass-card:nth-child(4) { animation-delay: 0.4s; }
+        .lists-row .glass-card:nth-child(1) { animation-delay: 0.5s; }
+        .lists-row .glass-card:nth-child(2) { animation-delay: 0.6s; }
+        .bottom-row .glass-card:nth-child(1) { animation-delay: 0.7s; }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--color-navy-darkest);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-navy-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-gold);
+        }
+
+        /* Pulse animation for notification badge */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* =================================================================
+           RESPONSIVE / MOBILE STYLES (Added for Full Optimization)
+           ================================================================= */
+        
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            body {
+                padding-top: 80px; /* Adjust for smaller header */
+            }
+
+            .main-header {
+                padding: 1rem 1.5rem;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .nav-wrapper {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: rgba(5, 13, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 6rem 2rem 2rem;
+                transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+                border-left: 1px solid rgba(212, 175, 55, 0.2);
+                z-index: 1001;
+                margin-left: 0;
+            }
+
+            .nav-wrapper.active {
+                right: 0;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+
+            .nav-link {
+                font-size: 1.1rem;
+                width: 100%;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+            
+            .nav-link::after { display: none; } /* Remove hover underline on mobile */
+
+            /* Move user/login buttons to bottom of drawer */
+            .nav-wrapper > div:last-child {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                align-items: flex-start !important;
+            }
+
+            .btn-book {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem;
+            }
+
+            .mission-control {
+                padding: 1.5rem;
+            }
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            /* KPI horizontal scroll on mobile */
+            .kpi-row {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+                scroll-snap-type: x mandatory;
+                gap: 1rem;
+                -webkit-overflow-scrolling: touch;
+            }
+            .kpi-card {
+                min-width: 260px;
+                scroll-snap-align: start;
+            }
+            
+            .lists-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                text-align: center;
+                gap: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            .notification-dropdown {
+                position: fixed !important;  /* Detach from the button */
+                top: 85px !important;        /* Position just below the header */
+                left: 50% !important;        /* Move to middle of screen */
+                right: auto !important;      /* Ignore 'right' alignment */
+                
+                /* Size and Centering */
+                width: 92vw !important;      /* 92% of screen width */
+                max-width: 400px !important;
+                
+                /* Center alignment + Start animation position (slightly down) */
+                transform: translate(-50%, 10px) !important;
+            }
+
+            .notification-dropdown.active {
+                /* Center alignment + End animation position (in place) */
+                transform: translate(-50%, 0) !important;
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+
+        
+        @media (max-width: 576px) {
+            .main-header { padding: 0.8rem 1rem; }
+            .logo-title { font-size: 1.25rem; }
+            .logo-subtitle { display: none; }
+            
+            .header-title h1 { font-size: 1.5rem; }
+            .header-title p { font-size: 0.8rem; }
+            
+            .dashboard-grid {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* Better List Item for Mobile */
+            .list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .item-meta {
+                width: 100%;
+                justify-content: space-between;
+                border-top: 1px solid rgba(255,255,255,0.05);
+                padding-top: 0.75rem;
+            }
+            
+            .project-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .status-badge {
+                align-self: flex-start;
+            }
+            
+            /* Footer Stacking */
+           .footer-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* This forces all child sections to center */
+                gap: 3rem;
+                max-width: 500px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            
+            /* Brand Section */
+            .footer-brand {
+                text-align: center;
+                padding-right: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .footer-logo-large {
+                justify-content: center;
+            }
+            
+            .footer-tagline {
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .footer-social-icons {
+                justify-content: center;
+            }
+            
+            /* General Footer Sections */
+            .footer-section {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            /* Center Headings and Underlines */
+            .footer-section h4 {
+                display: inline-block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .footer-section h4::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            /* LINK LISTS - CRITICAL FIX FOR "SHIFT RIGHT" */
+            .footer-links {
+                text-align: center;
+                padding-left: 0 !important; /* Forces removal of default browser padding */
+                margin-left: 0 !important;
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* Aligns the li elements to center */
+                width: 100%;
+            }
+            
+            .footer-links li {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+            
+            .footer-links a {
+                justify-content: center;
+                text-align: center;
+            }
+
+            /* Contact Links Specifics */
+            .footer-contact a {
+                justify-content: center;
+                width: auto;
+            }
+            
+            /* Newsletter Form Centering */
+            .newsletter-form {
+                align-items: center;
+                width: 100%;
+                max-width: 320px;
+                margin: 1rem auto 0;
+            }
+            
+            /* Bottom Bar */
+            .footer-bottom {
+                margin-top: 4rem;
+                padding-top: 2rem;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-legal-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='img/favicon.jpg') }}" alt="Ptah Studios" class="logo-image">
+                <div class="logo-text">
+                    <span class="logo-title">PTAH STUDIOS</span>
+                    <span class="logo-subtitle">Creation & Crafts</span>
+                </div>
+            </a>
+            
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="nav-wrapper" id="navWrapper">
+                <ul class="nav-links">
+                    {% if is_super_admin %}
+                        <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link" onclick="closeMobileMenu()">Dashboard</a></li>
+                        <li>
+                            <a href="{{ url_for('admin_leads') }}" class="nav-link" onclick="closeMobileMenu()">
+                                Leads
+                                {% if unseen_leads_count > 0 %}
+                                    <span class="nav-count-badge">{{ unseen_leads_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <li><a href="{{ url_for('manage_projects') }}" class="nav-link" onclick="closeMobileMenu()">Projects</a></li>
+                    
+                    
+                    {% if is_super_admin %}
+                        <li><a href="{{ url_for('admin_management_dashboard') }}" class="nav-link" onclick="closeMobileMenu()">Teams</a></li>
+                        <li><a href="{{ url_for('admin_analytics') }}" class="nav-link" onclick="closeMobileMenu()">Analytics</a></li>
+                    {% endif %}
+                </ul>
+                
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    {% if session.get('user_id') %}
+                        <span class="nav-link" style="font-size: 0.8rem; color: var(--color-gold); cursor: default;">
+                            <i class="fas fa-user"></i> {{ session.get('user_name', 'Account') }}
+                            {% if not is_super_admin %}<span style="font-size:0.7rem; color:var(--color-text-muted);">(Staff)</span>{% endif %}
+                        </span>
+                        
+                        <a href="{{ url_for('logout') }}" class="nav-link" style="font-size: 0.8rem;" onclick="closeMobileMenu()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link" style="font-size: 0.8rem;" onclick="closeMobileMenu()">
+                            <i class="fas fa-sign-in-alt"></i> Log In
+                        </a>
+
+                        <a href="{{ url_for('register') }}" class="nav-link" style="font-size: 0.8rem; color: var(--color-gold);" onclick="closeMobileMenu()">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </a>
+                    {% endif %}
+                    
+                    <div class="magnetic-wrap">
+                        <a href="{{ url_for('booking') }}" class="btn-book" onclick="closeMobileMenu()">
+                            <i class="fas fa-calendar-check"></i> Book Session
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mission-control">
+        {% block content %}
+        
+        {% if is_super_admin %}
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Mission <span>Control</span></h1>
+                <p>{% if current_date %}{{ current_date.strftime('%B %d, %Y') }}{% else %}{{ datetime.now().strftime('%B %d, %Y') }}{% endif %} | PTAH STUDIOS Admin Dashboard</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="notification-wrapper">
+                    <button class="notification-btn" onclick="toggleActivityDropdown()">
+                        <i class="fas fa-history"></i>
+                        <span class="notification-badge" id="activityBadge" 
+                              style="{% if unseen_activity_count == 0 %}display: none;{% endif %}">
+                            {{ unseen_activity_count }}
+                        </span>
+                    </button>
+
+                    <div class="notification-dropdown" id="activityDropdown" style="width: 400px;">
+                        <div class="notif-header">
+                            <span><i class="fas fa-stream"></i> Global Activity Stream</span>
+                            <button class="clear-btn" onclick="clearActivityStream(event)">Clear</button>
+                        </div>
+                        <div class="notif-list" style="max-height: 400px; overflow-y: auto;">
+                            {% if activity_stream %}
+                                {% for activity in activity_stream %}
+                                <div class="notif-item">
+                                    <div class="notif-row">
+                                        <span class="notif-client" style="color: var(--color-gold);">
+                                            {{ activity.user.name if activity.user else 'System' }}
+                                        </span>
+                                        <span class="notif-time">{{ activity.timestamp | local_time }}</span>
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: #fff; margin-bottom: 4px;">
+                                        {{ activity.action }}
+                                    </div>
+                                    <div class="notif-phone" style="font-size: 0.7rem;">
+                                        In: {{ activity.project.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-notif">No recent activity</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('admin_settings') }}" class="notification-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+                
+                <div class="notification-wrapper">
+                    <button class="notification-btn" id="bellBtn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notifBadge" style="display: none;">0</span>
+                    </button>
+
+                    <div class="notification-dropdown" id="notifDropdown">
+                        <div class="notif-header">
+                            <span>New Bookings</span>
+                            <span style="font-size: 0.75rem; color: #fff;">
+                                <span id="notifCount">0</span> Pending
+                            </span>
+                        </div>
+                        
+                        <div class="notif-list" id="notifList">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-grid">
+            <div class="kpi-row">
+                <div class="glass-card kpi-card highlight">
+                    <div class="kpi-icon gold">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">${{ "{:,.0f}".format(total_revenue if total_revenue else 0) }}</div>
+                        <div class="kpi-label">Total Revenue</div>
+                    </div>
+                </div>
+                
+                <div class="glass-card kpi-card">
+                    <div class="kpi-icon green">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">${{ "{:,.0f}".format(monthly_revenue if monthly_revenue else 0) }}</div>
+                        <div class="kpi-label">Monthly Revenue</div>
+                    </div>
+                </div>
+                
+                <div class="glass-card kpi-card">
+                    <div class="kpi-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">{{ pending_requests if pending_requests else 0 }}</div>
+                        <div class="kpi-label">Pending Requests</div>
+                    </div>
+                </div>
+                
+                <div class="glass-card kpi-card">
+                    <div class="kpi-icon blue">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">{{ active_projects_count if active_projects_count else 0 }}</div>
+                        <div class="kpi-label">Active Projects</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-row">
+                <div class="calendar-wrapper">
+                    <div class="cal-header-row">
+                        <div class="cal-title-left">Booking Calendar</div>
+                    </div>
+                    
+                    <div id="calendar"></div>
+                    
+                    <div class="cal-legend">
+                        <div class="legend-item">
+                            <div class="dot blue"></div> Bookings
+                        </div>
+                        <div class="legend-item">
+                            <div class="dot green"></div> Available
+                        </div>
+                        <div class="legend-item">
+                            <div class="dot orange"></div> Today
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lists-row">
+                <div class="glass-card list-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-hourglass-half"></i> Pending Confirmations</h3>
+                        <div class="header-actions-group">
+                            <a href="{{ url_for('booking_details_view') }}" class="view-details-btn">View Details</a>
+                        </div>
+                    </div>
+                    <div class="data-list">
+                        {% if pending_bookings %}
+                            {% for booking in pending_bookings|sort(attribute='id', reverse=True) %}
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <div class="item-avatar">{{ booking.client.first_name[0] }}{{ booking.client.last_name[0] }}</div>
+                                    <div class="item-details">
+                                        <div class="item-title">{{ booking.client.full_name }}</div>
+                                        <div class="item-subtitle">{{ booking.service.name }}</div>
+                                    </div>
+                                </div>
+                                <div class="item-meta">
+                                    <span class="item-date">
+                                        <i class="far fa-calendar"></i>
+                                        {{ booking.booking_date.strftime('%b %d') }}
+                                    </span>
+                                    <form method="POST" action="{{ url_for('update_booking', booking_id=booking.id) }}" style="display: inline;">
+                                        <input type="hidden" name="status" value="confirmed">
+                                        <button type="submit" class="accept-btn">
+                                            <i class="fas fa-check"></i> Accept
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-check-circle"></i>
+                                <p>No pending confirmations</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="glass-card list-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-receipt"></i> Recent Payments</h3>
+                        <div class="header-actions-group">
+                            <a href="{{ url_for('payment_details_view') }}" class="view-details-btn">View Details</a>
+                        </div>
+                    </div>
+                    <div class="data-list">
+                        {% if recent_payments %}
+                            {% for payment in recent_payments %}
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <div class="item-avatar">{{ payment.client.first_name[0] }}{{ payment.client.last_name[0] }}</div>
+                                    <div class="item-details">
+                                        <div class="item-title">{{ payment.client.full_name }}</div>
+                                        <div class="item-subtitle">{{ payment.service.name }}</div>
+                                    </div>
+                                </div>
+                                <div class="item-meta">
+                                    <span class="item-date">
+                                        <i class="far fa-calendar"></i>
+                                        {{ payment.booking_date.strftime('%b %d') }}
+                                    </span>
+                                    <span class="item-price">${{ "{:,.0f}".format(payment.total_price) }}</span>
+                                    <span class="status-badge status-{{ payment.status }}">
+                                        {{ payment.status }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-receipt"></i>
+                                <p>No recent payments</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-row">
+                <div class="glass-card projects-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-folder-open"></i> Active Projects</h3>
+                        <a href="{{ url_for('manage_projects') }}" class="view-details-btn">Manage All</a>
+                        <span class="card-count">{{ active_projects|length if active_projects else 0 }} in progress</span>
+                    </div>
+                    <div class="project-list">
+                        {% if active_projects %}
+                            {% for project in active_projects %}
+                            <div class="project-item">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">{{ project.title }}</div>
+                                        <div class="project-client">{{ project.client.full_name }}</div>
+                                    </div>
+                                    <span class="status-badge status-{{ project.status }}">
+                                        {{ project.status }}
+                                    </span>
+                                </div>
+                                <div class="project-progress-info">
+                                    <span>Progress</span>
+                                    <span>{{ project.progress_percentage }}%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: {{ project.progress_percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No active projects</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        
+        <div style="text-align: center; padding: 5rem 2rem;">
+            <h2><i class="fas fa-user-lock"></i> Welcome, {{ current_user.name }}</h2>
+            <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+                You have access to the Project Management Dashboard.
+            </p>
+            <a href="{{ url_for('manage_projects') }}" class="btn-book">
+                Go to My Projects
+            </a>
+        </div>
+        
+        {% endif %}
+        
+        {% block footer_content %}
+        {% endblock %}
+        
+        {% endblock %}
+    </div>
+
+    <footer class="main-footer" id="contact">
+        <div class="footer-divider">
+            <svg viewBox="0 0 1200 4" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,2 Q300,0 600,2 T1200,2" stroke="url(#goldGradient)" stroke-width="2" fill="none"/>
+                <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+                        <stop offset="50%" style="stop-color:#D4AF37;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-section footer-brand">
+                <div class="footer-logo-large" style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="{{ url_for('static', filename='img/favicon.jpg') }}" 
+                         alt="Ptah Studios" 
+                         style="width: 60px; height: 60px; border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.5);">
+                    <span style="font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; color: var(--color-gold);">
+                        PTAH
+                    </span>
+                </div>
+                
+                <p class="footer-tagline">The digital temple of creation. Where ambitious ideas become captivating reality.</p>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com/share/1aQE21MAJ7/?mibextid=wwXIfr" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/ptah_studios1?igsh=Z2sxZmd4N3hnaGJ4" class="social-link" target="_blank" rel="noopener noreferrer"> <i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@ptahstudios1?_r=1&_t=ZS-92cJS9QYArP" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@PTAHStudios-eg" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                    <a href=" https://www.linkedin.com/in/ptah-studios-a993a23a2/" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                    <a href=" https://x.com/PTAH_Studios" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-x"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('about_us') }}">About Us</a></li>
+                    <li><a href="{{ url_for('booking') }}">Book Now</a></li>
+                    <li><a href="{{ url_for('portfolio') }}">PTAH Studios</a></li>
+                    <li><a href="{{ url_for('pricing') }}">Pricing</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                    <li><a href="{{ url_for('services') }}">Services</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section footer-contact-section">
+                <h4>Connect</h4>
+                <ul class="footer-links footer-contact">
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-envelope"></i>
+                            <span>ptahstudios1@gmail.com</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-phone"></i>
+                            <span>+201044474915<br>+201055839535</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>5th District, 6th October City<br>Giza, Egypt</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2024 Ptah Studios. Temple of Creation.</p>
+                <div class="footer-legal-links">
+                    <a href="#">Privacy Policy</a>
+                    <span class="separator">•</span>
+                    <a href="#">Terms of Service</a>
+                    <span class="separator">•</span>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize notification system
+            initNotificationSystem();
+            
+            // Fetch initial notifications
+            fetchNotifications();
+            
+            // Set up periodic checking for new notifications
+            setInterval(fetchNotifications, 30000); // Check every 30 seconds
+            
+            // ============================================
+            // 1. FULLCALENDAR INITIALIZATION
+            // ============================================
+            // Only init calendar if element exists (Super Admin Only)
+            const calendarEl = document.getElementById('calendar');
+            if (calendarEl) {
+                let calendarEvents = [];
+                try {
+                    // Safely parse the events passed from Flask
+                    const eventsData = {{ calendar_events|safe if calendar_events else '[]' }};
+                    calendarEvents = typeof eventsData === 'string' ? JSON.parse(eventsData) : eventsData;
+                } catch (e) {
+                    console.log('No calendar events loaded');
+                }
+                
+                // Adaptive view based on screen width
+                const initialView = window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth';
+                const headerRight = window.innerWidth < 768 ? '' : 'prev,title,next';
+
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: initialView,
+                    headerToolbar: {
+                        left: window.innerWidth < 768 ? 'prev,next' : '',
+                        center: window.innerWidth < 768 ? 'title' : '',
+                        right: headerRight
+                    },
+                    events: calendarEvents,
+                    height: 'auto',
+                    showNonCurrentDates: false,
+                    fixedWeekCount: false,
+                    dayHeaderFormat: { weekday: 'short' },
+                    
+                    // Add window resize handler
+                    windowResize: function(view) {
+                        if (window.innerWidth < 768) {
+                            calendar.changeView('listWeek');
+                        } else {
+                            calendar.changeView('dayGridMonth');
+                        }
+                    },
+                    
+                    dayCellContent: function(arg) {
+                        const cellDate = arg.date;
+                        const offset = cellDate.getTimezoneOffset();
+                        const localDate = new Date(cellDate.getTime() - (offset*60*1000));
+                        const dateStr = localDate.toISOString().split('T')[0];
+                        const dayNumber = arg.date.getDate();
+
+                        const dayEvents = calendarEvents.filter(e => {
+                            return e.start && e.start.startsWith(dateStr);
+                        });
+                        
+                        const count = dayEvents.length;
+                        let statusHtml = '';
+                        
+                        if (count > 0) {
+                            statusHtml = `
+                                <span class="status-text text-bookings">${count} bookings</span>
+                                <span class="status-text text-free">3 free</span>
+                            `;
+                        } else {
+                            statusHtml = `
+                                <span class="status-text text-all-free">All free</span>
+                            `;
+                        }
+                        
+                        return { 
+                            html: `
+                            <div class="fc-day-custom-content">
+                                <div class="day-number-text">${dayNumber}</div>
+                                <div class="day-status-box">
+                                    ${statusHtml}
+                                </div>
+                            </div>
+                            ` 
+                        };
+                    }
+                });
+                calendar.render();
+            }
+            
+            // Smooth scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.glass-card, .calendar-wrapper').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        });
+
+        // ============================================
+        // 2. NOTIFICATION SYSTEM FUNCTIONS
+        // ============================================
+
+        function initNotificationSystem() {
+        }
+
+        function fetchNotifications() {
+            // Only fetch if elements exist (Super Admin)
+            if (!document.getElementById('notifBadge')) return;
+
+            fetch('/api/notifications/new-bookings')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateNotificationDisplay(data.notifications, data.count);
+                    }
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+
+        function updateNotificationDisplay(notifications, count) {
+            const badge = document.getElementById('notifBadge');
+            const notifCount = document.getElementById('notifCount');
+            const notifList = document.getElementById('notifList');
+            
+            if (!badge || !notifList) return;
+
+            // Update Badge: Only show if server says there are UNSEEN bookings
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'flex';
+                badge.style.animation = 'pulse 1s infinite';
+            } else {
+                badge.style.display = 'none';
+                badge.style.animation = 'none';
+            }
+            
+            // Update Header Text inside dropdown
+            if(notifCount) notifCount.textContent = notifications.length; 
+            
+            // Sort notifications by ID descending
+            notifications.sort((a, b) => b.id - a.id);
+            
+            // Populate List
+            if (notifications.length > 0) {
+                notifList.innerHTML = notifications.map(notif => `
+                    <a href="${notif.url}" class="notif-item" style="${notif.is_new ? 'background: rgba(212, 175, 55, 0.05);' : ''}">
+                        <div class="notif-row">
+                            <span class="notif-client">${notif.client_name}</span>
+                            <span class="notif-time">${notif.time_ago}</span>
+                        </div>
+                        <span class="notif-service">${notif.service_name}</span>
+                        <div class="notif-phone">
+                            <i class="fas fa-phone-alt"></i> ${notif.client_phone}
+                        </div>
+                    </a>
+                `).join('');
+            } else {
+                notifList.innerHTML = `
+                    <div class="empty-notif">
+                        <i class="far fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; display:block;"></i>
+                        No pending bookings
+                    </div>
+                `;
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notifDropdown');
+            if(!dropdown) return;
+            
+            const isOpening = !dropdown.classList.contains('active');
+            dropdown.classList.toggle('active');
+            
+            // Close other dropdowns
+            const actDropdown = document.getElementById('activityDropdown');
+            if (actDropdown && actDropdown.classList.contains('active')) {
+                actDropdown.classList.remove('active');
+            }
+            
+            if (isOpening) {
+                fetch('/api/notifications/mark-seen', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.success) {
+                            const badge = document.getElementById('notifBadge');
+                            if(badge) badge.style.display = 'none';
+                        }
+                    });
+            }
+        }
+
+        function toggleActivityDropdown() {
+            const dropdown = document.getElementById('activityDropdown');
+            if(!dropdown) return;
+            
+            const isOpening = !dropdown.classList.contains('active');
+            dropdown.classList.toggle('active');
+            
+            // Close other dropdowns
+            const notifDropdown = document.getElementById('notifDropdown');
+            if (notifDropdown && notifDropdown.classList.contains('active')) {
+                notifDropdown.classList.remove('active');
+            }
+
+            if (isOpening) {
+                fetch('/api/activity/mark-seen', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.success) {
+                            const badge = document.getElementById('activityBadge');
+                            if(badge) badge.style.display = 'none';
+                        }
+                    });
+            }
+        }
+
+        // NEW: Clear Activity Stream Function
+        function clearActivityStream(event) {
+            if(event) event.stopPropagation();
+            
+            // Call API to ensure backend state is updated
+            fetch('/api/activity/mark-seen', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        // 1. Hide Badge
+                        const badge = document.getElementById('activityBadge');
+                        if(badge) badge.style.display = 'none';
+                        
+                        // 2. Visually Clear the List
+                        const list = document.querySelector('#activityDropdown .notif-list');
+                        if(list) {
+                            list.innerHTML = `
+                                <div class="empty-notif" style="padding: 2rem; text-align: center; color: #8892B0;">
+                                    <i class="fas fa-check-circle" style="color: #D4AF37; font-size: 1.5rem; margin-bottom: 0.5rem; display:block;"></i>
+                                    Activity stream cleared
+                                </div>
+                            `;
+                        }
+                    }
+                })
+                .catch(err => console.error('Error clearing activity:', err));
+        }
+
+        // ============================================
+        // 3. MOBILE MENU FUNCTIONS
+        // ============================================
+        function toggleMobileMenu() {
+            const navWrapper = document.getElementById('navWrapper');
+            const overlay = document.getElementById('mobileOverlay');
+            const icon = document.querySelector('.mobile-menu-toggle i');
+            
+            navWrapper.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if(navWrapper.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        function closeMobileMenu() {
+            const navWrapper = document.getElementById('navWrapper');
+            const overlay = document.getElementById('mobileOverlay');
+            const icon = document.querySelector('.mobile-menu-toggle i');
+            
+            navWrapper.classList.remove('active');
+            overlay.classList.remove('active');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+
+        // Close Dropdowns on Click Outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.notification-btn') && !event.target.closest('.notification-dropdown')) {
+                document.querySelectorAll('.notification-dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+    </script>
+</body>
+</html>

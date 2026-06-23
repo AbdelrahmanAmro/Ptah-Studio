@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services Management - PTAH STUDIOS</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM (Matched to Bookings)
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            --color-info: #3B82F6;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           NAV TABS
+           =========================== */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .nav-tab.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--color-gold);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-tab i { font-size: 0.9rem; }
+
+        /* ===========================
+           STATS GRID
+           =========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.services { background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05)); color: var(--color-gold); }
+        .stat-icon.studios { background: rgba(59, 130, 246, 0.15); color: var(--color-info); }
+        .stat-icon.equipment { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+
+        .stat-info h4 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            color: #fff;
+        }
+
+        .stat-info p {
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ===========================
+           CONTENT SECTIONS
+           =========================== */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ===========================
+           ACTION BAR
+           =========================== */
+        .action-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .action-bar-info {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-gold {
+            background: var(--color-gold);
+            color: #000;
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-gold:hover { background: var(--color-gold-hover); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        /* ===========================
+           CARDS GRID
+           =========================== */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .item-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            background: rgba(5, 13, 26, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .card-icon.gold { background: rgba(212, 175, 55, 0.15); color: var(--color-gold); }
+        .card-icon.blue { background: rgba(59, 130, 246, 0.15); color: var(--color-info); }
+        .card-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+
+        .card-header-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: capitalize;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .badge-status {
+            background: rgba(136, 146, 176, 0.2);
+            color: var(--color-text-muted);
+        }
+        
+        .badge-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+        }
+
+        .badge-cat {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--color-border);
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .meta-item i { color: var(--color-gold); }
+        
+        .meta-item.price {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-delete {
+            color: var(--color-danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--color-card-bg);
+            border: 2px dashed var(--color-border);
+            border-radius: 12px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p { color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+        /* Flash Messages */
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+
+        /* Modal */
+        #deleteModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* ===========================
+           RESPONSIVE STYLES (< 768px)
+           =========================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 1.5rem;
+                gap: 0.75rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.85rem;
+            }
+
+            /* Nav Tabs */
+            .nav-tabs {
+                margin-bottom: 1.25rem;
+                padding-bottom: 0.75rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            /* Stats Grid */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+
+            .stat-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+
+            .stat-info h4 {
+                font-size: 1.5rem;
+            }
+
+            .stat-info p {
+                font-size: 0.75rem;
+            }
+
+            /* Action Bar */
+            .action-bar {
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+                padding-bottom: 1rem;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .btn-gold, .btn-outline {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 0.6rem 0.875rem;
+            }
+
+            /* Items Grid */
+            .items-grid {
+                grid-template-columns: 1fr;
+                gap: 0.875rem;
+            }
+
+            .item-card {
+                border-radius: 10px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .card-actions {
+                flex-direction: row;
+            }
+
+            .btn-action {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            /* Modal */
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .empty-state {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .empty-state i {
+                font-size: 2.5rem;
+            }
+
+            .empty-state h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-wrap: nowrap;
+                padding-bottom: 0.75rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 0.875rem;
+                font-size: 0.75rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-gold, .btn-outline {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Services <span>Management</span></h1>
+            <p class="page-subtitle">Manage services, studios, and equipment from one central dashboard.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Overall Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon services">
+                <i class="fas fa-list-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ services|length }}</h4>
+                <p>Services</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon studios">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ studios|length }}</h4>
+                <p>Studios</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon equipment">
+                <i class="fas fa-camera"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ equipment|length }}</h4>
+                <p>Equipment</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('services', event)">
+            <i class="fas fa-list-alt"></i> Services ({{ services|length }})
+        </button>
+        <button class="nav-tab" onclick="showSection('studios', event)">
+            <i class="fas fa-building"></i> Studios ({{ studios|length }})
+        </button>
+        <button class="nav-tab" onclick="showSection('equipment', event)">
+            <i class="fas fa-camera"></i> Equipment ({{ equipment|length }})
+        </button>
+    </div>
+
+    <!-- ===========================
+         SERVICES SECTION
+         =========================== -->
+    <div id="services-section" class="content-section active">
+        <div class="action-bar">
+            <div class="action-bar-info">
+                <i class="fas fa-list"></i> Service offerings
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('admin_service_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Service
+                </a>
+            </div>
+        </div>
+
+        <div class="items-grid">
+            {% for item in services %}
+            <div class="item-card">
+                <div class="card-header">
+                    <div class="card-icon gold">
+                        <i class="fas fa-{{ item.icon if item.icon else 'star' }}"></i>
+                    </div>
+                    <div class="card-header-content">
+                        <h3 class="card-title">{{ item.name }}</h3>
+                        <p class="card-subtitle">{{ item.category|replace('_', ' ')|title }}</p>
+                    </div>
+                    <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                        {{ 'Active' if item.is_active else 'Inactive' }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">{{ item.description[:100] if item.description else 'No description.' }}{{ '...' if item.description and item.description|length > 100 else '' }}</p>
+                    
+                    <div class="card-meta">
+                        <div class="meta-item price">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>${{ item.base_price|round(2) }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ item.duration_hours }}h</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="{{ url_for('admin_service_edit', service_id=item.id) }}" class="btn-action">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-concierge-bell"></i>
+                <h3>No Services Yet</h3>
+                <p>Create your first service offering to get started.</p>
+                <a href="{{ url_for('admin_service_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Service
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===========================
+         STUDIOS SECTION
+         =========================== -->
+    <div id="studios-section" class="content-section">
+        <div class="action-bar">
+            <div class="action-bar-info">
+                <i class="fas fa-building"></i> Studio spaces
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('admin_studio_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Studio
+                </a>
+            </div>
+        </div>
+
+        <div class="items-grid">
+            {% for item in studios %}
+            <div class="item-card">
+                <div class="card-header">
+                    <div class="card-icon blue">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div class="card-header-content">
+                        <h3 class="card-title">{{ item.name }}</h3>
+                        <p class="card-subtitle">Studio Space</p>
+                    </div>
+                    <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                        {{ 'Active' if item.is_active else 'Inactive' }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">{{ item.description[:100] if item.description else 'No description.' }}{{ '...' if item.description and item.description|length > 100 else '' }}</p>
+                    
+                    <div class="card-meta">
+                        <div class="meta-item price">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>${{ item.hourly_rate }}/hr</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="{{ url_for('admin_studio_edit', studio_id=item.id) }}" class="btn-action">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-building"></i>
+                <h3>No Studios Yet</h3>
+                <p>Add your first studio space to start accepting bookings.</p>
+                <a href="{{ url_for('admin_studio_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Studio
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===========================
+         EQUIPMENT SECTION
+         =========================== -->
+    <div id="equipment-section" class="content-section">
+        <div class="action-bar">
+            <div class="action-bar-info">
+                <i class="fas fa-camera"></i> Equipment & add-ons
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('admin_equipment_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Equipment
+                </a>
+            </div>
+        </div>
+
+        <div class="items-grid">
+            {% for item in equipment %}
+            <div class="item-card">
+                <div class="card-header">
+                    <div class="card-icon green">
+                        <i class="fas fa-{% if item.category == 'camera' %}camera{% elif item.category == 'lighting' %}lightbulb{% elif item.category == 'audio' %}microphone{% elif item.category == 'accessories' %}tools{% else %}box{% endif %}"></i>
+                    </div>
+                    <div class="card-header-content">
+                        <h3 class="card-title">{{ item.name }}</h3>
+                        <p class="card-subtitle">{{ item.category|title }}</p>
+                    </div>
+                    <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                        {{ 'Active' if item.is_active else 'Inactive' }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">{{ item.description[:100] if item.description else 'No description.' }}{{ '...' if item.description and item.description|length > 100 else '' }}</p>
+                    
+                    <div class="card-meta">
+                        <div class="meta-item price">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>${{ item.price|round(2) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="{{ url_for('admin_equipment_edit', equipment_id=item.id) }}" class="btn-action">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-camera"></i>
+                <h3>No Equipment Yet</h3>
+                <p>Add cameras, lighting, and other equipment for your clients.</p>
+                <a href="{{ url_for('admin_equipment_new') }}" class="btn-gold">
+                    <i class="fas fa-plus"></i> Add Equipment
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--color-danger); margin-bottom: 1rem;"></i>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 0.75rem; color: #fff;">Delete Item?</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Are you sure you want to delete <strong id="deleteItemName" style="color: #fff;"></strong>? 
+                <br>This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                <button onclick="closeDeleteModal()" class="btn-outline">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-gold" style="background: var(--color-danger); color: #fff;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(section, event) {
+            if (event && event.target) {
+                // Update tabs
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                event.target.closest('.nav-tab').classList.add('active');
+            }
+            
+            // Update sections
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+    </script>
+</body>
+</html>

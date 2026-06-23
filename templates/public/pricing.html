@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Pricing & FAQ - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       Pricing Theme - Compact
+       =========================== */
+    :root {
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-text-light: #CED4DA;
+        --font-heading: 'Playfair Display', Georgia, serif;
+    }
+
+    body {
+        background: var(--color-navy-darkest);
+        overflow-x: hidden;
+    }
+
+    /* Cinematic Grain Overlay */
+    .grain-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0.03;
+        mix-blend-mode: overlay;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+        animation: grain 8s steps(10) infinite;
+    }
+    @keyframes grain {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-5%, 5%); }
+    }
+
+    /* Smaller Pricing Hero */
+    .pricing-hero {
+        position: relative;
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 2rem 3rem; 
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        overflow: hidden;
+    }
+    
+    #pricing-particles {
+        position: absolute;
+        inset: 0;
+        opacity: 0.25;
+    }
+    
+    .pricing-hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 700px;
+    }
+    
+    .pricing-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 1rem;
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 50px;
+        font-size: 0.65rem;
+        color: var(--color-gold);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-hero-content h1 {
+        font-family: var(--font-heading);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+    
+    .text-gold {
+        background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* FAQ Section - Compact */
+    .faq-section {
+        padding: 4rem 2rem;
+        background: var(--color-navy-darkest);
+    }
+    
+    .faq-section h2 {
+        font-family: var(--font-heading);
+        text-align: center;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        margin-bottom: 3rem;
+        color: #fff;
+    }
+    
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    
+    .faq-item {
+        padding: 1.5rem;
+        background: rgba(17, 34, 64, 0.4);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        border-radius: 12px;
+        transition: 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        border-color: var(--color-gold);
+        transform: translateY(-3px);
+    }
+    
+    .faq-item h4 {
+        font-family: var(--font-heading);
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .faq-item h4::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--color-gold);
+        border-radius: 50%;
+    }
+    
+    .faq-item p {
+        color: var(--color-text-light);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        opacity: 0.8;
+    }
+    
+    /* CTA Section - Compact */
+    .cta-section {
+        padding: 5rem 2rem;
+        background: linear-gradient(135deg, var(--color-navy-dark) 0%, #112240 100%);
+        text-align: center;
+    }
+    
+    .cta-content h2 {
+        font-family: var(--font-heading);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-content p {
+        color: var(--color-text-light);
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .btn-gold {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-dark);
+        font-weight: 700;
+        padding: 1rem 2.5rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-gold:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .faq-grid { grid-template-columns: 1fr; }
+        .pricing-hero { padding-top: 8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="grain-overlay"></div>
+
+    <section class="pricing-hero">
+        <canvas id="pricing-particles"></canvas>
+        <div class="pricing-hero-content">
+            <div class="pricing-badge">
+                <i class="fas fa-sparkles"></i>
+                {{ _('Support Center') }}
+            </div>
+            <h1>{{ _('FAQs') }} <span class="text-gold">&</span> {{ _('Support') }}</h1>
+            <p>{{ _('Everything you need to know before booking your creative session.') }}</p>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <h2>{{ _('Frequently Asked') }} <span class="text-gold">{{ _('Questions') }}</span></h2>
+        
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h4>{{ _('Do you offer package discounts?') }}</h4>
+                <p>{{ _('Yes! Combine multiple sessions or services for custom quotes tailored to your long-term projects.') }}</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>{{ _("What's your cancellation policy?") }}</h4>
+                <p>{{ _('We require 48 hours notice. Cancellations made within shorter timeframes may incur a service fee.') }}</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>{{ _('Can I get a custom quote?') }}</h4>
+                <p>{{ _('Every vision is unique. Contact us directly for a proposal designed for your specific production needs.') }}</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>{{ _('Do you offer rush delivery?') }}</h4>
+                <p>{{ _('Yes, rush editing and production options are available for most services at an additional premium.') }}</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>{{ _("What's included in the base price?") }}</h4>
+                <p>{{ _('Base rates typically include studio access, standard equipment, and basic post-production support.') }}</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>{{ _('Do you offer ongoing contracts?') }}</h4>
+                <p>{{ _('We offer monthly retainer packages for consistent content creators and enterprise partners.') }}</p>
+            </div>
+        </div>
+    </section>    
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    
+    <script>
+        class PtahPricing {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.initMagneticElements();
+                this.initParticles();
+            }
+            
+            initLenis() {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            }
+            
+            initMagneticElements() {
+                const magneticElements = document.querySelectorAll('.magnetic-wrap');
+                magneticElements.forEach(wrap => {
+                    const button = wrap.querySelector('a, button');
+                    if (!button) return;
+                    wrap.addEventListener('mousemove', (e) => {
+                        const rect = wrap.getBoundingClientRect();
+                        const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                        const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+                        gsap.to(button, { x, y, duration: 0.3 });
+                    });
+                    wrap.addEventListener('mouseleave', () => {
+                        gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                    });
+                });
+            }
+            
+            initParticles() {
+                const canvas = document.getElementById('pricing-particles');
+                if (!canvas) return;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+                
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.position.z = 5;
+                
+                const particles = new THREE.BufferGeometry();
+                const count = 1500;
+                const pos = new Float32Array(count * 3);
+                
+                for(let i=0; i<count*3; i++) {
+                    pos[i] = (Math.random() - 0.5) * 10;
+                }
+                
+                particles.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const material = new THREE.PointsMaterial({ size: 0.015, color: 0xD4AF37, transparent: true, opacity: 0.6 });
+                const points = new THREE.Points(particles, material);
+                scene.add(points);
+                
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    points.rotation.y += 0.001;
+                    renderer.render(scene, camera);
+                };
+                animate();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => new PtahPricing());
+    </script>
+{% endblock %}

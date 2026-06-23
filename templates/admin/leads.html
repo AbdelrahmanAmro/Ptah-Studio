@@ -1,0 +1,567 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Lead Command Center - Ptah Admin{% endblock %}
+
+{% block content %}
+<style>
+    /* --- SOPHISTICATED DESIGN SYSTEM --- */
+    .leads-wrapper {
+        --bg-dark: #020617;
+        --card-bg: rgba(15, 23, 42, 0.6);
+        --card-border: 1px solid rgba(255, 255, 255, 0.08);
+        --card-hover-border: 1px solid rgba(212, 175, 55, 0.3);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --gold: #D4AF37;
+        --gold-glow: rgba(212, 175, 55, 0.15);
+        --primary: #3b82f6;
+        --success: #10b981;
+        --radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+
+    .leads-wrapper {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 2rem;
+    }
+
+    /* HEADER */
+    .page-header { margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .page-title h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin: 0; color: #fff; letter-spacing: -0.5px; }
+    .page-title p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; }
+
+    /* KPI GRID - GLASS CARDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+    .kpi-card { 
+        background: var(--card-bg); 
+        backdrop-filter: blur(10px);
+        border: var(--card-border); 
+        border-radius: var(--radius); 
+        padding: 1.5rem; 
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+    .kpi-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+    
+    .kpi-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        opacity: 0.5;
+    }
+
+    .kpi-value { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 0.5rem; letter-spacing: -1px; }
+    .kpi-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .kpi-icon { position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; opacity: 0.2; color: var(--text-main); }
+
+    /* CONTROLS BAR */
+    .controls-bar { 
+        display: flex; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; 
+        background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .search-group { flex: 1; position: relative; max-width: 500px; }
+    .search-group i { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+    .control-input { 
+        width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); 
+        color: #fff; padding: 0.85rem 1rem 0.85rem 3rem; border-radius: var(--radius); 
+        font-size: 0.95rem; outline: none; transition: var(--transition);
+    }
+    .control-input:focus { border-color: var(--gold); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); }
+    
+    .filter-dropdown { 
+        background: #0f172a; border: 1px solid rgba(255,255,255,0.1); color: #fff; 
+        padding: 0 1.5rem; border-radius: var(--radius); cursor: pointer; height: 100%;
+        font-size: 0.9rem; outline: none;
+    }
+    
+    .view-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 4px; }
+    .toggle-btn { 
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; 
+        border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; 
+        border: none; color: var(--text-muted); background: transparent; transition: var(--transition);
+    }
+    .toggle-btn.active { background: var(--text-main); color: #000; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .toggle-btn:hover:not(.active) { color: #fff; }
+
+    /* KANBAN BOARD */
+    .kanban-wrapper { 
+        display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1.5rem; flex: 1; align-items: flex-start; 
+        scroll-behavior: smooth;
+    }
+    .kanban-wrapper::-webkit-scrollbar { height: 8px; }
+    .kanban-wrapper::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .kanban-col { 
+        flex: 0 0 340px; display: flex; flex-direction: column; height: 100%; 
+        background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
+    }
+    .col-header { 
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; 
+        padding: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .col-title { font-weight: 700; font-size: 0.95rem; color: #e2e8f0; letter-spacing: 0.5px; text-transform: uppercase; }
+    .col-count { 
+        background: rgba(255,255,255,0.08); padding: 2px 10px; border-radius: 20px; 
+        font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+    }
+    .col-body { flex: 1; display: flex; flex-direction: column; gap: 1rem; min-height: 200px; padding: 1rem; }
+
+    /* LEAD CARD */
+    .lead-card { 
+        background: #151e32; border: 1px solid rgba(255,255,255,0.05); 
+        border-radius: var(--radius); padding: 1.25rem; cursor: grab; position: relative; 
+        transition: var(--transition); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .lead-card:hover { 
+        transform: translateY(-4px) scale(1.02); 
+        border-color: var(--gold); 
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        z-index: 10;
+    }
+    .card-header-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: center; }
+    .lead-name { font-weight: 700; color: #fff; font-size: 1.05rem; }
+    
+    .tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tag.warm { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .tag.hot { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .tag.cold { background: rgba(59, 130, 246, 0.1); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.2); }
+    
+    .lead-company { 
+        font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 1.25rem; 
+        display: flex; align-items: center; gap: 0.5rem;
+    }
+    .lead-company i { opacity: 0.5; }
+
+
+    .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+         .btn-gold, .btn-outline {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 0.6rem 0.875rem;
+                width: 1005;
+            }
+
+
+    .lead-email { 
+    display: block; 
+    font-size: 0.8rem; 
+    color: #64748b; 
+    margin-bottom: 0.5rem; 
+    word-break: break-all; 
+}
+
+    .card-footer-row { 
+        display: flex; justify-content: space-between; align-items: center;
+        border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; 
+    }
+    .footer-icons { display: flex; gap: 0.75rem; color: var(--text-muted); font-size: 0.9rem; }
+    .footer-icons i { transition: 0.2s; cursor: pointer; }
+    .footer-icons i:hover { color: #fff; }
+    
+    .lead-score { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--gold); font-weight: 700; }
+    .empty-col { 
+        text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.1); 
+        border: 2px dashed rgba(255,255,255,0.05); border-radius: var(--radius); 
+        font-size: 0.9rem; font-style: italic;
+    }
+
+    /* LIST VIEW TABLE */
+    .list-view-container { display: none; width: 100%; overflow-x: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+    .leads-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .leads-table th { 
+        text-align: left; padding: 1.25rem 1.5rem; color: var(--text-muted); 
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);
+    }
+    .leads-table td { 
+        padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); 
+        vertical-align: middle; background: rgba(15, 23, 42, 0.4); color: #fff; 
+        transition: background 0.2s;
+    }
+    .leads-table tr:hover td { background: rgba(255,255,255,0.05); }
+    
+    .status-badge { 
+        display: inline-block; padding: 6px 12px; border-radius: 6px; 
+        font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    /* Status Colors */
+    .status-badge.new { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+    .status-badge.qualified { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+    .status-badge.contacted { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    
+    .manage-btn { 
+        color: var(--gold); background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2);
+        font-size: 0.8rem; font-weight: 600; cursor: pointer; padding: 0.5rem 1rem; border-radius: 6px;
+        transition: var(--transition);
+    }
+    .manage-btn:hover { background: var(--gold); color: #000; }
+
+    /* MODAL ANIMATION */
+    .modal-backdrop { 
+        position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); 
+        z-index: 9999; display: none; align-items: center; justify-content: center; 
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active { display: flex; opacity: 1; }
+    
+    .modal-window { 
+        width: 850px; max-width: 95%; background: #0f172a; 
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; 
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
+        overflow: hidden; max-height: 90vh; overflow-y: auto;
+        transform: scale(0.95) translateY(10px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-backdrop.active .modal-window { transform: scale(1) translateY(0); }
+    
+    .modal-loader { padding: 5rem; text-align: center; color: var(--gold); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+    
+    /* --- ADD THIS NEW SECTION BELOW --- */
+    @media (max-width: 1024px) {
+        .kpi-grid {
+            display: flex;             /* Switch to flex row */
+            overflow-x: auto;          /* Allow horizontal scrolling */
+            padding-bottom: 1rem;      /* Space for the scrollbar */
+            scroll-snap-type: x mandatory; /* Snaps cards into place when scrolling */
+            gap: 1rem;
+            
+            /* Hide scrollbar for Chrome/Safari/Opera */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .kpi-grid::-webkit-scrollbar {
+            display: none; /* Optional: hides the scrollbar visually */
+        }
+
+        .kpi-card {
+            min-width: 260px;          /* Forces cards to stay wide */
+            scroll-snap-align: start;  /* Aligns card to start of screen on stop */
+        }
+    }
+    
+</style>
+
+
+<head>
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='img/favicon.jpg') }}">
+</head>
+
+<div class="leads-wrapper">
+    <div class="page-header">
+        <div class="page-title">
+            <h1>Lead Command Center</h1>
+            <p>Track, qualify, and convert your prospective clients.</p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+
+
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <i class="fas fa-users kpi-icon"></i>
+            <span class="kpi-value">{{ total_leads }}</span>
+            <span class="kpi-label">Total Leads</span>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-bolt kpi-icon" style="color: #3b82f6;"></i>
+            <span class="kpi-value" style="color: #3b82f6;">{{ new_leads_count }}</span>
+            <span class="kpi-label">New Inquiries</span>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-check-circle kpi-icon" style="color: #10b981;"></i>
+            <span class="kpi-value" style="color: #10b981;">{{ qualified_leads }}</span>
+            <span class="kpi-label">Qualified</span>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-trophy kpi-icon" style="color: #D4AF37;"></i>
+            <span class="kpi-value" style="color: #D4AF37;">{{ converted_leads }}</span>
+            <span class="kpi-label">Converted</span>
+        </div>
+    </div>
+
+    <div class="controls-bar">
+        <div class="search-group">
+            <i class="fas fa-search"></i>
+            <input type="text" id="leadSearch" class="control-input" placeholder="Search leads by name, email, or company...">
+        </div>
+        <div class="filter-group" style="display: flex; gap: 1rem; align-items: center;">
+            <select id="sourceFilter" class="filter-dropdown" onchange="filterBySource()">
+                <option value="">All Sources</option>
+                <option value="website">Website</option>
+                <option value="referral">Referral</option>
+                <option value="newsletter">Newsletter</option>
+                <option value="social">Social Media</option>
+                <option value="google">Google Search</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="controls-right" style="display: flex; gap: 1rem; align-items: center;">
+            <div class="view-toggle">
+                <button class="toggle-btn active" id="btnPipeline" onclick="switchView('pipeline')"><i class="fas fa-columns"></i> Pipeline</button>
+                <button class="toggle-btn" id="btnList" onclick="switchView('list')"><i class="fas fa-list"></i> List</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="kanban-wrapper" id="pipelineView">
+        {% for stage_key, stage_data in leads_by_stage.items() %}
+        <div class="kanban-col" data-stage="{{ stage_key }}">
+            <div class="col-header">
+                <span class="col-title">{{ stage_data.label }}</span>
+                <span class="col-count">{{ stage_data.count }}</span>
+            </div>
+            <div class="col-body sortable-list">
+                {% if stage_data.leads %}
+                    {% for lead in stage_data.leads %}
+                    <div class="lead-card" draggable="true" data-id="{{ lead.id }}" data-name="{{ lead.name|lower }}" data-source="{{ lead.source }}" onclick="window.openLeadModal({{ lead.id }})">
+                        <div class="card-header-row">
+                            <span class="lead-name">{{ lead.name }}</span>
+                            <span class="tag {{ lead.temperature }}">{{ lead.temperature }}</span>
+                        </div>
+                        <span class="lead-email">{{ lead.email }}</span>
+                        <span class="lead-company"><i class="far fa-building"></i> {{ lead.company if lead.company else 'Independent' }}</span>
+                        <div class="card-footer-row">
+                            <div class="footer-icons">
+                                <i class="far fa-envelope"></i>
+                                {% if lead.phone %}<i class="fas fa-phone"></i>{% endif %}
+                            </div>
+                            <div class="lead-score"><i class="fas fa-chart-line"></i> {{ lead.lead_score }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-col">No leads here</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="list-view-container" id="listView">
+        <table class="leads-table">
+            <thead>
+                <tr>
+                    <th style="width: 18%;">Contact</th>
+                    <th style="width: 15%;">Company Info</th>
+                    <th style="width: 15%;">Interest</th>
+                    <th style="width: 12%;">Source</th>
+                    <th style="width: 10%;">Stage</th>
+                    <th style="width: 15%;">Score & Temp</th>
+                    <th style="width: 15%;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stage_key, stage_data in leads_by_stage.items() %}
+                    {% for lead in stage_data.leads %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <span style="font-weight:700; font-size:0.95rem; color:#fff;">{{ lead.name }}</span>
+                                <a href="mailto:{{ lead.email }}" style="color:#64748b; font-size:0.8rem; text-decoration:none;">{{ lead.email }}</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:0.9rem; font-weight:500; color:#e2e8f0;">{{ lead.company or '-' }}</div>
+                            <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">{{ lead.company_size or '' }}</div>
+                        </td>
+                        <td>
+                            <span style="color:var(--gold); font-weight:500; font-size:0.85rem;">{{ lead.service_interest or 'General' }}</span>
+                        </td>
+                        <td class="lead-source-cell" data-source="{{ lead.source }}">
+                            <span style="font-size:0.85rem; color:#94a3b8;">
+                                {% if lead.source == 'website' %}Website
+                                {% elif lead.source == 'referral' %}Referral
+                                {% elif lead.source == 'social' %}Social Media
+                                {% elif lead.source == 'newsletter' %}<span style="color: #D4AF37;"><i class="fas fa-envelope-open-text"></i> Newsletter</span>
+                                {% elif lead.source == 'google' %}Google Search
+                                {% elif lead.source == 'other' %}Other
+                                {% else %}{{ lead.source }}{% endif %}
+                            </span>
+                            
+                            {% if lead.source_detail %}
+                                <div style="font-size: 0.75rem; color: var(--gold); margin-top: 4px; font-style: italic;">
+                                    <i class="fas fa-angle-right"></i> {{ lead.source_detail }}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge {{ lead.stage }}">{{ lead.stage|replace('_', ' ') }}</span>
+                        </td>
+                        <td>
+                            <div class="score-container">
+                                <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; margin-bottom:4px;">
+                                    <span>{{ lead.lead_score }}</span>
+                                    <span style="color:{% if lead.temperature == 'hot' %}#EF4444{% elif lead.temperature == 'warm' %}#F59E0B{% else %}#3B82F6{% endif %}; text-transform:uppercase;">{{ lead.temperature }}</span>
+                                </div>
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width:{{ lead.lead_score }}%; background:{% if lead.lead_score > 70 %}#F59E0B{% else %}#3B82F6{% endif %};"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="manage-btn" onclick="window.openLeadModal({{ lead.id }})">View Details</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="leadModal" class="modal-backdrop">
+    <div class="modal-window">
+        <div id="modalContent">
+            <div class="modal-loader"><i class="fas fa-circle-notch fa-spin fa-3x"></i></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+    // --- JS LOGIC ---
+    window.switchView = function(viewName) {
+        const pipeline = document.getElementById('pipelineView');
+        const list = document.getElementById('listView');
+        const btnPipeline = document.getElementById('btnPipeline');
+        const btnList = document.getElementById('btnList');
+
+        if(viewName === 'pipeline') {
+            pipeline.style.display = 'flex'; list.style.display = 'none';
+            btnPipeline.classList.add('active'); btnList.classList.remove('active');
+        } else {
+            pipeline.style.display = 'none'; list.style.display = 'block';
+            btnPipeline.classList.remove('active'); btnList.classList.add('active');
+        }
+    };
+
+    window.openLeadModal = function(leadId) {
+        const modal = document.getElementById('leadModal');
+        const content = document.getElementById('modalContent');
+        modal.classList.add('active');
+        content.innerHTML = `<div class="modal-loader"><i class="fas fa-circle-notch fa-spin fa-3x"></i></div>`;
+        fetch(`/admin/leads/${leadId}`).then(res => res.text()).then(html => content.innerHTML = html);
+    };
+
+    window.closeLeadModal = function() {
+        document.getElementById('leadModal').classList.remove('active');
+    };
+
+    // AJAX Functions
+    window.updateStage = function(newStage, leadId) {
+        if(!confirm("Update lead status?")) return;
+        const formData = new FormData(); formData.append('stage', newStage);
+        fetch(`/admin/leads/${leadId}/stage`, { method: 'POST', body: formData })
+        .then(res => res.json()).then(data => { if(data.success) { window.location.reload(); } });
+    };
+
+    window.logActivity = function(type, leadId) {
+        const desc = prompt("Enter activity details:");
+        if(desc) {
+            const formData = new FormData(); formData.append('activity_type', type); formData.append('description', desc);
+            fetch(`/admin/leads/${leadId}/activity`, { method: 'POST', body: formData })
+            .then(res => res.json()).then(data => { if(data.success) { alert("Logged!"); window.openLeadModal(leadId); } });
+        }
+    };
+
+    window.sendEmail = function(email, leadId) {
+        // Log action then open mailto
+        const formData = new FormData(); formData.append('activity_type', 'email'); formData.append('description', 'Opened email client');
+        fetch(`/admin/leads/${leadId}/activity`, { method: 'POST', body: formData });
+        window.location.href = `mailto:${email}`;
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const columns = document.querySelectorAll('.sortable-list');
+        columns.forEach(col => {
+            new Sortable(col, {
+                group: 'leads', animation: 150, ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    if (evt.to === evt.from) return;
+                    const newStage = evt.to.closest('.kanban-col').getAttribute('data-stage');
+                    const leadId = evt.item.getAttribute('data-id');
+                    const formData = new FormData(); formData.append('stage', newStage);
+                    fetch(`/admin/leads/${leadId}/stage`, { method: 'POST', body: formData });
+                }
+            });
+        });
+
+        // Universal Search
+        document.getElementById('leadSearch').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.lead-card').forEach(card => {
+                const name = card.getAttribute('data-name');
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+            document.querySelectorAll('.leads-table tbody tr').forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+        
+        // Source Filter
+        window.filterBySource = function() {
+            const source = document.getElementById('sourceFilter').value;
+            
+            // Filter Kanban cards
+            document.querySelectorAll('.lead-card').forEach(card => {
+                const cardSource = card.getAttribute('data-source');
+                if (!source || cardSource === source) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Filter table rows
+            document.querySelectorAll('.leads-table tbody tr').forEach(row => {
+                const sourceCell = row.querySelector('.lead-source-cell');
+                if (sourceCell) {
+                    const rowSource = sourceCell.getAttribute('data-source');
+                    if (!source || rowSource === source) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        };
+        
+        document.getElementById('leadModal').addEventListener('click', function(e) {
+            if (e.target === this) window.closeLeadModal();
+        });
+    });
+</script>
+{% endblock %}

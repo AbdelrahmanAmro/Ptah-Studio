@@ -1,0 +1,112 @@
+<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 0.25rem;">
+            <h2 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #fff;">{{ lead.name }}</h2>
+            <span style="background: rgba(212, 175, 55, 0.2); color: #D4AF37; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; border: 1px solid rgba(212, 175, 55, 0.3);">{{ lead.lead_score }} PTS</span>
+        </div>
+        <div style="color: #94a3b8; font-size: 0.9rem;">
+            <i class="far fa-building"></i> {{ lead.company or 'No Company' }}
+        </div>
+    </div>
+    <button type="button" onclick="window.closeLeadModal()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<div style="padding: 2rem; background: #0b1120; min-height: 400px;">
+    
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+        <button onclick="window.updateStage('qualified', {{ lead.id }})" style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #8B5CF6; padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <i class="fas fa-check-circle"></i> Qualify
+        </button>
+        <button onclick="window.updateStage('proposal_sent', {{ lead.id }})" style="background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); color: #D4AF37; padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <i class="fas fa-paper-plane"></i> Proposal
+        </button>
+    </div>
+
+    <form action="{{ url_for('lead_update', lead_id=lead.id) }}" method="POST">
+        
+        <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Contact Information</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="input-group">
+                <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">EMAIL ADDRESS</label>
+                <input type="text" name="email" value="{{ lead.email }}" style="width: 100%; background: #151e32; border: 1px solid #334155; color: #fff; padding: 0.75rem; border-radius: 6px; outline: none;">
+            </div>
+            <div class="input-group">
+                <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">PHONE NUMBER</label>
+                <input type="text" name="phone" value="{{ lead.phone or '' }}" style="width: 100%; background: #151e32; border: 1px solid #334155; color: #fff; padding: 0.75rem; border-radius: 6px; outline: none;">
+            </div>
+            <div class="input-group">
+                <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">COMPANY NAME</label>
+                <input type="text" name="company" value="{{ lead.company or '' }}" style="width: 100%; background: #151e32; border: 1px solid #334155; color: #fff; padding: 0.75rem; border-radius: 6px; outline: none;">
+            </div>
+            <div class="input-group">
+                <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">COMPANY SIZE</label>
+                <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px; color: #94a3b8; border: 1px solid transparent;">{{ lead.company_size or 'Not Specified' }}</div>
+            </div>
+        </div>
+
+        <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Deal Management</h4>
+        <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; color: #D4AF37; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem;">SERVICE INTEREST</label>
+                    <div style="color: #fff; font-size: 1rem;">{{ lead.service_interest or 'General Inquiry' }}</div>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #D4AF37; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem;">ACQUISITION SOURCE</label>
+                    <div style="color: #fff; font-size: 1rem;">
+                        <span style="text-transform: capitalize;">
+                            {% if lead.source == 'website' %}Website
+                            {% elif lead.source == 'referral' %}Referral
+                            {% elif lead.source == 'social' %}Social Media
+                            {% elif lead.source == 'newsletter' %}Newsletter
+                            {% elif lead.source == 'google' %}Google Search
+                            {% elif lead.source == 'other' %}Other
+                            {% else %}{{ lead.source or 'Unknown' }}{% endif %}
+                        </span>
+                        
+                        {% if lead.source_detail %}
+                            <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px; font-style: italic; border-left: 2px solid #D4AF37; padding-left: 8px;">
+                                "{{ lead.source_detail }}"
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                    <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">CURRENT STAGE</label>
+                    <select name="stage" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 0.6rem; border-radius: 6px;">
+                        {% for val, label in lead.STAGE_CHOICES %}
+                        <option value="{{ val }}" {% if lead.stage == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">PRIORITY</label>
+                    <select name="temperature" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 0.6rem; border-radius: 6px;">
+                        <option value="cold" {% if lead.temperature == 'cold' %}selected{% endif %}>Cold (Low)</option>
+                        <option value="warm" {% if lead.temperature == 'warm' %}selected{% endif %}>Warm (Med)</option>
+                        <option value="hot" {% if lead.temperature == 'hot' %}selected{% endif %}>Hot (High)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; color: #64748b; font-size: 0.75rem; margin-bottom: 0.4rem;">ORIGINAL INQUIRY</label>
+            <div style="background: #151e32; padding: 1.25rem; border-radius: 6px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; border-left: 3px solid #334155;">
+                {{ lead.original_message or 'No message text available.' }}
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <button type="button" onclick="window.closeLeadModal()" style="padding: 0.75rem 1.5rem; border: 1px solid #475569; background: transparent; color: #94a3b8; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
+            <button type="submit" style="padding: 0.75rem 2rem; background: #D4AF37; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">Save Changes</button>
+        </div>
+    </form>
+</div>

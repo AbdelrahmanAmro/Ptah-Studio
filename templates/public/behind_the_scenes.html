@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Behind The Scenes - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       Page Specific Styles
+       =========================== */
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --font-heading: 'Playfair Display', Georgia, serif;
+    }
+
+    body { 
+        background: var(--color-navy-dark); 
+        color: #fff; 
+        overflow-x: hidden; 
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility; 
+    }
+
+    /* ===========================
+       BTS Hero (Compact)
+       =========================== */
+    .bts-hero {
+        padding: 2rem 2rem 3rem;
+        text-align: center;
+        background: radial-gradient(circle at 50% 0%, #112240 0%, var(--color-navy-darkest) 70%);
+        position: relative;
+    }
+    
+    .bts-hero::before {
+        content: ''; 
+        position: absolute; 
+        top: 0; 
+        left: 50%; 
+        transform: translateX(-50%);
+        width: 1px; 
+        height: 80px;
+        background: linear-gradient(to bottom, var(--color-gold), transparent);
+    }
+    
+    .bts-badge {
+        color: var(--color-gold); 
+        border: 1px solid var(--color-gold); 
+        padding: 4px 12px; 
+        border-radius: 20px; 
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .bts-title { 
+        font-family: var(--font-heading); 
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        margin-bottom: 0.75rem; 
+        color: #fff; 
+        line-height: 1.1; 
+    }
+    
+    .bts-subtitle { 
+        color: var(--color-text-light); 
+        max-width: 500px;
+        margin: 0 auto; 
+        line-height: 1.6; 
+        font-size: 0.9rem;
+    }
+    
+    /* ===========================
+       Folder Grid (Compact)
+       =========================== */
+    .folder-grid {
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        max-width: 1200px; 
+        margin: 0 auto;
+        padding: 4rem 2rem 4rem; 
+    }
+
+    .folder-card { 
+        text-decoration: none; 
+        display: block; 
+    }
+    
+    .folder-wrapper {
+        position: relative; 
+        aspect-ratio: 4/3; 
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+    
+    .folder-card:hover .folder-wrapper { 
+        transform: translateY(-5px);
+        border-color: var(--color-gold); 
+    }
+    
+    .folder-overlay {
+        position: absolute; 
+        inset: 0;
+        background: linear-gradient(to top, rgba(5,13,26, 0.95) 0%, transparent 100%);
+        display: flex; 
+        flex-direction: column; 
+        justify-content: flex-end; 
+        padding: 1.5rem;
+        
+        /* CHANGED: 'start' aligns text Right for Arabic, Left for English */
+        text-align: start; 
+    }
+    
+    .folder-title { 
+        font-family: var(--font-heading); 
+        font-size: 1.25rem;
+        color: #fff; 
+        margin-bottom: 0.25rem; 
+    }
+    
+    .folder-meta { 
+        color: var(--color-gold); 
+        font-size: 0.65rem;
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+    }
+    
+    .folder-count {
+        color: #aaa; 
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* ADDED: Adds space between the icon and text in both LTR and RTL */
+    .folder-count i {
+        margin-inline-end: 6px;
+    }
+
+    /* ===========================
+       RESPONSIVE BREAKPOINTS
+       =========================== */
+    @media (max-width: 900px) {
+        .bts-hero { 
+            padding: 5rem 1.5rem 3rem; 
+        }
+        
+        .bts-title { 
+            font-size: 2.2rem; 
+        }
+        
+        .folder-grid { 
+            grid-template-columns: 1fr; 
+            gap: 1rem;
+            padding: 2rem 1.5rem 4rem;
+        }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-content-wrapper">
+        <section class="bts-hero">
+            <span class="bts-badge">{{ _('UNFILTERED ACCESS') }}</span>
+            <h1 class="bts-title">{{ _('Behind The') }} <span style="color: var(--color-gold);">{{ _('Scenes') }}</span></h1>
+            <p class="bts-subtitle">
+                {{ _('Step inside the chaos and craftsmanship. A raw look at how we bring our projects to life.') }}
+            </p>
+        </section>
+
+        <div class="folder-grid">
+            {% for project in projects %}
+            <a href="{{ url_for('bts_folder', slug=project.slug) }}" class="folder-card">
+                <div class="folder-wrapper">
+                    {% if project.thumbnail_url %}
+                        <img src="{{ url_for('static', filename=project.thumbnail_url) }}" style="width:100%; height:100%; object-fit:cover;" alt="{{ project.title }}">
+                    {% else %}
+                        <div style="width:100%; height:100%; background:#111; display:flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-folder" style="font-size:2.5rem; color:#333;"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="folder-overlay">
+                        <span class="folder-meta">{{ project.event_date.strftime('%B %Y') }}</span>
+                        
+                        <h3 class="folder-title">
+                            {{ project.title_ar or project.title if get_locale() == 'ar' else project.title }}
+                        </h3>
+                        
+                        <span class="folder-count"><i class="fas fa-images"></i> {{ project.media_count }} {{ _('items') }}</span>
+                    </div>
+                </div>
+            </a>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; border: 1px dashed rgba(212, 175, 55, 0.2); border-radius: 8px; margin-top: 2rem;">
+                <h3 style="color: #fff; font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.5rem;">{{ _('No Footage Released Yet') }}</h3>
+                <p style="color: #888; font-size: 0.8rem;">{{ _('Check back soon for new project uploads.') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

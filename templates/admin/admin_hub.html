@@ -1,0 +1,74 @@
+{% extends 'admin/base.html' %} 
+{% block title %}Settings - PTAH STUDIOS{% endblock %}
+
+{% block content %}
+<header class="dashboard-header">
+    <div class="header-title">
+        <h1>Admin <span>Settings</span></h1>
+        <p>Manage services, studios, and portfolio items.</p>
+    </div>
+</header>
+
+<div class="dashboard-grid">
+    <div class="bottom-row" style="grid-column: 1 / -1;">
+        
+        <div class="glass-card">
+            <div class="card-header">
+                <h3><i class="fas fa-concierge-bell"></i> Services & Offerings</h3>
+            </div>
+            <div class="data-list" style="flex-direction: row; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                
+                <a href="{{ url_for('admin_general_services') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                    <i class="fas fa-bullhorn" style="font-size: 2rem; color: var(--color-gold);"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 600;">General Services</span>
+                    <span style="color: var(--color-text-muted); font-size: 0.7rem;">Website Display Only</span>
+                </a>
+
+                <a href="{{ url_for('admin_services') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                    <i class="fas fa-calculator" style="font-size: 2rem; color: var(--color-info);"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 500;">Booking Logic</span>
+                    <span style="color: var(--color-text-muted); font-size: 0.7rem;">Pricing & Calculation</span>
+                </a>
+
+                <a href="{{ url_for('admin_studios') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                    <i class="fas fa-building" style="font-size: 2rem; color: var(--color-success);"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 500;">Studios</span>
+                    <span style="color: var(--color-text-muted); font-size: 0.7rem;">Manage Rooms</span>
+                </a>
+
+                <a href="{{ url_for('admin_equipment') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                    <i class="fas fa-camera" style="font-size: 2rem; color: #ff9f43;"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 500;">Equipment</span>
+                    <span style="color: var(--color-text-muted); font-size: 0.7rem;">Add-ons & Extras</span>
+                </a>
+
+                <a href="{{ url_for('admin_packages') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                     <i class="fas fa-box-open" style="font-size: 2rem; color: #a55eea;"></i>
+                     <span style="color: var(--color-text-primary); font-weight: 500;">Packages</span>
+                     <span style="color: var(--color-text-muted); font-size: 0.7rem;">Special Offers</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-header">
+                <h3><i class="fas fa-photo-video"></i> Portfolio Management</h3>
+                <a href="{{ url_for('admin_portfolio_new') }}" class="btn" style="background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light)); color: var(--color-navy-darkest); font-size: 0.75rem; padding: 0.5rem 1rem;">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+            </div>
+            <div class="data-list" style="flex-direction: row; gap: 1rem; margin-top: 1rem;">
+                <a href="{{ url_for('admin_portfolio') }}" class="list-item" style="flex: 1; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem;">
+                    <i class="fas fa-th-large" style="font-size: 2rem; color: var(--color-gold);"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 500;">Portfolio Gallery</span>
+                </a>
+                <a href="{{ url_for('admin_bts_list') }}" class="list-item" style="flex: 1; min-width: 150px; text-align: center; flex-direction: column; gap: 0.5rem; padding: 1.5rem; border: 1px solid rgba(255, 107, 107, 0.3);">
+                    <i class="fas fa-film" style="font-size: 2rem; color: #ff6b6b;"></i>
+                    <span style="color: var(--color-text-primary); font-weight: 500;">Behind the Scenes</span>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A192F"/>
+      <stop offset="100%" style="stop-color:#112240"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4AF37"/>
+      <stop offset="100%" style="stop-color:#B4922A"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="400" height="300" fill="url(#bgGrad)"/>
+  
+  <!-- Microphone icon -->
+  <rect x="185" y="80" width="30" height="60" rx="15" fill="url(#goldGrad)"/>
+  <rect x="175" y="130" width="50" height="10" rx="5" fill="#D4AF37"/>
+  <path d="M165 145 L235 145 L240 170 L160 170 Z" fill="#D4AF37"/>
+  <path d="M200 230 L200 250" stroke="#D4AF37" stroke-width="4"/>
+  <path d="M180 240 Q200 260 220 240" fill="none" stroke="#D4AF37" stroke-width="3"/>
+  
+  <text x="200" y="270" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#FFFFFF">Podcast Production</text>
+</svg>

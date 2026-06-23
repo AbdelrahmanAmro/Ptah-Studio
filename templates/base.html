@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{{ _('Ptah Studios - Premium Creative Production') }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ _('Professional creative studio for podcast, video, and content production. Premium quality, exceptional results.') }}{% endblock %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpg" href="{{ url_for('static', filename='img/favicon.jpg') }}">
+    
+    <style>
+        /* Base Styles from Index */
+        :root {
+            --color-navy-darkest: #050d1a;
+            --color-navy-dark: #0A192F;
+            --color-navy-medium: #112240;
+            --color-navy-light: #233554;
+            --color-gold: #D4AF37;
+            --color-gold-light: #F4D06F;
+            --color-text-light: #CED4DA;
+            --color-gray-400: #ADB5BD;
+            
+            /* English Fonts */
+            --font-heading: 'Playfair Display', Georgia, serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-premium-title: 'Cinzel', serif;
+            --font-premium-text: 'Cormorant Garamond', serif;
+
+            /* FIX: Defined Missing Arabic Variables */
+            --font-arabic-body: 'Cairo', sans-serif;
+            --font-arabic-heading: 'Cairo', sans-serif;
+        }
+        
+        body {
+            cursor: default;
+            overflow-x: hidden;
+            height: auto;
+            background: var(--color-navy-dark);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+        }
+
+        /* ===========================
+           RTL / Arabic Overrides
+           =========================== */
+        html[dir="rtl"] body {
+            font-family: var(--font-arabic-body);
+            text-align: right;
+        }
+        
+        /* Apply Arabic font and RESET letter-spacing (Fixes lag) */
+        html[dir="rtl"] h1, 
+        html[dir="rtl"] h2, 
+        html[dir="rtl"] h3, 
+        html[dir="rtl"] h4, 
+        html[dir="rtl"] .logo-title,
+        html[dir="rtl"] .hero-title,
+        html[dir="rtl"] .footer-cta-title,
+        html[dir="rtl"] .nav-link,
+        html[dir="rtl"] .btn-book,
+        html[dir="rtl"] .section-label,
+        html[dir="rtl"] .studio-category,
+        html[dir="rtl"] .service-title {
+            font-family: var(--font-arabic-heading);
+            font-weight: 700;
+            letter-spacing: 0 !important; /* Performance Fix */
+            line-height: 1.4 !important;
+        }
+
+        html[dir="rtl"] .logo {
+            flex-direction: row-reverse;
+        }
+        
+        html[dir="rtl"] .nav-links {
+            padding: 0;
+        }
+
+        html[dir="rtl"] .desktop-actions {
+            flex-direction: row-reverse;
+        }
+        
+        html[dir="rtl"] .footer-brand { 
+            text-align: right; 
+            border-right: none; 
+            border-left: 1px solid rgba(212,175,55,0.1); 
+            padding-right: 0;
+            padding-left: 2rem;
+        }
+
+        html[dir="rtl"] .footer-section h4::after {
+            left: auto;
+            right: 0;
+        }
+
+        html[dir="rtl"] .footer-contact a {
+            flex-direction: row;
+        }
+        
+        html[dir="rtl"] .flash-message {
+            border-left-width: 1px;
+            border-right-width: 4px;
+            border-right-style: solid;
+        }
+        
+        html[dir="rtl"] .flash-close {
+            margin-right: auto;
+            margin-left: 0;
+        }
+
+        html[dir="rtl"] .fa-arrow-right { transform: rotate(180deg); }
+        html[dir="rtl"] .btn-book i { margin-left: 8px; margin-right: 0; }
+        
+        /* End RTL Overrides */
+
+        body.menu-open {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .mobile-nav-link {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .mobile-nav-link:hover {
+            color: var(--color-gold);
+        }
+
+        /* Header Styles */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0.5rem 3rem; 
+            background: rgba(5, 13, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            transition: padding 0.3s;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            position: relative;
+            z-index: 1002;
+        }
+        
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.4),
+                inset 0 0 20px rgba(212, 175, 55, 0.8),
+                inset 0 0 2px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .logo:hover .logo-image {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 35px rgba(212, 175, 55, 0.6),
+                inset 0 0 30px rgba(212, 175, 55, 1);
+            border-color: #fff;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        
+        .logo-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 0.65rem;
+            color: var(--color-gray-400);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-gold);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--color-gold);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .desktop-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn-book {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+            color: var(--color-navy-darkest);
+            border: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .btn-book:hover {
+            background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
+        }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1002;
+        }
+        
+        .bar {
+            width: 28px;
+            height: 2px;
+            background-color: var(--color-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-toggle.active .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-toggle.active .bar:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Footer Styles */
+        .main-footer {
+            position: relative;
+            padding: 3rem 2rem 2rem;
+            background: linear-gradient(to bottom, #000000 0%, var(--color-navy-dark) 100%);
+            z-index: 10;
+            overflow: hidden;
+        }
+        
+        .main-footer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--color-gold) 50%, transparent 100%);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 0 0 20px rgba(212, 175, 55, 0.4), 0 -5px 15px rgba(212, 175, 55, 0.2);
+            z-index: 20;
+            opacity: 0.9;
+        }
+
+        .main-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .footer-cta {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            padding: 0 5%;
+        }
+        
+        .footer-cta-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 50%, var(--color-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+        }
+        
+        .footer-cta-subtitle {
+            font-size: 1rem;
+            color: var(--color-text-light);
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        .footer-cta-btn {
+            padding: 0.8rem 2rem;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+        
+        .footer-divider {
+            max-width: 1400px;
+            margin: 0 auto 5rem;
+            opacity: 0.6;
+        }
+        
+        .footer-divider svg {
+            width: 100%;
+            height: 4px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr 0.8fr 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .footer-logo-large img {
+            width: 45px !important;
+            height: 45px !important;
+        }
+
+        .footer-logo-large span {
+            font-size: 1.8rem !important;
+        }
+        
+        .footer-brand {
+            padding-right: 2rem;
+        }
+        
+        .footer-tagline {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+            opacity: 0.8;
+        }
+        
+        .footer-social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 38px;
+            height: 38px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gold);
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+        
+        .social-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--color-gold);
+            transform: scale(0);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-radius: 50%;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        .social-link:hover::before {
+            transform: scale(1);
+        }
+        
+        .social-link i {
+            position: relative;
+            z-index: 1;
+            transition: color 0.4s;
+        }
+        
+        .social-link:hover i {
+            color: var(--color-navy-darkest);
+        }
+        
+        .footer-section h4 {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-gold), transparent);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.4rem;
+        }
+        
+        .footer-links a {
+            color: var(--color-text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .footer-links a i {
+            color: var(--color-gold);
+            opacity: 0.5;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-gold);
+            transform: translateX(5px);
+        }
+        
+        .footer-links a:hover i {
+            opacity: 1;
+        }
+        
+        .footer-contact a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .footer-contact a span {
+            flex: 1;
+        }
+        
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            background: transparent !important;
+        }
+        
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .footer-bottom p {
+            color: var(--color-gray-400);
+            font-size: 0.75rem;
+        }
+        
+        .footer-legal-links {
+            font-size: 0.75rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .footer-legal-links a {
+            color: var(--color-gray-400);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-legal-links a:hover {
+            color: var(--color-gold);
+        }
+        
+        .footer-legal-links .separator {
+            color: rgba(212, 175, 55, 0.3);
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.8rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-input:focus {
+            border-color: var(--color-gold);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .newsletter-input::placeholder {
+            color: #64748b;
+        }
+
+        .newsletter-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--color-gold);
+            color: #000;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-btn:hover {
+            background: #F4D06F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .main-header {
+                padding: 0.8rem 1.5rem;
+            }
+            
+            .nav-links, .desktop-actions {
+                display: none;
+            }
+            
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .footer-content {
+                display: flex;
+                flex-direction: column;
+                gap: 3rem;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .footer-brand {
+                text-align: center;
+                padding-right: 0;
+            }
+            
+            .footer-logo-large {
+                justify-content: center;
+            }
+            
+            .footer-tagline {
+                text-align: center;
+            }
+            
+            .footer-social-icons {
+                justify-content: center;
+            }
+            
+            .footer-section {
+                text-align: center;
+            }
+            
+            .footer-section h4::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .footer-links {
+                text-align: center;
+            }
+            
+            .footer-links a {
+                justify-content: center;
+            }
+            
+            .footer-contact a {
+                justify-content: center;
+            }
+            
+            .newsletter-form {
+                align-items: center;
+            }
+            
+            .footer-bottom {
+                margin-top: 4rem;
+                padding-top: 2rem;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-legal-links {
+                justify-content: center;
+            }
+        }
+
+        .main-content {
+            padding-top: 65px;
+        }
+
+        /* Flash Message Container */
+        .flash-container {
+            position: fixed;
+            top: 70px; 
+            right: 20px;
+            z-index: 9999; 
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            pointer-events: none; 
+        }
+
+        /* Individual Flash Message Card */
+        .flash-message {
+            pointer-events: auto; 
+            background: rgba(10, 25, 47, 0.95); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-left-width: 4px; 
+            color: #fff;
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            
+            /* Animation In */
+            transform: translateX(50px);
+            opacity: 0;
+            animation: slideInFade 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Category Specific Colors */
+        .flash-success {
+            border-left-color: var(--color-gold);
+        }
+        .flash-success span::before {
+            content: '\f00c'; 
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: var(--color-gold);
+        }
+
+        /* Error (Red) */
+        .flash-error {
+            border-left-color: #ef4444;
+        }
+        .flash-error span::before {
+            content: '\f071'; 
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: #ef4444;
+        }
+
+        /* Info (Blue/Neutral) */
+        .flash-info {
+            border-left-color: #3b82f6;
+        }
+        .flash-info span::before {
+            content: '\f05a'; 
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            color: #3b82f6;
+        }
+
+        /* Close Button styling */
+        .flash-close {
+            background: transparent;
+            border: none;
+            color: var(--color-gray-400);
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 0;
+            margin-top: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .flash-close:hover {
+            color: var(--color-gold);
+            transform: scale(1.1);
+        }
+
+        /* Animation Keyframes */
+        @keyframes slideInFade {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Mobile Adjustment */
+        @media (max-width: 600px) {
+            .flash-container {
+                right: 50%;
+                transform: translateX(50%); 
+                width: 90%;
+                top: 65px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <a href="{{ url_for('index') }}" class="mobile-nav-link" onclick="toggleMobileMenu()">{{ _('Dashboard') }}</a>
+        <a href="{{ url_for('booking') }}" class="mobile-nav-link" onclick="toggleMobileMenu()">{{ _('Bookings') }}</a>
+        <a href="{{ url_for('portfolio') }}" class="mobile-nav-link" onclick="toggleMobileMenu()">{{ _('PTAH Studios') }}</a>
+        
+        <div style="margin-top: 0.5rem; text-align: center;">
+            {% if get_locale() == 'en' %}
+                <a href="{{ url_for('set_language', language='ar') }}" class="mobile-nav-link" style="font-size: 1.5rem; font-family: 'Cairo', sans-serif;">العربية</a>
+            {% else %}
+                <a href="{{ url_for('set_language', language='en') }}" class="mobile-nav-link" style="font-size: 1.5rem;">English</a>
+            {% endif %}
+        </div>
+        
+        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+             {% if session.get('user_id') %}
+                <a href="{{ url_for('logout') }}" class="btn-book" style="background: transparent; border: 1px solid var(--color-gold); color: #fff;">{{ _('Logout') }}</a>
+             {% else %}
+                <a href="{{ url_for('login') }}" class="btn-book" style="background: transparent; border: 1px solid var(--color-gold); color: #fff;">{{ _('Log In') }}</a>
+                <a href="{{ url_for('register') }}" class="btn-book">{{ _('Sign Up') }}</a>
+             {% endif %}
+        </div>
+    </div>
+
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='img/favicon.jpg') }}" alt="Ptah Studios" class="logo-image">
+                <div class="logo-text">
+                    <span class="logo-title">PTAH STUDIOS</span>
+                    <span class="logo-subtitle">{{ _('Creation & Crafts') }}</span>
+                </div>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="{{ url_for('booking') }}" class="nav-link">{{ _('Bookings') }}</a></li>
+                <li><a href="{{ url_for('portfolio') }}" class="nav-link">{{ _('PTAH Studios') }}</a></li>
+            </ul>
+            
+            <div class="desktop-actions">
+                
+                {% if get_locale() == 'en' %}
+                    <a href="{{ url_for('set_language', language='ar') }}" class="nav-link" style="font-family: 'Cairo', sans-serif;">
+                        العربية
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('set_language', language='en') }}" class="nav-link">
+                        English
+                    </a>
+                {% endif %}
+
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('user_dashboard') }}" class="nav-link" style="font-size: 0.8rem; color: var(--color-gold);">
+                        <i class="fas fa-user"></i> {{ session.get('user_name', _('Account')) }}
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="nav-link" style="font-size: 0.8rem;">
+                        <i class="fas fa-sign-out-alt"></i> {{ _('Logout') }}
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link" style="font-size: 0.8rem;">
+                        <i class="fas fa-sign-in-alt"></i> {{ _('Log In') }}
+                    </a>
+                    <a href="{{ url_for('register') }}" class="nav-link" style="font-size: 0.8rem; color: var(--color-gold);">
+                        <i class="fas fa-user-plus"></i> {{ _('Sign Up') }}
+                    </a>
+                {% endif %}
+                
+                <div class="magnetic-wrap">
+                    <a href="{{ url_for('booking') }}" class="btn-book">
+                        <i class="fas fa-calendar-check"></i> {{ _('Book Session') }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="mobile-toggle" onclick="toggleMobileMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </nav>
+    </header>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span>{{ _(message) }}</span>
+                        <button class="flash-close">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer class="main-footer" id="contact">
+        <div class="footer-cta">
+            <h2 class="footer-cta-title">{{ _('CREATE') }}</h2>
+            <p class="footer-cta-subtitle">{{ _('Ready to elevate your vision?') }}</p>
+            <a href="{{ url_for('booking') }}" class="btn-book magnetic-wrap footer-cta-btn">
+                <i class="fas fa-rocket"></i> {{ _('Start Your Project') }}
+            </a>
+        </div>
+        
+        <div class="footer-divider">
+            <svg viewBox="0 0 1200 4" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,2 Q300,0 600,2 T1200,2" stroke="url(#goldGradientFooter)" stroke-width="2" fill="none"/>
+                <defs>
+                    <linearGradient id="goldGradientFooter" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+                        <stop offset="50%" style="stop-color:#D4AF37;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-section footer-brand">
+                <div class="footer-logo-large" style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                    <img src="{{ url_for('static', filename='img/favicon.jpg') }}" 
+                         alt="Ptah Studios" 
+                         style="width: 60px; height: 60px; border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.5);">
+                    <span style="font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; color: var(--color-gold);">
+                        PTAH
+                    </span>
+                </div>
+                
+                <p class="footer-tagline" style="text-align: center;">{{ _('The digital temple of creation. Where ambitious ideas become captivating reality.') }}</p>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com/share/1aQE21MAJ7/?mibextid=wwXIfr" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/ptah_studios1?igsh=Z2sxZmd4N3hnaGJ4" class="social-link" target="_blank" rel="noopener noreferrer"> <i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@ptahstudios1?_r=1&_t=ZS-92cJS9QYArP" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@PTAHStudios-eg" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                    <a href=" https://www.linkedin.com/in/ptah-studios-a993a23a2/" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                    <a href=" https://x.com/PTAH_Studios" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-x"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>{{ _('Quick Links') }}</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('about_us') }}">{{ _('About Us') }}</a></li>
+                    <li><a href="{{ url_for('contact') }}">{{ _('Contact Us') }}</a></li>
+                    <li><a href="{{ url_for('behind_the_scenes') }}">{{ _('Portfolio') }}</a></li>
+                    <li><a href="{{ url_for('services') }}">{{ _('Services') }}</a></li>
+                    <li><a href="{{ url_for('pricing') }}">{{ _('FAQs') }}</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section footer-contact-section">
+                <h4>{{ _('Connect') }}</h4>
+                <ul class="footer-links footer-contact">
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-envelope"></i>
+                            <span>ptahstudios1@gmail.com</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-phone"></i>
+                            <span>+201044474915<br>+201055839535</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('contact') }}">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ _('5th District, 6th October City') }}<br>{{ _('Giza, Egypt') }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>{{ _('Newsletter') }}</h4>
+                <p style="color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; text-align: center;">
+                    {{ _('Stay updated with our latest projects.') }}
+                </p>
+                
+                <form action="{{ url_for('newsletter_subscribe') }}" method="POST" class="newsletter-form">
+                    <input type="text" name="name" class="newsletter-input" placeholder="{{ _('Your name (optional)') }}">
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                        <input type="email" 
+                               name="email" 
+                               class="newsletter-input" 
+                               placeholder="{{ _('Enter your email') }}" 
+                               required 
+                               pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
+                               title="{{ _('Please enter a valid email address (e.g. user@example.com)') }}">
+                        <button type="submit" class="newsletter-btn">
+                            <i class="fas fa-envelope"></i> {{ _('Keep updated') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2024 {{ _('Ptah Studios. Temple of Creation.') }}</p>
+                <div class="footer-legal-links">
+                    <a>{{ _('Privacy Policy') }}</a>
+                    <span class="separator">•</span>
+                    <a>{{ _('Terms of Service') }}</a>
+                    <span class="separator">•</span>
+                    <a>{{ _('Cookie Policy') }}</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const toggle = document.querySelector('.mobile-toggle');
+            document.body.classList.toggle('menu-open');
+            menu.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.flash-close');
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const message = this.closest('.flash-message');
+                    if (message) {
+                        message.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        message.style.opacity = '0';
+                        message.style.transform = 'translateY(-10px)';
+                        
+                        setTimeout(() => {
+                            message.remove();
+                        }, 300);
+                    }
+                });
+            });
+
+            const messages = document.querySelectorAll('.flash-message');
+            messages.forEach(msg => {
+                setTimeout(() => {
+                    if (document.body.contains(msg)) {
+                        msg.style.transition = "opacity 0.5s ease";
+                        msg.style.opacity = "0";
+                        setTimeout(() => msg.remove(), 500);
+                    }
+                }, 5000); 
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

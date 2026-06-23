@@ -1,0 +1,1766 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Ptah Studios - Temple of Creation') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===========================
+       CSS Variables & Reset
+       =========================== */
+    /* IMPORTING PREMIUM FONTS */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-navy-medium: #112240;
+        --color-navy-light: #233554;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --color-gray-400: #ADB5BD;
+        
+        --font-heading: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', -apple-system, sans-serif;
+        --font-premium-title: 'Cinzel', serif;
+        --font-premium-text: 'Cormorant Garamond', serif;
+    }
+    
+    body {
+        cursor: default;
+        overflow-x: hidden;
+        height: auto;
+        background: var(--color-navy-dark);
+        overflow-y: auto; /* Ensure native scroll */
+    }
+
+    /* Prevent content jumping behind the mobile menu */
+    body.menu-open {
+        overflow: hidden;
+        height: 100vh;
+    }
+    
+    /* Grain overlay removed for performance */
+
+    .magnetic-wrap {
+        position: relative;
+        display: inline-block;
+    }
+    
+    /* ===========================
+       Hero Section
+       =========================== */
+    .hero {
+        position: relative;
+        min-height: 80vh; 
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 3rem;
+        padding: 0 10%; 
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        transform: translateZ(0); /* Force GPU layer */
+    }
+    
+    #particle-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.3;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 700px;
+    }
+    
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.4rem 1.2rem;
+        background: rgba(212, 175, 55, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50px;
+        font-size: 0.65rem;
+        color: var(--color-gold);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1.2rem;
+        opacity: 0;
+    }
+    
+    .badge-icon {
+        font-size: 1rem;
+    }
+    
+    .hero-title {
+        font-family: var(--font-heading);
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        color: #fff;
+    }
+    
+    .hero-title .word {
+        display: inline-block;
+        opacity: 0;
+    }
+    
+    .text-gold {
+        color: var(--color-gold);
+        position: relative;
+    }
+    
+    .hero-text {
+        font-size: clamp(1rem, 1.5vw, 0.95rem);
+        color: var(--color-text-light);
+        line-height:1.6;
+        margin-bottom: 2rem;
+        opacity: 0;
+        max-width: 600px;
+    }
+    
+    .hero-actions {
+        display: flex;
+        gap: 1.5rem;
+        opacity: 0;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.8rem 2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-dark);
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--color-gold);
+        color: var(--color-gold);
+    }
+    
+    .btn-outline:hover {
+        background: rgba(212, 175, 55, 0.1);
+        transform: translateY(-3px);
+    }
+    
+    .hero-image-container {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+    }
+    
+    .hero-image-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 380px; 
+        aspect-ratio: 3/4;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+        border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .hero-image-wrapper::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(135deg, var(--color-gold), transparent, var(--color-gold));
+        border-radius: 20px;
+        z-index: -1;
+        opacity: 0.5;
+        animation: borderGlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes borderGlow {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.7; }
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .hero-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10, 25, 47, 0.6) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .scroll-indicator {
+        display: none;
+    }
+    
+    .lottie-scroll {
+        width: 30px;
+        height: 60px;
+        border: 2px solid var(--color-gold);
+        border-radius: 20px;
+        position: relative;
+    }
+
+    .lottie-scroll::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 10px;
+        background: var(--color-gold);
+        border-radius: 2px;
+        animation: scrollDown 2s infinite;
+    }
+    
+    @keyframes scrollDown {
+        0% { top: 10px; opacity: 1; }
+        100% { top: 35px; opacity: 0; }
+    }
+
+    /* ===========================
+       Mission & Vision Section
+       =========================== */
+    .premium-theme {
+        padding: 5rem 8%;
+        background: radial-gradient(circle at center, #0a192f 0%, #050d1a 100%);
+    }
+
+    .mission-section {
+        padding: 10rem 4rem;
+        position: relative;
+        background: radial-gradient(circle at center, #0f1f3a 0%, var(--color-navy-dark) 100%);
+        overflow: hidden;
+    }
+    
+    .mission-section::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .mission-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 5rem;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mission-divider {
+        width: 1px;
+        height: 100%;
+        min-height: 200px;
+        background: linear-gradient(to bottom, transparent, var(--color-gold), transparent);
+        opacity: 0.5;
+        position: relative;
+    }
+    
+    .mission-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        border: 1px solid var(--color-gold);
+        background: var(--color-navy-darkest);
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+    }
+
+    .mv-block {
+        text-align: center;
+        padding: 1rem;
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .mv-block:hover {
+        transform: translateY(-5px);
+    }
+
+    .mission-vision-values {
+        padding: 3rem 10% 2rem;
+        background: var(--color-navy-darkest);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .mv-values-divider {
+        position: relative;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+        margin: 1.5rem 0 2.5rem; 
+        opacity: 0.4;
+    }
+
+    .mv-values-divider::after {
+        content: '◈'; 
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--color-gold);
+        background: var(--color-navy-darkest);
+        padding: 0 15px;
+        font-size: 0.8rem;
+    }
+
+    .mv-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 4rem;
+        margin-bottom: 2rem;
+    }
+
+    .mv-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .mv-label {
+        font-family: 'Cinzel', serif;
+        font-size: 1.2rem;
+        color: var(--color-gold);
+        letter-spacing: 5px;
+        text-transform: uppercase;
+    }
+
+    .mv-line {
+        width: 40px;
+        height: 1px;
+        background: var(--color-gold);
+        margin: 1rem auto;
+        opacity: 0.6;
+    }
+
+    .mv-full-text {
+        font-family: 'Cinzel', serif !important; 
+        font-weight: 400;
+        color: #e0e0e0;
+        line-height: 1.6;
+        font-size: 1.25rem;
+        max-width: 550px;
+        margin: 0 auto;
+    }
+    
+    .values-premium {
+        padding-top: 0
+    }
+
+    .mv-vertical-divider {
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, var(--color-gold), transparent);
+        opacity: 0.3;
+    }
+
+    /* Values Styling */
+    .values-section-title {
+        display: block;
+        text-align: center;
+        font-family: 'Cinzel', serif;
+        font-size: 1.5rem;
+        letter-spacing: 6px;
+        color: var(--color-gold);
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+    }
+
+    .values-detailed-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2.5rem;
+    }
+
+    .value-card {
+        text-align: center;
+        padding: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .v-num {
+        font-family: 'Cinzel', serif;
+        font-size: 1.5rem;
+        color: var(--color-gold);
+        opacity: 0.4;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .v-title {
+        font-family: 'Cinzel', serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .v-desc {
+        font-family: 'Cinzel', serif !important;
+        font-weight: 400;
+        color: #e0e0e0;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        opacity: 0.9;
+        padding-top: 0.5rem;
+    }
+    
+    @media (max-width: 1024px) {
+        .values-detailed-grid { grid-template-columns: repeat(2, 1fr); }
+        .mv-container { flex-direction: column; align-items: center; }
+        .mv-vertical-divider { display: none; }
+    }
+
+    @media (max-width: 900px) {
+        .studios-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .studio-arrow {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 100; 
+            background: rgba(10, 25, 47, 0.9) !important;
+            border: 2px solid var(--color-gold) !important;
+        }
+        .studio-arrow.left { left: 5px; }
+        .studio-arrow.right { right: 5px; }
+
+        .mission-container {
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+        .mission-divider {
+            width: 100%;
+            height: 1px;
+            min-height: 1px;
+            background: linear-gradient(to right, transparent, var(--color-gold), transparent);
+        }
+        .studios-header {
+            margin-top: 80px; 
+            padding: 0 1.5rem;
+        }
+        .studios-carousel-container {
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .studios-track {
+            display: flex;
+            width: max-content; 
+            padding: 0 1.5rem; 
+            gap: 1rem;
+        }
+    }
+
+    /* ===========================
+       Studios Showcase Styles (Dynamic)
+       =========================== */
+    .studios-showcase-section {
+        padding: 3rem 0; 
+        background: var(--color-navy-darkest);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .studios-header {
+        text-align: center;
+        padding: 0 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .studios-header .section-label {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--color-gold);
+        margin-bottom: 1rem;
+    }
+
+    .studios-header h2 {
+        font-family: var(--font-heading);
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .studios-header p {
+        color: var(--color-text-light);
+        font-size: 0.9rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Carousel Container */
+    .studios-carousel-container {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2rem;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; 
+        -ms-overflow-style: none;
+    }
+    
+    .studios-carousel-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* The Moving Track */
+    .studios-track {
+        display: flex;
+        gap: 1.5rem;
+        padding: 0 4rem;
+        width: max-content;
+    }
+
+    /* Individual Card */
+    .studio-card {
+        width: 260px;
+        height: 340px;
+        position: relative;
+        border-radius: 16px;
+        scroll-snap-align: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        border-radius: 12px;
+        background: var(--color-navy-dark);
+        transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+    
+    .studio-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--color-gold);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    }
+
+    .studio-image-wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .studio-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    
+    .studio-placeholder {
+        width: 100%;
+        height: 100%;
+        background: #112240;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .studio-placeholder i {
+        font-size: 4rem;
+        color: rgba(212, 175, 55, 0.2);
+    }
+    
+    .studio-card:hover .studio-img {
+        transform: scale(1.1);
+    }
+
+    /* Overlay Gradient & Text */
+    .studio-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(5, 13, 26, 1) 0%, rgba(5, 13, 26, 0.4) 50%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.25rem;
+    }
+
+    .studio-category {
+        color: var(--color-gold);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.25rem;
+    }
+
+    .studio-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .btn-studio-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        opacity: 0.8;
+        transition: all 0.3s;
+    }
+
+    .btn-studio-link i {
+        color: var(--color-gold);
+        transition: transform 0.3s;
+    }
+
+    .studio-card:hover .btn-studio-link {
+        opacity: 1;
+        color: var(--color-gold);
+    }
+    
+    .studio-card:hover .btn-studio-link i {
+        transform: translateX(5px);
+    }
+    
+    .studios-actions .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.75rem;
+    }
+
+    .studios-actions {
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+    
+    .no-studios-msg {
+        padding: 2rem 4rem;
+        color: var(--color-text-light);
+    }
+
+    /* Studio Navigation Arrows */
+    .studios-wrapper {
+        position: relative;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .studio-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 35px;
+        height: 35px;
+        background: rgba(5, 13, 26, 0.95); /* High opacity */
+        border: 1px solid var(--color-gold);
+        color: var(--color-gold);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s;
+    }
+
+    .studio-arrow:hover {
+        background: var(--color-gold);
+        color: var(--color-navy-dark);
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .studio-arrow.left { left: 1rem; }
+    .studio-arrow.right { right: 1rem; }
+
+    @media (max-width: 768px) {
+        .studio-arrow {
+            display: flex !important; 
+            width: 40px;
+            height: 40px;
+        }
+        .studio-arrow.left { left: 0.5rem; }
+        .studio-arrow.right { right: 0.5rem; }
+        .mv-divider { width: 50%; height: 1px; margin: 0 auto; }
+        .values-grid-mini { gap: 1.5rem; }
+        .values-section-title {
+            font-size: 1.3rem;
+            letter-spacing: 6px;
+        }
+    }
+    
+    /* ===========================
+       Services Section
+       =========================== */
+
+    .services-section {
+        padding: 3rem 10% 4rem;
+        background: var(--color-navy-dark);
+        position: relative;
+    }
+
+    .services-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .services-header .section-label {
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+        color: var(--color-gold);
+        text-transform: uppercase;
+    }
+
+    .services-header h2 {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        margin: 0.5rem 0;
+        color: #fff;
+    }
+
+    .services-header p {
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+        opacity: 0.8;
+    }
+
+    /* The Grid Layout */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.25rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* The Rectangular Card */
+    .service-card {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        background: rgba(17, 34, 64, 0.6); /* Slightly higher opacity for perf */
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        padding: 1.25rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        min-height: 100px;
+    }
+
+    .service-card:hover {
+        background: rgba(17, 34, 64, 0.9);
+        border-color: var(--color-gold);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Icon Styling */
+    .service-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        color: var(--color-navy-darkest);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-inline-end: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    /* Text Content Area */
+    .service-info {
+        flex-grow: 1;
+    }
+
+    .service-title {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 0.4rem;
+        line-height: 1.2;
+        white-space: normal;
+    }
+
+    .service-description {
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        color: var(--color-text-light);
+        opacity: 0.7;
+        margin: 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; 
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Price Area (Right Aligned) */
+    .service-price {
+        text-align: right;
+        padding-left: 1.25rem;
+        margin-left: 1.25rem;
+        border-left: 1px solid rgba(212, 175, 55, 0.2);
+        min-width: 100px;
+        align-self: center;
+    }
+
+    .price-label {
+        display: block;
+        font-size: 0.55rem;
+        text-transform: uppercase;
+        color: var(--color-gray-400);
+        letter-spacing: 0.5px;
+    }
+
+    .price-value {
+        font-family: var(--font-heading);
+        font-size: 1.15rem;
+        color: var(--color-gold);
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .price-currency {
+        font-size: 0.65rem;
+        font-weight: 400;
+    }
+
+    .full-card-link {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+    }
+
+    .service-card.premium-gold {
+        border-color: var(--color-gold);
+        background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
+    }
+
+    .service-card.premium-gold .service-icon {
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    @media (max-width: 600px) {
+        .service-card {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+        .service-icon {
+            margin: 0 auto 1.5rem auto !important; 
+            width: 65px !important;
+            height: 65px !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+        .service-info {
+            width: 100%;
+        }
+        .service-price {
+            border-left: none;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            margin-left: 0;
+            margin-top: 1.5rem;
+            padding-left: 0;
+            padding-top: 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+        .price-value {
+            font-size: 1.5rem; 
+        }
+    }
+
+    /* ===========================
+       Package Card Hover Effects
+       =========================== */
+    .package-card-premium {
+        cursor: default; 
+    }
+
+    .package-card-premium:hover {
+        transform: translateY(-10px) !important; 
+        border-color: var(--color-gold) !important; 
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                    0 0 30px rgba(212, 175, 55, 0.15) !important;
+        background: rgba(17, 34, 64, 0.8) !important; 
+    }
+    
+    .package-card-premium:hover .btn-outline {
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--color-gold);
+        border-color: var(--color-gold);
+    }
+    
+    /* ===========================
+       Testimonials Section
+       =========================== */
+    .testimonials-section {
+        padding: 3rem 10%; 
+        background: linear-gradient(180deg, var(--color-navy-darkest) 0%, #000000 100%);
+        position: relative;
+        z-index: 5;
+    }
+
+    .testimonials-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .testimonials-header h2 {
+        font-family: var(--font-heading);
+        font-size: clamp(1.8rem, 4vw, 2.5rem); 
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .testimonials-header p {
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+        margin: 0 auto;
+        opacity: 0.7;
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .testimonial-card {
+        background: rgba(17, 34, 64, 0.6); /* Performance: Higher opacity */
+        /* backdrop-filter: blur(10px); REMOVED for performance */
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(212, 175, 55, 0.4);
+        background: rgba(17, 34, 64, 0.9);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .testimonial-stars {
+        color: var(--color-gold);
+        font-size: 0.7rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 3px;
+    }
+
+    .quote-icon-large {
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        color: rgba(212, 175, 55, 0.05);
+        line-height: 1;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        pointer-events: none;
+    }
+
+    .testimonial-text {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: var(--color-text-light);
+        margin-bottom: 1.5rem;
+        font-style: italic;
+        position: relative;
+        z-index: 1;
+        flex-grow: 1;
+    }
+
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: auto;
+        border-top: 1px solid rgba(212, 175, 55, 0.1);
+        padding-top: 1.5rem;
+    }
+
+    .client-avatar {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--color-navy-darkest);
+        flex-shrink: 0;
+    }
+
+    .client-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .client-name {
+        font-family: var(--font-heading);
+        font-size: 0.95rem;
+        color: #fff;
+        margin-bottom: 0.2rem;
+    }
+
+    .client-role {
+        font-size: 0.65rem;
+        color: var(--color-gray-400);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* ===========================
+       Responsive & Mobile Styles
+       =========================== */
+    @media (max-width: 900px) {
+        .main-header {
+            padding: 1.5rem 1.5rem;
+        }
+        .studio-card {
+            flex: 0 0 85vw; 
+            scroll-snap-align: center;
+        }
+        .values-detailed-grid {
+            grid-template-columns: repeat(2, 1fr) ;
+            gap: 1.5rem ;
+            padding: 0 10px ;
+        }
+        
+        .hero, .services-section, .process-section, .testimonials-section, .main-footer, .mission-section {
+            padding: 4rem 1.5rem; 
+        }
+        .studios-showcase-section {
+            padding-top: 6rem;
+        }
+
+        .value-card {
+            padding: 0.5rem ;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .v-title {
+            font-size: 1rem ;
+            white-space: normal ;
+            width: 100%;
+        }
+
+        .v-desc {
+            font-size: 0.8rem ;
+            line-height: 1.4 ;
+            opacity: 0.8 ;
+        }
+        
+        .hero {
+             min-height: 100svh; 
+             padding-top: 8rem;
+             grid-template-columns: 1fr;
+             text-align: center;
+             gap: 2rem;
+        }
+        
+        .hero-title {
+            font-size: 2.8rem;
+        }
+        
+        .hero-text {
+            margin: 0 auto 2rem;
+        }
+        
+        .hero-actions {
+            justify-content: center;
+        }
+        
+        .hero-image-wrapper {
+            margin: 0 auto;
+            max-width: 350px;
+        }
+
+        .mission-container {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .mission-divider {
+            width: 100%;
+            height: 1px;
+            min-height: 1px;
+            background: linear-gradient(to right, transparent, var(--color-gold), transparent);
+        }
+        
+        .mission-divider::after {
+            display: none;
+        }
+
+        .studios-track {
+            gap: 1.5rem !important; 
+        }
+        .studio-card {
+            width: 320px; 
+            height: 420px;
+        }
+        
+        .studio-title {
+            font-size: 1.25rem;
+        }
+
+        .services-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .process-container {
+            padding-left: 20px;
+        }
+        
+        .golden-thread {
+            left: 20px;
+        }
+        
+        .process-step {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+            gap: 1.5rem;
+            padding-left: 3rem;
+            margin-bottom: 5rem;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            font-size: 1.25rem;
+        }
+
+        .testimonials-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .hero-badge {
+            padding: 0.4rem 1rem;
+            font-size: 0.65rem;
+        }
+        
+        .studio-card {
+            width: 280px;
+            height: 380px;
+        }
+        
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .footer-cta-title {
+            font-size: 2.5rem;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+        }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="hero" id="hero">
+        <canvas id="particle-canvas"></canvas>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles badge-icon"></i>
+                {{ _('God of Creation & Craftsmen') }}
+            </div>
+            <h1 class="hero-title">
+                <span class="word">{{ _('WHERE') }}</span><br>
+                <span class="word text-gold">{{ _('CREATION') }}</span><br>
+                <span class="word">{{ _('COMES') }}</span>
+                <span class="word">{{ _('ALIVE') }}</span>
+            </h1>
+            <p class="hero-text">
+                {{ _('The ancient Egyptian god of craftsmen and architects. We craft visual masterpieces that tell your story.') }}
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('booking') }}" class="btn btn-primary magnetic-wrap">
+                    <i class="fas fa-arrow-right"></i> {{ _('Book Your Session') }}
+                </a>
+                <a href="{{ url_for('services') }}" class="btn btn-outline magnetic-wrap">
+                    {{ _('View Our Service') }}
+                </a>
+            </div>
+        </div>
+        <div class="hero-image-container">
+            <div class="hero-image-wrapper">
+                <div class="hero-image-overlay"></div>
+                <img src="{{ url_for('static', filename='img/hero-statue1.jpg') }}" alt="{{ _('Ancient Egyptian Statue') }}" class="hero-image">
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="lottie-scroll"></div>
+        </div>
+    </section>
+    
+    <section class="mission-vision-values premium-theme">
+        <div class="mv-container">
+            <div class="mv-item">
+                <span class="mv-label">{{ _('PTAH Vision') }}</span>
+                <div class="mv-line"></div>
+                <p class="mv-full-text">
+                    {{ _('"To redefine the horizon of digital media, transforming fleeting moments into timeless, high-impact cinematic experiences."') }}
+                </p>
+            </div>
+
+            <div class="mv-vertical-divider"></div>
+
+            <div class="mv-item">
+                <span class="mv-label">{{ _('PTAH Mission') }}</span>
+                <div class="mv-line"></div>
+                <p class="mv-full-text">
+                    {{ _('"We architect visual legacies by fusing authentic storytelling with strategic precision, crafting content that doesn\'t just engage—it captivates."') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="mv-values-divider"></div>
+
+        <div class="values-premium">
+            <span class="values-section-title">{{ _('Our Values') }}</span>
+            <div class="values-detailed-grid">
+                <div class="value-card">
+                    <span class="v-num">I</span>
+                    <h4 class="v-title">{{ _('Creativity First') }}</h4>
+                    <p class="v-desc">{{ _('We believe in pushing creative boundaries and bringing unique visions to life.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">II</span>
+                    <h4 class="v-title">{{ _('Excellence') }}</h4>
+                    <p class="v-desc">{{ _('Delivering premium quality in every project, from concept to final delivery.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">III</span>
+                    <h4 class="v-title">{{ _('Collaboration') }}</h4>
+                    <p class="v-desc">{{ _('Working closely with clients as partners to achieve their creative goals.') }}</p>
+                </div>
+                <div class="value-card">
+                    <span class="v-num">IV</span>
+                    <h4 class="v-title">{{ _('Integrity') }}</h4>
+                    <p class="v-desc">{{ _('Transparent pricing, honest timelines, and professional service every time.') }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="studios-showcase-section">
+        <div class="studios-header">
+            <h2>{{ _('Explore Our') }} <span class="text-gold">{{ _('Studios') }}</span></h2>
+            <p>{{ _('State-of-the-art production environments designed for creators.') }}</p>
+        </div>
+
+        <div class="studios-wrapper">
+            <button class="studio-arrow left" onclick="scrollStudios('left')" aria-label="{{ _('Scroll Left') }}">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="studios-carousel-container" id="studiosContainer">
+                <div class="studios-track">
+                    {% for item in featured_studios %}
+                    <div class="studio-card">
+                        <div class="studio-image-wrapper">
+                            {% if item.thumbnail_url %}
+                                <img src="{{ url_for('static', filename=item.thumbnail_url) }}" alt="{{ item.title }}" class="studio-img">
+                            {% else %}
+                                <div class="studio-placeholder">
+                                    <i class="fas fa-{{ 'video' if item.category == 'video' else 'microphone' }}"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="studio-overlay">
+                                <span class="studio-category">{{ _(item.category|replace('_', ' ')|title) }}</span>
+                                <h3 class="studio-title">
+                                    {{ item.title_ar or item.title if get_locale() == 'ar' else item.title }}
+                                </h3>
+                                
+                                <a href="{{ url_for('portfolio_item', slug=item.slug) }}" class="btn-studio-link">
+                                    {{ _('View Studio Details') }} <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                        <div class="no-studios-msg">
+                            <p>{{ _('No featured studios available at the moment.') }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button class="studio-arrow right" onclick="scrollStudios('right')" aria-label="{{ _('Scroll Right') }}">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="studios-actions">
+            <a href="{{ url_for('portfolio') }}" class="btn btn-outline">{{ _('See All Spaces') }}</a>
+        </div>
+    </section>
+
+    <section class="services-section" id="services">
+        <div class="services-header">
+            <span class="section-label">{{ _('Our Expertise') }}</span>
+            <h2>{{ _('Our') }} <span class="text-gold">{{ _('Services') }}</span></h2>
+            <p>{{ _('Professional creative services delivered with studio precision.') }}</p>
+        </div>
+        
+        <div class="services-grid">
+            {% for service in services %}
+            <div class="service-card {% if service.slug == 'custom-package' %}premium-gold{% endif %}">
+                
+                <div class="service-icon">
+                    <i class="fas fa-{{ service.icon }}"></i>
+                </div>
+                
+                <div class="service-info">
+                    <h3 class="service-title">
+                        {{ service.name_ar or service.name if get_locale() == 'ar' else service.name }}
+                    </h3>
+                    <p class="service-description">
+                        {{ service.description_ar or service.description if get_locale() == 'ar' else service.description }}
+                    </p>
+                </div>
+
+                <a href="{{ url_for('service_detail', slug=service.slug) }}" class="full-card-link" aria-label="{{ _('View') }} {{ service.name }} {{ _('details') }}"></a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="packages-section" style="padding: 4rem 8% 6rem; background: radial-gradient(circle at top, #060e1d 0%, #050d1a 100%); position: relative;">
+        <div style="text-align: center; margin-bottom: 3.5rem;">
+            <span style="color: var(--color-gold); text-transform: uppercase; letter-spacing: 4px; font-size: 0.7rem; font-weight: 600; opacity: 0.9;">{{ _('Special Offers') }}</span>
+            <h2 style="font-family: var(--font-heading); font-size: 2.5rem; color: #fff; margin-top: 0.5rem; letter-spacing: 1px;">{{ _('Exclusive') }} <span class="text-gold">{{ _('Packages') }}</span></h2>
+            <p style="color: var(--color-text-light); max-width: 500px; margin: 0.75rem auto; font-size: 0.9rem; opacity: 0.7;">{{ _('Bundled solutions designed to give you maximum value.') }}</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 350px)); gap: 1.5rem; justify-content: center; max-width: 1400px; margin: 0 auto;">
+            {% for pkg in packages %}
+            <div class="package-card-premium" style="background: rgba(10, 25, 47, 0.4); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; padding: 2rem; position: relative; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column; overflow: hidden;">
+                
+                <div style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(212, 175, 55, 0.03); filter: blur(40px); border-radius: 50%;"></div>
+
+                {% if pkg.discount_percentage > 0 %}
+                <div style="align-self: flex-end; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--color-gold); color: var(--color-gold); font-weight: 600; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 1px; margin-bottom: 1rem;">
+                    {{ _('SAVE') }} {{ pkg.discount_percentage }}%
+                </div>
+                {% endif %}
+
+                <div style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 45px; height: 45px; background: rgba(212, 175, 55, 0.07); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-{{ pkg.icon }}" style="font-size: 1.2rem; color: var(--color-gold);"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.65rem; color: var(--color-gray-400); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500;">
+                            <i class="fas fa-clock" style="color: var(--color-gold); margin-inline-end: 8px; font-size: 0.6rem;"></i> {{ pkg.duration_hours|int }}h {{ _('Session') }}
+                        </div>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #fff; margin: 0;">
+                            {{ pkg.name_ar or pkg.name if get_locale() == 'ar' else pkg.name }}
+                        </h3>
+                    </div>
+                </div>
+
+                <p style="color: var(--color-text-light); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.5rem; opacity: 0.8; flex-grow: 1;">
+                    {{ pkg.description_ar or pkg.description if get_locale() == 'ar' else pkg.description }}
+                </p>
+
+                <div style="margin-bottom: 2rem;">
+                    {% set features_to_show = pkg.get_features_list_ar() if get_locale() == 'ar' and pkg.features_ar else pkg.get_features_list() %}
+                    {% if features_to_show %}
+                    <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem;">
+                        {% for feature in features_to_show %}
+                        <li style="color: rgba(255,255,255,0.9); font-size: 0.8rem; display: flex; align-items: center; gap: 0.6rem;">
+                            <i class="fas fa-check" style="color: var(--color-gold); font-size: 0.7rem;"></i> 
+                            <span style="border-bottom: 1px solid rgba(212, 175, 55, 0.05); width: 100%; padding-bottom: 2px;">{{ feature }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+
+                <div style="border-top: 1px solid rgba(212, 175, 55, 0.1); padding-top: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        {% if pkg.original_price > pkg.package_price %}
+                        <span style="color: var(--color-gray-400); text-decoration: line-through; font-size: 0.8rem; margin-right: 8px;">{{ pkg.original_price|int }}</span>
+                        {% endif %}
+                        <span style="color: var(--color-gold); font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700;">{{ pkg.package_price|int }} <span style="font-size: 0.7rem; font-family: var(--font-body); font-weight: 400; opacity: 0.8;">{{ _('EGP') }}</span></span>
+                    </div>
+                        <a href="{{ url_for('contact') }}" class="btn btn-outline" style="padding: 0.4rem 0.9rem; font-size: 0.7rem; border-width: 1px; min-width: auto; white-space: nowrap; margin-bottom: 1px;">
+                            {{ _('Contact Sales') }}
+                        </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="testimonials-section" id="testimonials">
+        <div class="testimonials-header">
+            <h2 class="section-title">{{ _('What our clients') }} <span class="text-gold">{{ _('Says') }}</span></h2>
+            <p>{{ _('Professional feedback from our creative partners.') }}</p>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"PTAH Studios exceeded our expectations! Their podcast production service is top-notch. The team\'s attention to detail made our series a huge success."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">A</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Ahmed Hassan') }}</span>
+                        <span class="client-role">{{ _('TechVision Egypt') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"Working on our product ads was incredible. They understood our brand vision perfectly and delivered stunning visuals."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">S</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Sarah Mohamed') }}</span>
+                        <span class="client-role">{{ _('Bloom Cosmetics') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="quote-icon-large">”</div>
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">
+                    {{ _('"The social media content PTAH created went viral! Their creative team knows exactly how to engage audiences."') }}
+                </p>
+                <div class="client-info">
+                    <div class="client-avatar">O</div>
+                    <div class="client-details">
+                        <span class="client-name">{{ _('Omar Kamal') }}</span>
+                        <span class="client-role">{{ _('StartHub Cairo') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script>
+        // Mobile Menu Toggle Function
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const toggle = document.querySelector('.mobile-toggle');
+            document.body.classList.toggle('menu-open'); 
+            menu.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+        
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        // Fix: Stop ScrollTrigger from refreshing when mobile address bar hides/shows
+        ScrollTrigger.config({ 
+            ignoreMobileResize: true 
+        });        
+        
+        // --- STUDIO SCROLL FUNCTION ---
+        function scrollStudios(direction) {
+            const container = document.getElementById('studiosContainer');
+            const track = container.querySelector('.studios-track');
+            const firstCard = track.querySelector('.studio-card');
+            
+            if (!firstCard) return;
+
+            const cardWidth = firstCard.offsetWidth;
+            const style = window.getComputedStyle(track);
+            const gap = parseInt(style.columnGap) || parseInt(style.gap) || 0;
+            const scrollAmount = cardWidth + gap;
+            
+            if (direction === 'left') {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+        
+        class PtahApp {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.animateHero();
+                this.initParticleSystem();
+                this.initScrollAnimations();
+                this.initMagneticElements();
+                this.initServiceCards();
+                ScrollTrigger.refresh();
+            }
+            
+            // Removed empty initLenis() to prevent overhead
+            
+            initParticleSystem() {
+                const canvas = document.getElementById('particle-canvas');
+                if (!canvas) return;
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                camera.position.z = 5;
+                const particleCount = 2500;
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const color = new THREE.Color(0xD4AF37);
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    const radius = Math.random() * 5;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.random() * Math.PI * 2;
+                    positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                    positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    positions[i3 + 2] = radius * Math.cos(phi);
+                    const colorVariation = 0.8 + Math.random() * 0.4;
+                    colors[i3] = color.r * colorVariation;
+                    colors[i3 + 1] = color.g * colorVariation;
+                    colors[i3 + 2] = color.b * colorVariation;
+                    sizes[i] = Math.random() * 0.03;
+                }
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                const material = new THREE.PointsMaterial({
+                    size: 0.02, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false
+                });
+                const particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+                const mouseVector = new THREE.Vector2();
+                document.addEventListener('mousemove', (e) => {
+                    mouseVector.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    mouseVector.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+
+                // PERFORMANCE FIX: Pause animation when not in view
+                let isAnimating = true;
+                const animate = () => {
+                    if (!isAnimating) return;
+                    requestAnimationFrame(animate);
+                    if (!prefersReducedMotion) {
+                        particles.rotation.y += 0.0005;
+                        particles.rotation.x += (mouseVector.y * 0.2 - particles.rotation.x) * 0.05;
+                        particles.rotation.z += (mouseVector.x * 0.1 - particles.rotation.z) * 0.05;
+                    }
+                    renderer.render(scene, camera);
+                };
+                animate();
+
+                // Observer to toggle animation state
+                const heroSection = document.getElementById('hero');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            if (!isAnimating) {
+                                isAnimating = true;
+                                animate();
+                            }
+                        } else {
+                            isAnimating = false;
+                        }
+                    });
+                }, { threshold: 0 });
+                observer.observe(heroSection);
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            animateHero() {
+                if (prefersReducedMotion) {
+                    gsap.set(['.hero-badge', '.hero-title .word', '.hero-text', '.hero-actions', '.hero-image-container', '.scroll-indicator'], { opacity: 1, y: 0 });
+                    return;
+                }
+                const tl = gsap.timeline();
+                tl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+                .to('.hero-title .word', { opacity: 1, y: 0, rotationX: 0, stagger: 0.15, duration: 1, ease: 'power4.out' }, '-=0.4')
+                .to('.hero-text', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+                .to('.hero-actions', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+                .to('.hero-image-container', { opacity: 1, scale: 1, duration: 1, ease: 'power3.out' }, '-=0.8')
+                .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.4');
+            }
+
+            initScrollAnimations() {
+                const threadProgress = document.querySelector('.thread-progress');
+                if (threadProgress && !prefersReducedMotion) {
+                    gsap.to(threadProgress, {
+                        strokeDashoffset: 0, ease: 'none',
+                        scrollTrigger: { trigger: '.process-section', start: 'top center', end: 'bottom center', scrub: 1 }
+                    });
+                }
+                const processSteps = document.querySelectorAll('.process-step');
+                processSteps.forEach((step, index) => {
+                    ScrollTrigger.create({
+                        trigger: step, start: 'top 70%',
+                        onEnter: () => {
+                            if (!prefersReducedMotion) {
+                                gsap.to(step, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+                            }
+                            step.classList.add('active');
+                        }
+                    });
+                });
+            }
+
+            initMagneticElements() {
+                const magneticElements = document.querySelectorAll('.magnetic-wrap');
+                magneticElements.forEach(wrap => {
+                    const button = wrap.querySelector('a, button, .btn');
+                    if (!button) return;
+                    wrap.addEventListener('mousemove', (e) => {
+                        const rect = wrap.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        if (!prefersReducedMotion) {
+                            gsap.to(button, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+                        }
+                    });
+                    wrap.addEventListener('mouseleave', () => {
+                        if (!prefersReducedMotion) {
+                            gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                        }
+                    });
+                });
+            }
+
+            initServiceCards() {
+                const serviceCards = document.querySelectorAll('.service-card');
+                let isThrottled = false;
+                serviceCards.forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        if (isThrottled) return;
+                        isThrottled = true;
+                        requestAnimationFrame(() => {
+                            const rect = card.getBoundingClientRect();
+                            const x = ((e.clientX - rect.left) / rect.width) * 100;
+                            const y = ((e.clientY - rect.top) / rect.height) * 100;
+                            card.style.setProperty('--mouse-x', `${x}%`);
+                            card.style.setProperty('--mouse-y', `${y}%`);
+                            isThrottled = false;
+                        });
+                    });
+                });
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new PtahApp());
+        } else {
+            new PtahApp();
+        }
+    </script>
+{% endblock %}

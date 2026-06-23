@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit {{ item.title }}{% else %}Add Portfolio Item{% endif %} - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM (Matched to Bookings)
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy (Body Background) */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08); /* Subtle borders */
+            
+            --color-gold: #D4AF37;          /* Primary Accent */
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           LAYOUT CONTAINER
+           =========================== */
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           FORM STYLES
+           =========================== */
+        .form-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-full { grid-column: 1 / -1; }
+
+        .form-group { margin-bottom: 0.5rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required { color: var(--color-gold); }
+
+        /* Inputs */
+        .form-control {
+            width: 100%;
+            background: var(--color-bg-dark); /* Darker input background for contrast */
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control::placeholder { color: rgba(136, 146, 176, 0.4); }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select.form-control { cursor: pointer; }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            height: 100%; /* Fill height in grid */
+        }
+
+        .checkbox-group:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-gold);
+            cursor: pointer;
+        }
+
+        .checkbox-group span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Upload Areas */
+        .upload-area {
+            border: 2px dashed var(--color-border);
+            background: rgba(5, 13, 26, 0.5);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--color-gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 2.5rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+        }
+
+        .upload-area p { color: var(--color-text-muted); font-size: 0.9rem; }
+        .upload-area .small { font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem; }
+
+        /* Image Previews */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-remove-img {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.9);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 2;
+        }
+
+        .btn-remove-img:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        .btn-save {
+            background: var(--color-gold);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background: var(--color-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--color-success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-danger);
+        }
+
+        /* Slug Code Preview */
+        code.slug-code {
+            color: var(--color-gold);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Dual Input Row for Languages */
+        .dual-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .dual-input-row { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .form-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    {% if item %}
+                        Edit <span>{{ item.title }}</span>
+                    {% else %}
+                        Add Portfolio <span>Item</span>
+                    {% endif %}
+                </h1>
+                <p class="page-subtitle">Configure studio details, settings, and manage media gallery.</p>
+            </div>
+            <a href="{{ url_for('admin_portfolio') }}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form method="POST" enctype="multipart/form-data" id="studioForm">
+                
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Basic Information
+                </h3>
+
+                <div class="form-grid">
+                    
+                    <div class="form-group form-full">
+                        <label>Portfolio Title <span class="required">*</span></label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="title" class="form-control" 
+                                       value="{{ item.title if item else '' }}" 
+                                       placeholder="English (e.g., Music Video Shoot)"
+                                       required>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <input type="text" name="title_ar" class="form-control" 
+                                       value="{{ item.title_ar if item and item.title_ar else '' }}" 
+                                       placeholder="Arabic (e.g., تصوير فيديو كليب)"
+                                       dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL Slug</label>
+                        <input type="text" name="slug" class="form-control" 
+                               value="{{ item.slug if item else '' }}"
+                               placeholder="auto-generated-from-title">
+                        <div class="form-hint">Preview: <code id="slugPreview" class="slug-code">/portfolio/{{ item.slug if item else '...' }}</code></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category <span class="required">*</span></label>
+                        <select name="category" class="form-control" required>
+                            <option value="">Select a category...</option>
+                            <option value="production" {% if item and item.category == 'production' %}selected{% endif %}>Production</option>
+                            <option value="podcast" {% if item and item.category == 'podcast' %}selected{% endif %}>Podcast</option>
+                            <option value="commercial" {% if item and item.category == 'commercial' %}selected{% endif %}>Commercial</option>
+                            <option value="educational" {% if item and item.category == 'educational' %}selected{% endif %}>Educational</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link to Studio <span class="required">*</span></label>
+                        <select name="studio_id" class="form-control" required>
+                            <option value="">Select a studio...</option>
+                            {% for studio in studios %}
+                            <option value="{{ studio.id }}" {% if item and item.studio_id == studio.id %}selected{% endif %}>
+                                {{ studio.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-hint">Select which studio this portfolio item represents.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="client_name" class="form-control" 
+                                       value="{{ item.client_name if item else 'Ptah Studios' }}"
+                                       placeholder="English Name">
+                            </div>
+                            <div>
+                                <input type="text" name="client_name_ar" class="form-control" 
+                                       value="{{ item.client_name_ar if item and item.client_name_ar else '' }}" 
+                                       placeholder="Arabic Name" dir="rtl">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control" 
+                               value="{{ item.display_order if item else 0 }}"
+                               placeholder="0">
+                        <div class="form-hint">Lower numbers appear first.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Video URL (Optional)</label>
+                        <input type="url" name="video_url" class="form-control" 
+                               value="{{ item.video_url if item else '' }}"
+                               placeholder="https://youtube.com/...">
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <label class="checkbox-group">
+                                <input type="checkbox" name="is_featured" id="is_featured"
+                                       {% if item and item.is_featured %}checked{% endif %}>
+                                <span>Feature on Homepage</span>
+                            </label>
+                            
+                            <label class="checkbox-group">
+                                <input type="checkbox" name="is_active" id="is_active"
+                                       {% if item and item.is_active %}checked{% endif %}
+                                       {% if not item %}checked{% endif %}>
+                                <span>Active (Visible on Website)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label>Tags</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="tags" class="form-control" 
+                                       value="{{ item.tags if item else '' }}"
+                                       placeholder="studio, lighting, 4k (English, comma separated)">
+                                <div class="form-hint">English Tags</div>
+                            </div>
+                            <div>
+                                <input type="text" name="tags_ar" class="form-control" 
+                                       value="{{ item.tags_ar if item and item.tags_ar else '' }}"
+                                       placeholder="استوديو, إضاءة, 4k (عربي, مفصول بفاصلة)" dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic Tags (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-images"></i> Media Gallery
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Thumbnail Image <span class="required">*</span></label>
+                        <div class="upload-area" onclick="document.getElementById('thumbnailInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload cover image</p>
+                            <p class="small">JPG, PNG, WebP (Max 16MB)</p>
+                        </div>
+                        <input type="file" id="thumbnailInput" name="thumbnail" accept="image/*" style="display:none;" onchange="previewThumbnail(this)">
+                        
+                        <div id="thumbnailPreview" class="preview-grid">
+                            {% if item and item.thumbnail_url %}
+                            <div class="preview-item">
+                                <img src="{{ url_for('static', filename=item.thumbnail_url) }}" alt="Current thumbnail">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gallery Images</label>
+                        <div class="upload-area" onclick="document.getElementById('galleryInput').click()">
+                            <i class="fas fa-layer-group"></i>
+                            <p>Click to upload gallery shots</p>
+                            <p class="small">Select multiple files</p>
+                        </div>
+                        <input type="file" id="galleryInput" name="gallery" accept="image/*" multiple style="display:none;" onchange="previewGallery(this)">
+                        
+                        <div id="galleryPreview" class="preview-grid">
+                            {% if item and item.get_image_list() %}
+                                {% for img_url in item.get_image_list() %}
+                                <div class="preview-item">
+                                    <img src="{{ url_for('static', filename=img_url) }}" alt="Gallery image">
+                                    <button type="button" class="btn-remove-img" 
+                                            onclick="deleteImage('{{ img_url }}', {{ item.id }})"
+                                            title="Remove image">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-align-left"></i> About This Studio / Project
+                </h3>
+
+                <div class="form-group form-full">
+                    <label>Full Description</label>
+                    <div class="dual-input-row">
+                        <div>
+                            <textarea name="description" class="form-control" 
+                                      placeholder="Describe the studio features, dimensions, etc. (English)">{{ item.description if item else '' }}</textarea>
+                            <div class="form-hint">English</div>
+                        </div>
+                        <div>
+                            <textarea name="description_ar" class="form-control" 
+                                      placeholder="وصف الاستوديو والمميزات (عربي)..."
+                                      dir="rtl">{{ item.description_ar if item and item.description_ar else '' }}</textarea>
+                            <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_portfolio') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        {% if item %}Save Changes{% else %}Create Item{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. Auto-generate Slug
+        const titleInput = document.querySelector('input[name="title"]');
+        const slugInput = document.querySelector('input[name="slug"]');
+        const slugPreview = document.getElementById('slugPreview');
+
+        function generateSlug(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s-]/g, '')  // Remove non-word chars
+                .replace(/\s+/g, '-')      // Replace spaces with -
+                .replace(/-+/g, '-')       // Remove duplicate -
+                .trim('-');
+        }
+
+        titleInput.addEventListener('input', function() {
+            if (!slugInput.dataset.manual) {
+                const slug = generateSlug(this.value);
+                slugInput.value = slug;
+                slugPreview.textContent = '/portfolio/' + slug;
+            }
+        });
+
+        slugInput.addEventListener('input', function() {
+            this.dataset.manual = 'true';
+            slugPreview.textContent = '/portfolio/' + this.value;
+        });
+
+        // 2. Thumbnail Preview
+        function previewThumbnail(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.getElementById('thumbnailPreview');
+                    container.innerHTML = ''; // Clear previous
+                    
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `<img src="${e.target.result}" alt="New Thumbnail">`;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. Gallery Preview (Multi-file)
+        function previewGallery(input) {
+            const container = document.getElementById('galleryPreview');
+            // We append new files, not clear, so users see what they are adding to existing ones
+            
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        // Add green border to indicate new upload
+                        div.style.border = '2px solid var(--color-success)';
+                        div.innerHTML = `<img src="${e.target.result}" alt="New Upload">`;
+                        container.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // 4. AJAX Delete Image
+        function deleteImage(imageUrl, studioId) {
+            if (confirm('Are you sure you want to permanently remove this image?')) {
+                const formData = new FormData();
+                formData.append('image_url', imageUrl);
+
+                fetch('/admin/portfolio/delete-image/' + studioId, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Refresh to update list
+                    } else {
+                        alert('Error removing image: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Network error occurred.');
+                });
+            }
+        }
+
+        // Init slug preview on load if editing
+        if (titleInput.value && !slugInput.value) {
+            slugPreview.textContent = '/portfolio/' + generateSlug(titleInput.value);
+        }
+    </script>
+</body>
+</html>

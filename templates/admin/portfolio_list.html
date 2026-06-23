@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studios Management - PTAH STUDIOS</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM (Matched to Bookings)
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           STATS GRID
+           =========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gold);
+            font-size: 1.5rem;
+        }
+
+        .stat-info h4 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            color: #fff;
+        }
+
+        .stat-info p {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===========================
+           ACTION BAR
+           =========================== */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .btn-gold {
+            background: var(--color-gold);
+            color: #000;
+            padding: 0.7rem 1.25rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .btn-gold:hover { background: var(--color-gold-hover); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.7rem 1.25rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        /* ===========================
+           CARDS GRID
+           =========================== */
+        .studios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .studio-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .studio-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-image {
+            aspect-ratio: 16/9;
+            background: #000;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Removed opacity: 0.85 to make image fully visible */
+            transition: 0.3s;
+        }
+
+        .studio-card:hover .card-image img { opacity: 1; }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-card-bg), var(--color-bg-dark));
+            color: var(--color-border);
+            font-size: 3rem;
+        }
+
+        /* Badges */
+        .badge-container {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+        }
+
+        .badge-featured {
+            background: var(--color-gold);
+            color: var(--color-bg-dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .badge-cat {
+            background: rgba(5, 13, 26, 0.8);
+            color: var(--color-gold);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .badge-status {
+            background: rgba(136, 146, 176, 0.2);
+            color: var(--color-text-muted);
+        }
+        
+        .badge-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+        }
+
+        /* Content */
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-client {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+            margin-top: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        .meta-item i { color: var(--color-gold); }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-delete {
+            color: var(--color-danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--color-card-bg);
+            border: 2px dashed var(--color-border);
+            border-radius: 12px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p { color: var(--color-text-muted); margin-bottom: 2rem; }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+
+        /* Modal */
+        #deleteModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Studios <span>Portfolio</span></h1>
+            <p class="page-subtitle">Manage your studio spaces, production floors, and suites.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-building"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|length }}</h4>
+                <p>Total Studios</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|selectattr('is_featured')|list|length }}</h4>
+                <p>Featured on Home</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|selectattr('is_active')|list|length }}</h4>
+                <p>Active Listings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-bar">
+        <div style="color: var(--color-text-muted); font-size: 0.9rem;">
+            <i class="fas fa-list"></i> Showing all studio items
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('portfolio') }}" target="_blank" class="btn-outline">
+                <i class="fas fa-external-link-alt"></i> Public Page
+            </a>
+            <a href="{{ url_for('admin_portfolio_new') }}" class="btn-gold">
+                <i class="fas fa-plus"></i> Add New Studio
+            </a>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="studios-grid">
+        {% for item in items %}
+        <div class="studio-card">
+            <div class="card-image">
+                {% if item.thumbnail_url %}
+                    {# FIX: Robust image path handling. Ensures no double slashes if DB has /uploads/... #}
+                    <img src="{{ url_for('static', filename=item.thumbnail_url.lstrip('/')) }}" alt="{{ item.title }}">
+                {% else %}
+                    <div class="image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="badge-container">
+                    {% if item.is_featured %}
+                    <span class="badge badge-featured">Featured</span>
+                    {% endif %}
+                    <span class="badge badge-cat">{{ item.category|replace('_', ' ')|title }}</span>
+                    <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                        {{ 'Active' if item.is_active else 'Inactive' }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-content">
+                <h3 class="card-title">{{ item.title }}</h3>
+                <p class="card-client">{{ item.client_name or 'Ptah Studios' }}</p>
+                
+                <div class="card-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-images"></i>
+                        <span>{{ item.get_image_list()|length + (1 if item.thumbnail_url else 0) }} images</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ item.created_at.strftime('%b %d, %Y') }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <a href="{{ url_for('admin_portfolio_edit', item_id=item.id) }}" class="btn-action">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{{ url_for('portfolio_item', slug=item.slug) }}" target="_blank" class="btn-action">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <button type="button" class="btn-action btn-delete" 
+                            onclick="deleteStudio({{ item.id }}, '{{ item.title }}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-film"></i>
+            <h3>No Studios Found</h3>
+            <p>Get started by creating your first studio portfolio item.</p>
+            <a href="{{ url_for('admin_portfolio_new') }}" class="btn-gold">
+                <i class="fas fa-plus"></i> Create Studio
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--color-danger); margin-bottom: 1.5rem;"></i>
+            <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; color: #fff;">Delete Studio?</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 2rem;">
+                Are you sure you want to delete <strong id="deleteStudioName" style="color: #fff;"></strong>? 
+                <br>This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button onclick="closeDeleteModal()" class="btn-outline">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-gold" style="background: var(--color-danger); color: #fff;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteStudio(id, title) {
+            document.getElementById('deleteStudioName').textContent = title;
+            document.getElementById('deleteForm').action = '/admin/portfolio/delete/' + id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+</body>
+</html>

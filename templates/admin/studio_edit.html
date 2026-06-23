@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit {{ item.name }}{% else %}Add New Studio{% endif %} - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM (Matched to Bookings)
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy (Body Background) */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08); /* Subtle borders */
+            
+            --color-gold: #D4AF37;          /* Primary Accent */
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           LAYOUT CONTAINER
+           =========================== */
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           FORM STYLES
+           =========================== */
+        .form-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-full { grid-column: 1 / -1; }
+
+        .form-group { margin-bottom: 0.5rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required { color: var(--color-gold); }
+
+        /* Inputs */
+        .form-control {
+            width: 100%;
+            background: var(--color-bg-dark); /* Darker input background for contrast */
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control::placeholder { color: rgba(136, 146, 176, 0.4); }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select.form-control { cursor: pointer; }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            height: 100%; /* Fill height in grid */
+        }
+
+        .checkbox-group:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-gold);
+            cursor: pointer;
+        }
+
+        .checkbox-group span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        .btn-save {
+            background: var(--color-gold);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background: var(--color-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--color-success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-danger);
+        }
+
+        /* Slug Code Preview */
+        code.slug-code {
+            color: var(--color-gold);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        /* Helper for red hover icons */
+        .hover-red:hover {
+            color: var(--color-danger) !important;
+        }
+
+        /* NEW: Dual Input Row for English/Arabic */
+        .dual-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr !important; }
+            .dual-input-row { grid-template-columns: 1fr; } /* Stack languages on mobile */
+            .btn-cancel, .btn-save { width: 100%; justify-content: center; }
+            .form-actions { flex-direction: column-reverse; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    {% if item %}
+                        Edit <span>{{ item.name }}</span>
+                    {% else %}
+                        Add New <span>Studio</span>
+                    {% endif %}
+                </h1>
+                <p class="page-subtitle">Configure studio details, pricing, and settings (English & Arabic).</p>
+            </div>
+            <a href="{{ url_for('admin_studios') }}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form method="POST" id="studioForm" enctype="multipart/form-data">
+                
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Basic Information
+                </h3>
+
+                <div class="form-grid">
+                    
+                    <div class="form-group form-full">
+                        <label>Studio Name <span class="required">*</span></label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ item.name if item else '' }}" 
+                                       placeholder="English (e.g., Studio A)"
+                                       required>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <input type="text" name="name_ar" class="form-control" 
+                                       value="{{ item.name_ar if item and item.name_ar else '' }}" 
+                                       placeholder="Arabic (e.g., استوديو أ)"
+                                       dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL Slug</label>
+                        <input type="text" name="slug" class="form-control" 
+                               value="{{ item.slug if item else '' }}"
+                               placeholder="auto-generated-from-title">
+                        <div class="form-hint">Preview: <code id="slugPreview" class="slug-code">/studio/{{ item.slug if item else '...' }}</code></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Persons Capacity <span class="required">*</span></label>
+                        <input type="number" name="persons_capacity" class="form-control" 
+                               value="{{ item.persons_capacity if item else 3 }}" 
+                               min="1" max="50" placeholder="3" required>
+                        <div class="form-hint">Number of persons this studio can accommodate.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control" 
+                               value="{{ item.display_order if item else 0 }}"
+                               placeholder="0">
+                        <div class="form-hint">Lower numbers appear first.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="is_active" id="is_active"
+                                   {% if item and item.is_active %}checked{% endif %}
+                                   {% if not item %}checked{% endif %}>
+                            <span>Active (Available for Booking)</span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-align-left"></i> Description & Specifications
+                </h3>
+
+                <div class="form-grid">
+                    
+                    <div class="form-group form-full">
+                        <label>Description</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="description" class="form-control" 
+                                          placeholder="Describe the studio, its features, dimensions, and what makes it unique (English)...">{{ item.description if item else '' }}</textarea>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <textarea name="description_ar" class="form-control" 
+                                          placeholder="وصف الاستوديو والمميزات (عربي)..."
+                                          dir="rtl">{{ item.description_ar if item and item.description_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label>Specifications (Text)</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="specs" class="form-control" 
+                                          placeholder="Size: 50m2&#10;Equipment: Included"
+                                          style="min-height: 100px;">{{ item.specs if item else '' }}</textarea>
+                                <div class="form-hint">English Specs</div>
+                            </div>
+                            <div>
+                                <textarea name="specs_ar" class="form-control" 
+                                          placeholder="المساحة: 50 متر مربع&#10;المعدات: مشمولة"
+                                          style="min-height: 100px;"
+                                          dir="rtl">{{ item.specs_ar if item and item.specs_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic Specs (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-image"></i> Studio Image
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Studio Photo</label>
+                        
+                        {% if item and item.image_url %}
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid var(--color-border);">
+                            <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                                <i class="fas fa-check-circle" style="color: var(--color-success);"></i> Current image:
+                            </p>
+                            <img src="{{ url_for('static', filename=item.image_url) }}" 
+                                 alt="{{ item.name }}" 
+                                 style="max-width: 300px; max-height: 200px; border-radius: 8px; border: 1px solid var(--color-border);">
+                            
+                            <a href="{{ url_for('admin_studio_delete_image', studio_id=item.id) }}" 
+                               style="display: inline-block; margin-top: 0.75rem; color: var(--color-danger); font-size: 0.85rem; text-decoration: none;"
+                               onclick="return confirm('Are you sure you want to delete this image?');">
+                                <i class="fas fa-trash"></i> Delete Image
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <input type="file" name="image" id="imageInput" class="form-control" 
+                               accept="image/jpeg,image/png,image/webp" style="padding: 0.5rem;">
+                        
+                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                            <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">New image preview:</p>
+                            <img id="previewImg" src="" alt="Preview" 
+                                 style="max-width: 300px; max-height: 200px; border-radius: 8px; border: 1px solid var(--color-gold);">
+                        </div>
+                        
+                        <div class="form-hint">Upload a photo of the studio (JPEG, PNG, or WebP). Recommended: 800x600px.</div>
+                    </div>
+                </div>
+
+                {% if item %}
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-calendar-times"></i> Availability Management
+                </h3>
+                
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                    
+                    <div class="form-card" style="padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); box-shadow: none;">
+                        <h4 style="margin-bottom: 1rem; font-size: 1rem; color: var(--color-gold);">Block a Date</h4>
+                        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+                            Disable this studio for a specific day. It will appear as "Booked" to all users.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label>Select Date</label>
+                            <input type="date" id="blockDateInput" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Reason (Internal Note)</label>
+                            <input type="text" id="blockReasonInput" class="form-control" placeholder="e.g. Maintenance, Holiday">
+                        </div>
+                        
+                        <button type="button" onclick="submitBlockForm()" class="btn-save" style="width: 100%; justify-content: center; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">
+                            <i class="fas fa-ban"></i> Block Date
+                        </button>
+                    </div>
+
+                    <div class="form-card" style="padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); box-shadow: none;">
+                        <h4 style="margin-bottom: 1rem; font-size: 1rem; color: #fff;">Upcoming Blocks</h4>
+                        
+                        {% set blocked_bookings = item.bookings|selectattr("client.email", "equalto", "system@ptahstudios.internal")|selectattr("booking_date", "ge", date.today())|list %}
+                        
+                        {% if blocked_bookings %}
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                                {% for booking in blocked_bookings|sort(attribute='booking_date') %}
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid var(--color-border); font-size: 0.9rem;">
+                                    <div>
+                                        <div style="color: var(--color-gold); font-weight: 600;">{{ booking.booking_date.strftime('%b %d, %Y') }}</div>
+                                        <div style="font-size: 0.8rem; color: var(--color-text-muted);">{{ booking.client_notes|replace('INTERNAL BLOCK: ', '') }}</div>
+                                    </div>
+                                    
+                                    <button type="button" onclick="document.getElementById('delete-block-{{ booking.id }}').submit();" style="background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 5px;">
+                                        <i class="fas fa-trash-alt hover-red" style="transition: 0.2s;"></i>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="color: var(--color-text-muted); font-style: italic; font-size: 0.9rem;">No upcoming blocked dates.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_studios') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        {% if item %}Save Changes{% else %}Create Studio{% endif %}
+                    </button>
+                </div>
+
+            </form> </div>
+    </div>
+
+    {% if item %}
+    <form id="realBlockForm" action="{{ url_for('admin_studio_block_date', studio_id=item.id) }}" method="POST" style="display: none;">
+        <input type="hidden" name="block_date" id="hiddenBlockDate">
+        <input type="hidden" name="reason" id="hiddenBlockReason">
+    </form>
+
+    {% for booking in item.bookings|selectattr("client.email", "equalto", "system@ptahstudios.internal") %}
+    <form id="delete-block-{{ booking.id }}" action="{{ url_for('admin_studio_unblock_date', booking_id=booking.id) }}" method="POST" style="display: none;" onsubmit="return confirm('Unblock this date?');">
+    </form>
+    {% endfor %}
+
+    <script>
+        function submitBlockForm() {
+            const dateVal = document.getElementById('blockDateInput').value;
+            const reasonVal = document.getElementById('blockReasonInput').value;
+            
+            if (!dateVal) {
+                alert("Please select a date.");
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to block ${dateVal}?`)) {
+                // Populate hidden form
+                document.getElementById('hiddenBlockDate').value = dateVal;
+                document.getElementById('hiddenBlockReason').value = reasonVal;
+                
+                // Submit hidden form
+                document.getElementById('realBlockForm').submit();
+            }
+        }
+    </script>
+    {% endif %}
+
+    <script>
+        // Auto-generate Slug
+        const titleInput = document.querySelector('input[name="name"]');
+        const slugInput = document.querySelector('input[name="slug"]');
+        const slugPreview = document.getElementById('slugPreview');
+
+        function generateSlug(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s-]/g, '')  // Remove non-word chars
+                .replace(/\s+/g, '-')      // Replace spaces with -
+                .replace(/-+/g, '-')       // Remove duplicate -
+                .trim('-');
+        }
+
+        titleInput.addEventListener('input', function() {
+            if (!slugInput.dataset.manual) {
+                const slug = generateSlug(this.value);
+                slugInput.value = slug;
+                slugPreview.textContent = '/studio/' + slug;
+            }
+        });
+
+        slugInput.addEventListener('input', function() {
+            this.dataset.manual = 'true';
+            slugPreview.textContent = '/studio/' + this.value;
+        });
+
+        // Init slug preview on load if editing
+        if (titleInput.value && !slugInput.value) {
+            slugPreview.textContent = '/studio/' + generateSlug(titleInput.value);
+        }
+        
+        // Image Preview Functionality
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (imageInput) {
+            imageInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                
+                if (file) {
+                    // Check if it's an image
+                    if (!file.type.match('image.*')) {
+                        alert('Please select an image file (JPEG, PNG, or WebP)');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

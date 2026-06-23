@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit {{ item.name }}{% else %}Add New Service{% endif %} - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ===========================
+           DESIGN SYSTEM
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy (Body Background) */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08); /* Subtle borders */
+            
+            --color-gold: #D4AF37;          /* Primary Accent */
+            --color-gold-hover: #bfa13f;
+            
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ===========================
+           LAYOUT CONTAINER
+           =========================== */
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===========================
+           HEADER
+           =========================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-title span { color: var(--color-gold); }
+        
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===========================
+           FORM STYLES
+           =========================== */
+        .form-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-full { grid-column: 1 / -1; }
+
+        .form-group { margin-bottom: 0.5rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required { color: var(--color-gold); }
+
+        /* Inputs */
+        .form-control {
+            width: 100%;
+            background: var(--color-bg-dark); 
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control::placeholder { color: rgba(136, 146, 176, 0.4); }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select.form-control { cursor: pointer; }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            height: 100%; 
+        }
+
+        .checkbox-group:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-gold);
+            cursor: pointer;
+        }
+
+        .checkbox-group span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            color: var(--color-gold);
+            border-color: var(--color-gold);
+        }
+
+        .btn-save {
+            background: var(--color-gold);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background: var(--color-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px dashed var(--color-gold);
+            color: var(--color-gold);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .btn-outline:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            width: 32px; height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .btn-delete:hover {
+            background: var(--color-danger);
+            color: #fff;
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+
+        /* Tables */
+        table input.form-control {
+            background: rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.05);
+            padding: 0.4rem 0.6rem;
+        }
+        table input.form-control:focus {
+            border-color: var(--color-gold);
+        }
+
+        /* Dual Input Row for Languages */
+        .dual-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .dual-input-row { grid-template-columns: 1fr; }
+            .btn-cancel, .btn-save { width: 100%; justify-content: center; }
+            .form-actions { flex-direction: column-reverse; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">
+                    {% if item %}
+                        Edit <span>{{ item.name }}</span>
+                    {% else %}
+                        Add New <span>Service</span>
+                    {% endif %}
+                </h1>
+                <p class="page-subtitle">Configure service details, pricing tiers, and presentation (English & Arabic).</p>
+            </div>
+            <a href="{{ url_for('admin_services') }}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form method="POST" id="serviceForm">
+                
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Basic Information
+                </h3>
+
+                <div class="form-grid">
+                    
+                    <div class="form-group form-full">
+                        <label>Service Name <span class="required">*</span></label>
+                        <div class="dual-input-row">
+                            <div>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ item.name if item else '' }}" 
+                                       placeholder="English Name (e.g., Podcast Production)"
+                                       required>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <input type="text" name="name_ar" class="form-control" 
+                                       value="{{ item.name_ar if item and item.name_ar else '' }}" 
+                                       placeholder="Arabic Name (e.g., إنتاج بودكاست)"
+                                       dir="rtl">
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category <span class="required">*</span></label>
+                        <select name="category" class="form-control" required>
+                            <option value="">Select a category...</option>
+                            <option value="audio" {% if item and item.category == 'audio' %}selected{% endif %}>Audio/Podcast</option>
+                            <option value="video" {% if item and item.category == 'video' %}selected{% endif %}>Video Production</option>
+                            <option value="advertising" {% if item and item.category == 'advertising' %}selected{% endif %}>Advertising</option>
+                            <option value="corporate" {% if item and item.category == 'corporate' %}selected{% endif %}>Corporate</option>
+                            <option value="social" {% if item and item.category == 'social' %}selected{% endif %}>Social Media</option>
+                            <option value="pre_production" {% if item and item.category == 'pre_production' %}selected{% endif %}>Pre-Production</option>
+                            <option value="post_production" {% if item and item.category == 'post_production' %}selected{% endif %}>Post-Production</option>
+                            <option value="exclusive" {% if item and item.category == 'exclusive' %}selected{% endif %}>Exclusive/Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <select name="icon" class="form-control">
+                            <option value="film" {% if item and item.icon == 'film' %}selected{% endif %}>Film/Movie</option>
+                            <option value="microphone" {% if item and item.icon == 'microphone' %}selected{% endif %}>Microphone</option>
+                            <option value="video" {% if item and item.icon == 'video' %}selected{% endif %}>Video Camera</option>
+                            <option value="headphones" {% if item and item.icon == 'headphones' %}selected{% endif %}>Headphones</option>
+                            <option value="music" {% if item and item.icon == 'music' %}selected{% endif %}>Music</option>
+                            <option value="broadcast" {% if item and item.icon == 'broadcast' %}selected{% endif %}>Broadcast</option>
+                            <option value="star" {% if item and item.icon == 'star' %}selected{% endif %}>Star</option>
+                            <option value="wand-magic-sparkles" {% if item and item.icon == 'wand-magic-sparkles' %}selected{% endif %}>Magic Wand</option>
+                            <option value="cog" {% if item and item.icon == 'cog' %}selected{% endif %}>Settings</option>
+                            <option value="building" {% if item and item.icon == 'building' %}selected{% endif %}>Building/Corporate</option>
+                            <option value="shopping-bag" {% if item and item.icon == 'shopping-bag' %}selected{% endif %}>Product/Bag</option>
+                            <option value="hashtag" {% if item and item.icon == 'hashtag' %}selected{% endif %}>Hashtag/Social</option>
+                            <option value="clipboard-list" {% if item and item.icon == 'clipboard-list' %}selected{% endif %}>Clipboard</option>
+                            <option value="laptop-medical" {% if item and item.icon == 'laptop-medical' %}selected{% endif %}>Editing/Laptop</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control" 
+                               value="{{ item.display_order if item else 0 }}"
+                               placeholder="0">
+                        <div class="form-hint">Lower numbers appear first.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="is_active" id="is_active"
+                                   {% if item and item.is_active %}checked{% endif %}
+                                   {% if not item %}checked{% endif %}>
+                            <span>Active (Visible on Booking Page)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-dollar-sign"></i> Pricing Configuration
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                         <label class="checkbox-group" style="background: rgba(212, 175, 55, 0.1); border-color: var(--color-gold);">
+                            <input type="checkbox" name="is_quotation_only" id="is_quotation_only" 
+                                   onchange="togglePricing()"
+                                   {% if item and item.is_quotation_only %}checked{% endif %}>
+                            <span style="color: var(--color-gold);">Request Quotation Only</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="hourly_div">
+                        <label>Overtime Hourly Rate<span class="required">*</span></label>
+                        <input type="number" name="hourly_rate" class="form-control" 
+                               value="{{ item.hourly_rate if item else 0 }}" 
+                               step="0.01" min="0" placeholder="0.00">
+                        <div class="form-hint">Used for calculating overtime costs.</div>
+                    </div>
+                </div>
+
+                <div id="tiers_section">
+                    <h3 class="section-title" style="font-size: 1rem; color: #fff; margin-top: 1rem;">
+                        Fixed Pricing Tiers
+                    </h3>
+                    <p class="form-hint" style="margin-bottom: 1rem;">
+                        Define pricing for specific durations (e.g., Half Day, Full Day).
+                    </p>
+                    
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-bottom: 1rem;">
+                        <thead>
+                            <tr style="text-align: left; color: var(--color-gold); font-size: 0.85rem; text-transform: uppercase;">
+                                <th style="padding: 0 0.5rem; width: 30%;">Label (EN)</th>
+                                <th style="padding: 0 0.5rem; width: 30%;">Label (AR)</th>
+                                <th style="padding: 0 0.5rem; width: 15%;">Duration (Hrs)</th>
+                                <th style="padding: 0 0.5rem; width: 20%;">Price (EGP)</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tier_table_body">
+                            {% if item and item.pricing_tiers %}
+                                {% for tier in item.pricing_tiers %}
+                                <tr>
+                                    <td style="padding: 0 0.5rem;">
+                                        <input type="text" name="tier_label[]" class="form-control" value="{{ tier.label }}" placeholder="e.g. Full Day">
+                                    </td>
+                                    <td style="padding: 0 0.5rem;">
+                                        <input type="text" name="tier_label_ar[]" class="form-control" value="{{ tier.label_ar or '' }}" placeholder="e.g. يوم كامل" dir="rtl">
+                                    </td>
+                                    <td style="padding: 0 0.5rem;">
+                                        <input type="number" name="tier_duration[]" class="form-control" value="{{ tier.duration_hours }}" step="0.5" placeholder="8">
+                                    </td>
+                                    <td style="padding: 0 0.5rem;">
+                                        <input type="number" name="tier_price[]" class="form-control" value="{{ tier.price }}" step="0.01" placeholder="8000">
+                                    </td>
+                                    <td style="padding: 0 0.5rem;">
+                                        <button type="button" class="btn-delete" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn-outline" onclick="addTierRow()">+ Add Pricing Tier</button>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    <i class="fas fa-align-left"></i> Description & Details
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Full Details (HTML Allowed)</label>
+                        <div class="dual-input-row">
+                            <div>
+                                <textarea name="details" class="form-control" rows="6" 
+                                          placeholder="Detailed English explanation of what is included.">{{ item.details if item else '' }}</textarea>
+                                <div class="form-hint">English</div>
+                            </div>
+                            <div>
+                                <textarea name="details_ar" class="form-control" rows="6" 
+                                          placeholder="Detailed Arabic explanation (الشرح التفصيلي)"
+                                          dir="rtl">{{ item.details_ar if item and item.details_ar else '' }}</textarea>
+                                <div class="form-hint" style="text-align: right;">Arabic (العربية)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_services') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        {% if item %}Save Changes{% else %}Create Service{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Pricing Visibility
+        function togglePricing() {
+            const isQuote = document.getElementById('is_quotation_only').checked;
+            const tiers = document.getElementById('tiers_section');
+            const hourly = document.getElementById('hourly_div');
+            
+            if (isQuote) {
+                tiers.style.opacity = '0.4';
+                tiers.style.pointerEvents = 'none';
+                hourly.style.opacity = '0.4';
+            } else {
+                tiers.style.opacity = '1';
+                tiers.style.pointerEvents = 'auto';
+                hourly.style.opacity = '1';
+            }
+        }
+
+        // Add Dynamic Table Rows
+        function addTierRow() {
+            const tbody = document.getElementById('tier_table_body');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="padding: 0 0.5rem;">
+                    <input type="text" name="tier_label[]" class="form-control" placeholder="e.g. Full Day">
+                </td>
+                <td style="padding: 0 0.5rem;">
+                    <input type="text" name="tier_label_ar[]" class="form-control" placeholder="e.g. يوم كامل" dir="rtl">
+                </td>
+                <td style="padding: 0 0.5rem;">
+                    <input type="number" name="tier_duration[]" class="form-control" placeholder="8" step="0.5">
+                </td>
+                <td style="padding: 0 0.5rem;">
+                    <input type="number" name="tier_price[]" class="form-control" placeholder="8000" step="0.01">
+                </td>
+                <td style="padding: 0 0.5rem;">
+                    <button type="button" class="btn-delete" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+        
+        // Initialize state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePricing();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Services (Website) - PTAH STUDIOS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Exact CSS from services_list.html */
+        :root { --color-bg-dark: #050d1a; --color-card-bg: #0A192F; --color-border: rgba(255, 255, 255, 0.08); --color-gold: #D4AF37; --color-gold-hover: #bfa13f; --color-text-main: #FFFFFF; --color-text-muted: #8892B0; --color-danger: #ef4444; --color-success: #10b981; --font-heading: 'Playfair Display', serif; --font-body: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background-color: var(--color-bg-dark); color: var(--color-text-main); min-height: 100vh; padding: 2rem; line-height: 1.5; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; gap: 1rem; }
+        .page-title { font-family: var(--font-body); font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .page-title span { color: var(--color-gold); }
+        .page-subtitle { color: var(--color-text-muted); font-size: 0.9rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--color-bg-dark); border: 1px solid var(--color-border); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all 0.3s ease; }
+        .stat-card:hover { border-color: rgba(212, 175, 55, 0.3); transform: translateY(-2px); }
+        .stat-icon { width: 48px; height: 48px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 1.25rem; flex-shrink: 0; }
+        .stat-info h4 { font-size: 1.5rem; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; color: #fff; }
+        .stat-info p { color: var(--color-text-muted); font-size: 0.8rem; }
+        .action-bar { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); }
+        .action-bar-info { color: var(--color-text-muted); font-size: 0.85rem; }
+        .action-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .btn-gold { background: var(--color-gold); color: #000; padding: 0.65rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; border: none; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; white-space: nowrap; }
+        .btn-gold:hover { background: var(--color-gold-hover); }
+        .btn-outline { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); padding: 0.65rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; white-space: nowrap; }
+        .btn-outline:hover { color: var(--color-gold); border-color: var(--color-gold); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+        .service-card { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; }
+        .service-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+        .card-image { aspect-ratio: 16/9; background: #000; position: relative; display: flex; align-items: center; justify-content: center; min-height: 120px; }
+        .card-image i { font-size: 2.5rem; color: var(--color-gold); opacity: 0.5; }
+        .badge-container { position: absolute; top: 0.75rem; left: 0.75rem; display: flex; gap: 0.375rem; flex-wrap: wrap; }
+        .badge { padding: 0.25rem 0.625rem; border-radius: 20px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+        .badge-cat { background: rgba(5, 13, 26, 0.85); color: var(--color-gold); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .badge-status { background: rgba(136, 146, 176, 0.2); color: var(--color-text-muted); }
+        .badge-status.active { background: rgba(16, 185, 129, 0.2); color: var(--color-success); }
+        /* NEW: Badge for Booking Link */
+        .badge-link { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .card-content { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; }
+        .card-title { font-family: var(--font-heading); font-size: 1.2rem; color: #fff; margin-bottom: 0.25rem; }
+        .card-category { font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0.75rem; text-transform: capitalize; }
+        .card-description { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.75rem; line-height: 1.5; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-meta { display: flex; gap: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border); margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .meta-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; color: var(--color-text-muted); }
+        .meta-item i { color: var(--color-gold); }
+        .card-actions { display: flex; gap: 0.5rem; }
+        .btn-action { flex: 1; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; text-align: center; border: 1px solid var(--color-border); color: var(--color-text-muted); transition: all 0.2s; cursor: pointer; }
+        .btn-action:hover { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+        .btn-delete { color: var(--color-danger); border-color: rgba(239, 68, 68, 0.3); }
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.1); color: var(--color-danger); border-color: var(--color-danger); }
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem; background: var(--color-card-bg); border: 2px dashed var(--color-border); border-radius: 12px; }
+        .empty-state i { font-size: 3rem; color: var(--color-gold); margin-bottom: 1rem; opacity: 0.5; }
+        .empty-state h3 { font-family: var(--font-heading); font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
+        .empty-state p { color: var(--color-text-muted); margin-bottom: 1.5rem; }
+        .alert { padding: 0.875rem 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--color-success); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--color-danger); }
+        #deleteModal { display: none; position: fixed; inset: 0; background: rgba(5, 13, 26, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem; }
+        .modal-content { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; max-width: 450px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">General Services <span>(Website)</span></h1>
+            <p class="page-subtitle">Manage services displayed on public Index & Services pages.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_settings') }}" class="btn-outline">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|length }}</h4>
+                <p>Public Services</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-link"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|selectattr('linked_booking_service_id')|list|length }}</h4>
+                <p>Bookable</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+            <div class="stat-info">
+                <h4>{{ items|selectattr('is_active')|list|length }}</h4>
+                <p>Visible Online</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <div class="action-bar-info">
+            <i class="fas fa-list"></i> Managing public-facing marketing cards
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('services') }}" target="_blank" class="btn-outline">
+                <i class="fas fa-external-link-alt"></i> View Website
+            </a>
+            <a href="{{ url_for('admin_general_service_new') }}" class="btn-gold">
+                <i class="fas fa-plus"></i> Add General Service
+            </a>
+        </div>
+    </div>
+
+    <div class="services-grid">
+        {% for item in items %}
+        <div class="service-card">
+            <div class="card-image">
+                <i class="fas fa-{{ item.icon if item.icon else 'star' }}"></i>
+                <div class="badge-container">
+                    <span class="badge badge-cat">{{ item.category|replace('_', ' ')|title }}</span>
+                    {% if item.linked_service %}
+                    <span class="badge badge-link"><i class="fas fa-link"></i> Bookable</span>
+                    {% endif %}
+                    <span class="badge badge-status {{ 'active' if item.is_active else '' }}">
+                        {{ 'Active' if item.is_active else 'Hidden' }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-content">
+                <h3 class="card-title">{{ item.name }}</h3>
+                <p class="card-category">
+                    {% if item.linked_service %}
+                        Links to: {{ item.linked_service.name }}
+                    {% else %}
+                        Informational Only
+                    {% endif %}
+                </p>
+                
+                <p class="card-description">{{ item.description[:150] if item.description else 'No description.' }}{{ '...' if item.description and item.description|length > 150 else '' }}</p>
+                
+                <div class="card-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-sort"></i>
+                        <span>Order: {{ item.display_order }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-code"></i>
+                        <span>/{{ item.slug }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <a href="{{ url_for('admin_general_service_edit', service_id=item.id) }}" class="btn-action">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button type="button" class="btn-action btn-delete" 
+                            onclick="deleteItem({{ item.id }}, '{{ item.name }}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-bullhorn"></i>
+            <h3>No General Services</h3>
+            <p>Create services to display on your homepage and services page.</p>
+            <a href="{{ url_for('admin_general_service_new') }}" class="btn-gold">
+                <i class="fas fa-plus"></i> Create First Service
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="deleteModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--color-danger); margin-bottom: 1rem;"></i>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 0.75rem; color: #fff;">Delete Service?</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Are you sure you want to delete <strong id="deleteItemName" style="color: #fff;"></strong>? 
+                <br>This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                <button onclick="closeDeleteModal()" class="btn-outline">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-gold" style="background: var(--color-danger); color: #fff;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteItem(id, name) {
+            document.getElementById('deleteItemName').textContent = name;
+            document.getElementById('deleteForm').action = '/admin/general-services/delete/' + id;
+            document.getElementById('deleteModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+    </script>
+</body>
+</html>

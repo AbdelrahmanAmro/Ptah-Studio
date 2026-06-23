@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ _('Book a Session - Ptah Studios') }}</title>
+</head>
+{% extends "base.html" %}
+
+{% block title %}{{ _('Book a Session - Ptah Studios') }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{# Add Arabic Theme support for Calendar if needed #}
+{% if get_locale() == 'ar' %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.css">
+{% endif %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* ===========================
+       CSS Variables & Shared Styles
+       =========================== */
+    :root {
+        --color-navy-darkest: #050d1a;
+        --color-navy-dark: #0A192F;
+        --color-navy-medium: #112240;
+        --color-navy-light: #233554;
+        --color-gold: #D4AF37;
+        --color-gold-light: #F4D06F;
+        --color-text-light: #CED4DA;
+        --color-gray-300: #D1D5DB;
+        --color-gray-400: #ADB5BD;
+        --color-white: #FFFFFF;
+        
+        --font-heading: 'Playfair Display', Georgia, serif;
+        --font-body: 'Inter', -apple-system, sans-serif;
+    }
+    
+    html.lenis { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+    
+    body {
+        cursor: default;
+        overflow-x: hidden;
+        background: var(--color-navy-darkest);
+        font-size: 0.85rem;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        padding: 0;
+    }
+
+    /* RTL Support for Form Elements */
+    html[dir="rtl"] .form-label { text-align: right; }
+    html[dir="rtl"] .form-select, html[dir="rtl"] .form-control { text-align: right; }
+    html[dir="rtl"] .summary-item { flex-direction: row; }
+    html[dir="rtl"] .summary-row { flex-direction: row; }
+    html[dir="rtl"] .step-indicator { flex-direction: row-reverse; } 
+    html[dir="rtl"] .wizard-steps::before { left: 0; right: 0; }
+    html[dir="rtl"] .selection-card.selected::after { right: auto; left: 10px; }
+    html[dir="rtl"] .equipment-card.checked::after { right: auto; left: 6px; }
+    html[dir="rtl"] .select-arrow { right: auto; left: 0.75rem; }
+    html[dir="rtl"] .custom-date-trigger { background-position: left 1rem center !important; }
+    html[dir="rtl"] .nav-btn.prev-btn { left: auto; right: 10px; transform: rotate(180deg); }
+    html[dir="rtl"] .nav-btn.next-btn { right: auto; left: 10px; transform: rotate(180deg); }
+    html[dir="rtl"] .duration-card { border-left: none; border-right: 3px solid var(--color-gold); }
+    html[dir="rtl"] .duration-card.invalid { border-right-color: #ff6b6b; }
+    html[dir="rtl"] .summary-value { text-align: left; }
+    html[dir="rtl"] .modal-close { right: auto; left: 1rem; }
+    html[dir="rtl"] .flatpickr-calendar {
+        direction: rtl;
+        text-align: right;
+    }
+
+    html[dir="rtl"] .flatpickr-prev-month, 
+    html[dir="rtl"] .flatpickr-next-month {
+        /* Flip the arrow icons so they point correctly in RTL */
+        transform: scaleX(-1);
+    }
+
+    html[dir="rtl"] .flatpickr-weekday {
+    float: right !important; /* Ensures headers align with row-reverse body */
+    width: 14.28% !important;
+}
+
+    html[dir="rtl"] .flatpickr-weekday {
+        /* Aligns the weekday headers (Sat, Sun...) to match the grid */
+        text-align: center; 
+    }
+
+    /* ===========================
+       Cinematic Grain Overlay
+       =========================== */
+    .grain-overlay {
+        position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.04; mix-blend-mode: overlay;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+        animation: grain 8s steps(10) infinite;
+    }
+    @keyframes grain {
+        0%, 100% { transform: translate(0, 0); }
+        10% { transform: translate(-5%, -10%); }
+        90% { transform: translate(-10%, 10%); }
+    }
+
+    /* ===========================
+       Booking Specifics - COMPACT
+       =========================== */
+    .booking-hero {
+        padding: 8rem 1.5rem 2rem; 
+        background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+        text-align: center;
+    }
+    .booking-hero::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%;
+        background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 70%); pointer-events: none;
+    }
+    .booking-hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+    
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem;
+        background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 40px; font-size: 0.7rem; color: var(--color-gold); text-transform: uppercase;
+        letter-spacing: 1.5px; margin-bottom: 1rem; animation: fadeInDown 0.8s ease-out;
+    }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .booking-hero h1 {
+        font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700;
+        line-height: 1.1; margin-bottom: 0.75rem; color: #fff; animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+    .text-gold {
+        background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: var(--color-gold);
+    }
+    .booking-hero p { font-size: 0.95rem; margin-top: 0; color: var(--color-text-light); line-height: 1.6; animation: fadeInUp 0.8s ease-out 0.4s backwards; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===========================
+       Booking Wizard
+       =========================== */
+    .booking-section { padding: 2rem 1.5rem 5rem; background: var(--color-navy-dark); position: relative; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .form-progress {
+        display: flex; justify-content: center; align-items: center; gap: 0.6rem; margin-bottom: 2.5rem; padding: 1rem;
+        background: rgba(17, 34, 64, 0.6); backdrop-filter: blur(10px);
+        border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px;
+    }
+    .progress-step { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; position: relative; z-index: 2; }
+    .step-number {
+        width: 35px; height: 35px; background: rgba(17, 34, 64, 0.8); border: 2px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-heading); font-size: 0.9rem; font-weight: 700; color: var(--color-gray-400); transition: all 0.4s;
+    }
+    .progress-step.active .step-number, .progress-step.completed .step-number { border-color: var(--color-gold); color: var(--color-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+    .progress-line { flex-grow: 1; height: 2px; background: rgba(212, 175, 55, 0.2); max-width: 50px; }
+    .progress-step.completed + .progress-line, .progress-step.completed + .progress-line + .progress-step { background: var(--color-gold); }
+
+    /* Layout Grid */
+    .form-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 300px; 
+        gap: 1.5rem; 
+        align-items: start; 
+        position: relative; 
+    }
+    
+    .wizard-phase {
+        display: none; 
+        background: rgba(17, 34, 64, 0.6); 
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 12px; 
+        padding: 2rem; 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+        box-sizing: border-box;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    .wizard-phase.active-phase { display: block; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .phase-title { font-family: var(--font-heading); font-size: 1.3rem; color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.6rem; }
+
+    /* Carousel */
+    .carousel-wrapper {
+        display: flex; align-items: center; position: relative; width: 100%; max-width: 100%; margin-bottom: 1rem; overflow: hidden;
+    }
+    .carousel-track {
+        display: flex; gap: 1rem; overflow-x: auto; scroll-behavior: smooth; padding: 5px; width: 100%; max-width: 100%; scrollbar-width: none;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+
+    .nav-btn {
+        background: none; border: none; color: var(--color-gold); font-size: 2rem; cursor: pointer; padding: 0 8px; z-index: 10; transition: transform 0.2s; flex-shrink: 0;
+    }
+    .nav-btn:hover { transform: scale(1.1); color: #fff; }
+
+    .studio-card {
+        min-width: calc((100% - 2rem) / 3);
+        max-width: calc((100% - 2rem) / 3);
+        flex-shrink: 0;
+        background: rgba(35, 53, 84, 0.4); 
+        border: 1px solid rgba(212, 175, 55, 0.2); 
+        border-radius: 10px;
+        overflow: hidden; 
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+        position: relative;
+        display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .studio-card:hover { background: rgba(35, 53, 84, 0.7); border-color: var(--color-gold); transform: translateY(-3px); }
+    .studio-card.selected { background: rgba(212, 175, 55, 0.1); border-color: var(--color-gold); box-shadow: 0 0 12px rgba(212, 175, 55, 0.2); }
+    .studio-card.selected::after {
+        content: '\f00c'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
+        background: var(--color-gold); color: var(--color-navy-darkest); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+    
+    .studio-card input[type="radio"] { display: none; }
+    .studio-image-container { width: 100%; height: 130px; overflow: hidden; position: relative; }
+    .studio-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .studio-card:hover .studio-image { transform: scale(1.08); }
+    .studio-image-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--color-navy-light) 0%, var(--color-navy-medium) 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--color-gold); }
+    
+    .studio-card-content { padding: 0.85rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .studio-card-title { font-size: 0.85rem; font-weight: 600; color: #fff; margin-bottom: 0.25rem; }
+    .studio-card-rate { font-size: 0.9rem; font-weight: 700; color: var(--color-gold); font-family: var(--font-heading); margin-bottom: auto;}
+    
+    .view-studio-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; margin-top: 0.75rem; padding: 0.35rem 0.75rem;
+        font-size: 0.65rem; font-weight: 600; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 4px;
+        color: var(--color-gold); text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; position: relative; z-index: 5;
+    }
+    .view-studio-btn:hover { background: var(--color-gold); color: var(--color-navy-darkest); }
+
+    /* Date & Time UI */
+    .datetime-container { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+    .datetime-card { background: rgba(17, 34, 64, 0.4); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; padding: 1.25rem; }
+
+    .custom-date-trigger {
+        background-color: rgba(17, 34, 64, 0.6) !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important; background-position: right 1rem center !important; background-size: 1rem !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important; border-radius: 8px !important; color: #fff !important;
+        padding: 0.75rem 1rem !important; font-family: var(--font-heading) !important; font-size: 0.85rem !important;
+        letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease;
+        box-sizing: border-box !important;
+    }
+    .custom-date-trigger:hover, .custom-date-trigger:focus { border-color: var(--color-gold) !important; background-color: rgba(17, 34, 64, 0.9) !important; }
+
+    .time-selection-wrapper {
+        display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.75rem;
+        background: rgba(10, 25, 47, 0.6); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 12px; padding: 1.25rem;
+    }
+    .time-connector { display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 1rem; padding-top: 1.2rem; opacity: 0.5; }
+    
+    .select-wrapper { position: relative; width: 100%; }
+    .custom-time-select {
+        width: 100%; appearance: none; background: rgba(5, 13, 26, 0.8);
+        border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; padding: 0.75rem;
+        color: #fff; font-size: 0.95rem; font-family: var(--font-heading); letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease;
+    }
+    .custom-time-select:focus { outline: none; border-color: var(--color-gold); background: rgba(5, 13, 26, 1); }
+    .select-arrow { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--color-gold); pointer-events: none; transition: transform 0.3s; font-size: 0.8rem;}
+    .custom-time-select:focus + .select-arrow { transform: translateY(-50%) rotate(180deg); }
+    .sub-text { font-size: 0.65rem; color: var(--color-gray-400); margin-left: 4px; }
+     .time-selection-wrapper, 
+    #duration_display_box {
+        display: none; 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    .duration-card {
+        display: flex; align-items: center; background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, rgba(10, 25, 47, 0.0) 100%);
+        border-left: 3px solid var(--color-gold); border-radius: 8px; padding: 1rem; gap: 1rem; transition: all 0.3s ease;
+    }
+    .duration-card.valid { background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, rgba(10, 25, 47, 0.4) 100%); }
+    .duration-card.invalid { border-left-color: #ff6b6b; background: linear-gradient(90deg, rgba(255, 107, 107, 0.1) 0%, rgba(10, 25, 47, 0.0) 100%); }
+    
+    .duration-icon {
+        font-size: 1.25rem; color: var(--color-gold); width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center; background: rgba(212, 175, 55, 0.1); border-radius: 50%;
+    }
+    .duration-info { flex-grow: 1; display: flex; flex-direction: column; }
+    .duration-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-gray-400); margin-bottom: 0.1rem; }
+    .duration-value { font-size: 1.25rem; font-family: var(--font-heading); font-weight: 700; color: #fff; }
+    
+    .duration-badge {
+        padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.5px; background: rgba(255, 255, 255, 0.05); color: var(--color-gray-400);
+    }
+    .duration-card.valid .duration-badge { background: var(--color-gold); color: var(--color-navy-darkest); }
+    .duration-card.invalid .duration-badge { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+
+    /* Service Cards (Updated) */
+    .cards-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+        gap: 0.8rem; 
+    }
+    
+    .selection-card-wrapper {
+        display: flex; flex-direction: column; height: 100%; position: relative;
+    }
+
+    .selection-card {
+        background: rgba(35, 53, 84, 0.4); 
+        border: 1px solid rgba(212, 175, 55, 0.2); 
+        border-radius: 8px 8px 0 0;
+        padding: 0.8rem;
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+        position: relative;
+        display: flex; flex-direction: column; 
+        flex-grow: 1;
+        min-height: 110px;
+    }
+    
+    .selection-card:hover { background: rgba(35, 53, 84, 0.7); border-color: var(--color-gold); }
+    .selection-card.selected { background: rgba(212, 175, 55, 0.1); border-color: var(--color-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.15); }
+    .selection-card.selected::after { content: '\f00c'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: 10px; right: 10px; color: var(--color-gold); font-size: 1rem; }
+    
+    .selection-card input[type="radio"] { display: none; }
+
+    .card-icon { 
+        font-size: 1.2rem;
+        color: var(--color-text-light); 
+        margin-bottom: 0.5rem; 
+    }    .selection-card.selected .card-icon { color: var(--color-gold); }
+    .card-title { 
+        font-size: 0.85rem;
+        font-weight: 600; 
+        color: #fff; 
+        margin-bottom: 0.3rem; 
+        line-height: 1.2; 
+    }    
+    .card-price { 
+        font-size: 0.9rem; font-weight: 700; color: var(--color-gold); 
+        font-family: var(--font-heading); margin-top: auto; 
+    }
+    .card-subtext { font-size: 0.65rem; font-weight: 400; color: var(--color-gray-400); display: block; margin-top: 3px;}
+
+    /* Details Button (New) */
+    .details-btn {
+        width: 100%;
+        background: rgba(10, 25, 47, 0.6);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-top: none;
+        color: var(--color-gray-400);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 0 0 8px 8px;
+        transition: all 0.3s ease;
+        display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .details-btn:hover { color: var(--color-gold); background: rgba(17, 34, 64, 0.9); border-color: var(--color-gold); }
+
+    /* Modal Styles */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0; z-index: 10000;
+        background: rgba(5, 13, 26, 0.9); backdrop-filter: blur(5px);
+        align-items: center; justify-content: center; padding: 1rem;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+        background: var(--color-navy-dark);
+        border: 1px solid var(--color-gold);
+        padding: 2rem; border-radius: 12px;
+        max-width: 600px; width: 100%; position: relative;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        max-height: 90vh; overflow-y: auto;
+        animation: scaleUp 0.3s ease;
+    }
+    .modal-close {
+        position: absolute; top: 15px; right: 15px;
+        background: none; border: none; color: var(--color-gray-400); 
+        font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+    }
+    .modal-close:hover { color: var(--color-gold); transform: rotate(90deg); }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+
+    /* Equipment UI */
+    .addon-category { margin-bottom: 2rem; }
+    .addon-category h3 {
+        color: var(--color-gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+        margin-bottom: 1rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 0.5rem;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
+    .equipment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    
+    .equipment-card {
+        display: flex; flex-direction: column; background: rgba(35, 53, 84, 0.3);
+        border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 10px; overflow: hidden;
+        cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative; height: 100%;
+    }
+    .equipment-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    .equipment-card.checked { border-color: var(--color-gold); background: rgba(212, 175, 55, 0.08); }
+    .equipment-card.checked::after {
+        content: '\f00c'; font-family: "Font Awesome 6 Free"; font-weight: 900;
+        position: absolute; top: 6px; right: 6px; width: 20px; height: 20px;
+        background: var(--color-gold); color: var(--color-navy-darkest);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 0.65rem; z-index: 10;
+    }
+    
+    .equipment-image-wrapper { width: 100%; height: 120px; position: relative; overflow: hidden; background: var(--color-navy-light); }
+    .equipment-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .equipment-card:hover .equipment-image { transform: scale(1.1); }
+    .equipment-image-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--color-navy-light) 0%, var(--color-navy-medium) 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: rgba(212, 175, 55, 0.4); }
+    
+    .equipment-info { padding: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem; flex-grow: 1; }
+    .equipment-name { font-weight: 600; color: #fff; font-size: 0.85rem; line-height: 1.2; }
+    .equipment-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+    .add-label { font-size: 0.65rem; color: var(--color-gold); font-weight: 600; }
+    
+    .quantity-selector {
+        display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; padding: 0.3rem;
+        background: rgba(10, 25, 47, 0.8); border-radius: 4px; border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .qty-btn {
+        width: 22px; height: 22px; border: 1px solid rgba(212, 175, 55, 0.3);
+        background: transparent; color: var(--color-gold); border-radius: 4px;
+        font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .qty-btn:hover { background: var(--color-gold); color: var(--color-navy-dark); }
+    .qty-input { width: 30px; text-align: center; background: transparent; border: none; color: #fff; font-size: 0.8rem; font-weight: 600; }
+    .qty-input::-webkit-inner-spin-button, .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    
+    .add-btn, .remove-btn {
+        width: 100%; padding: 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+        cursor: pointer; transition: all 0.3s; margin-top: 0.4rem; border: none;
+        display: flex; align-items: center; justify-content: center; gap: 0.3rem;
+    }
+    .add-btn { background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light)); color: var(--color-navy-darkest); }
+    .remove-btn { background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); color: #ff6b6b; }
+
+    /* Summary Sidebar */
+    .form-sidebar { 
+        position: sticky; top: 110px; max-height: calc(100vh - 120px); opacity: 1; max-width: 100%; overflow: hidden; opacity: 0; pointer-events: none; transform: translateX(20px); transition: all 0.3s ease;
+    }
+    .form-sidebar.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+    
+    .summary-card {
+        background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(10px);
+        border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 1rem; color: #fff;
+    }
+    .summary-section { margin-bottom: 1rem; border-bottom: 1px solid rgba(212, 175, 55, 0.1); padding-bottom: 0.75rem; }
+    .summary-label { display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--color-gray-400); margin-bottom: 0.2rem; }
+    .summary-value { font-size: 0.85rem; color: #fff; font-weight: 500; display: flex; justify-content: space-between; gap: 0.4rem; }
+    .summary-price-tag { color: var(--color-gold); white-space: nowrap; }
+    .summary-total { display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 700; padding-top: 0.75rem; }
+    .summary-total span:last-child { font-family: var(--font-heading); font-size: 1.4rem; color: var(--color-gold); }
+
+    /* Form Inputs */
+    .form-group { 
+        margin-bottom: 1rem; 
+        max-width: 800px; 
+        width: 100%; 
+        margin-left: auto; 
+        margin-right: auto; 
+    }
+    
+    .form-label { 
+        display: block; 
+        margin-bottom: 0.3rem; 
+        color: var(--color-gold); 
+        font-size: 0.7rem; 
+        text-transform: uppercase; 
+    }
+    
+    .form-input, .form-select, .form-textarea {
+        width: 100%; 
+        padding: 0.6rem 0.8rem; 
+        background: rgba(10, 25, 47, 0.6);
+        border: 1px solid rgba(212, 175, 55, 0.2); 
+        border-radius: 6px; 
+        color: #fff; 
+        font-size: 0.85rem; 
+        box-sizing: border-box; 
+    }
+    
+    .form-input:focus { outline: none; border-color: var(--color-gold); }
+    
+    .field-error { 
+        color: #ff6b6b; 
+        font-size: 0.65rem; 
+        margin-top: 0.3rem; 
+        display: flex; 
+        align-items: center; 
+        gap: 0.3rem; 
+        animation: shake 0.3s ease-in-out; 
+    }
+    
+    .form-row {
+        max-width: 800px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.9rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        margin-left: auto; 
+        margin-right: auto; 
+    }
+    
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+    
+    /* Nav Buttons */
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 1.5rem; }
+    .btn-nav { padding: 0.7rem 1.4rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; }
+    .btn-prev { background: transparent; border: 1px solid rgba(212, 175, 55, 0.3); color: var(--color-text-light); }
+    .btn-prev:hover { border-color: var(--color-gold); color: var(--color-gold); }
+    .btn-next { background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light)); border: none; color: var(--color-navy-darkest); }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 3px 12px rgba(212, 175, 55, 0.3); }
+    .error-message { color: #ff6b6b; margin-top: 0.6rem; display: none; font-size: 0.75rem; }
+
+    /* Trust Section */
+    .trust-section { padding: 2.5rem 1.5rem; background: var(--color-navy-medium); position: relative; }
+    .trust-badges { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
+    .trust-badge { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; color: #fff; text-align: center; }
+    .trust-badge i {
+        width: 45px; height: 45px; background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; color: var(--color-navy-dark); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Flatpickr Customization */
+    .flatpickr-calendar {
+        background: #0A192F !important;
+        border: 1px solid rgba(212, 175, 55, 0.5) !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        font-family: var(--font-body) !important;
+        width: 280px !important;
+    }
+    .flatpickr-calendar:before, .flatpickr-calendar:after { display: none !important; }
+
+    .flatpickr-month {
+        background: transparent !important;
+        color: var(--color-gold) !important;
+        fill: var(--color-gold) !important;
+        height: 50px !important;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        margin-bottom: 8px;
+    }
+
+    .flatpickr-current-month {
+        font-size: 0.9rem !important;
+        padding-top: 12px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 5px;
+        color: #fff !important;
+        font-family: var(--font-heading) !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        padding: 2px 8px !important;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        color: var(--color-gold) !important;
+        border-color: rgba(212, 175, 55, 0.3) !important;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months option {
+        background-color: #0A192F !important;
+        color: #D4AF37 !important;
+        font-family: var(--font-body) !important;
+        padding: 8px !important;
+        font-size: 0.85rem;
+    }
+
+    .flatpickr-current-month input.cur-year {
+        font-family: var(--font-heading) !important;
+        font-weight: 700 !important;
+        color: var(--color-gold) !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .flatpickr-prev-month, .flatpickr-next-month {
+        fill: var(--color-gold) !important;
+        color: var(--color-gold) !important;
+        padding-top: 8px !important;
+    }
+    .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
+        fill: #fff !important;
+    }
+
+    span.flatpickr-weekday {
+        background: transparent !important;
+        color: var(--color-gray-400) !important;
+        font-weight: 600;
+        font-size: 0.7rem !important;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+     
+
+
+    .dayContainer {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-around !important;
+}
+
+    .flatpickr-days {
+    width: 260px !important;
+}
+
+    .flatpickr-day {
+        color: #e6f1ff !important;
+        border-radius: 6px !important;
+        border: 1px solid transparent !important;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        font-weight: 500;
+        height: 32px;
+        line-height: 32px;
+        flex-basis: 14.28% !important;
+    max-width: 38px !important; /* Standard flatpickr day size */
+    margin: 2px 0 !important;
+    }
+
+    .flatpickr-day:hover {
+        background: rgba(212, 175, 55, 0.2) !important;
+        border-color: var(--color-gold) !important;
+        transform: scale(1.1);
+        z-index: 2;
+    }
+
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+        background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light)) !important;
+        color: var(--color-navy-darkest) !important;
+        border-color: transparent !important;
+        font-weight: 800 !important;
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .flatpickr-day.today {
+        border: 1px solid var(--color-gold) !important;
+        background: transparent !important;
+        color: var(--color-gold) !important;
+    }
+    .flatpickr-day.today:hover {
+        background: var(--color-gold) !important;
+        color: var(--color-navy-darkest) !important;
+    }
+
+    .flatpickr-day.disabled {
+        color: rgba(255,255,255,0.05) !important;
+    }
+    
+    /* Mobile */
+    @media (max-width: 900px) {
+        .booking-hero { padding: 6rem 1rem 1.5rem; }
+        .booking-hero h1 { font-size: 1.8rem; }
+        
+        .booking-section { padding: 1rem 1rem 4rem; }
+        .form-grid { display: flex !important; align-items: start; flex-direction: column !important; gap: 2rem !important; }
+        
+        .form-content { order: 1 !important; width: 100% !important; }
+        .form-sidebar { order: 2 !important; width: 100% !important; position: static !important; margin-top: 0 !important; opacity: 0 !important; pointer-events: none !important; }
+        .form-sidebar.visible { opacity: 1 !important; pointer-events: auto !important; }
+        .form-progress { display: none; }
+
+        .carousel-wrapper { width: 100vw; margin-left: -1rem; margin-right: -1rem; position: relative; }
+        .carousel-track { padding: 8px 12.5vw; scroll-snap-type: x mandatory; }
+        .studio-card { min-width: 75vw; width: 75vw; scroll-snap-align: center; }
+        
+        .nav-btn { display: flex !important; position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; background: rgba(5, 13, 26, 0.6); border-radius: 50%; width: 30px; height: 30px; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-size: 1.2rem; }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+        
+        .time-selection-wrapper { grid-template-columns: 1fr; gap: 1rem; }
+        .time-connector { transform: rotate(90deg); padding: 0; }
+        
+        .nav-buttons { 
+            position: static !important;
+            bottom: auto !important;
+            background: transparent !important;
+            padding: 1.5rem 0 0 0 !important;
+            z-index: 1; 
+            margin-top: 0;
+            width: 100%;
+            display: flex;
+            gap: 1rem ; 
+            box-shadow: none !important;
+        }
+        .btn-nav { 
+            padding: 0.9rem;
+            flex: 1;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="grain-overlay"></div>
+
+    <section class="booking-hero">
+        <div class="booking-hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-calendar-check"></i>
+                {{ _('Reserve Your Creation Session') }}
+            </div>
+            <h1>{{ _('Book Your') }} <span class="text-gold">{{ _('Session') }}</span></h1>
+            <p>{{ _('Select your studio, choose a date and time, and customize your booking.') }}</p>
+        </div>
+    </section>
+
+    <section class="booking-section">
+        <div class="container">
+            <form method="POST" class="booking-form" id="bookingForm" novalidate>
+                {{ form.hidden_tag() }}
+                <input type="hidden" name="equipment_data" id="equipment_data" value="{}">
+                
+                <div class="form-progress">
+                    <div class="progress-step active" id="step1"><span class="step-number">1</span></div>
+                    <div class="progress-line" id="line1"></div>
+                    <div class="progress-step" id="step2"><span class="step-number">2</span></div>
+                    <div class="progress-line" id="line2"></div>
+                    <div class="progress-step" id="step3"><span class="step-number">3</span></div>
+                    <div class="progress-line" id="line3"></div>
+                    <div class="progress-step" id="step4"><span class="step-number">4</span></div>
+                    <div class="progress-line" id="line4"></div>
+                    <div class="progress-step" id="step5"><span class="step-number">5</span></div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-content">
+                        
+                        <div id="phase1" class="wizard-phase active-phase">
+                            <h2 class="phase-title"><i class="fas fa-layer-group text-gold"></i> {{ _('Select a Studio') }}</h2>
+                            <p style="color: var(--color-gray-400); margin-bottom: 1.5rem; font-size: 0.9rem;">{{ _('Choose from our professional studio spaces.') }}</p>
+                            
+                            <div class="carousel-wrapper">
+                                <button type="button" class="nav-btn prev-btn" onclick="scrollCarousel(-1)">&#10094;</button>
+
+                                <div class="carousel-track" id="studioTrack">
+                                    {% for studio in studios %}
+                                    <label class="studio-card" 
+                                           data-studio-id="{{ studio.id }}" 
+                                           data-capacity="{{ studio.persons_capacity }}"
+                                           onclick="selectStudio({{ studio.id }}, '{{ studio.name_ar or studio.name if get_locale() == 'ar' else studio.name }}', {{ studio.persons_capacity }})">
+                                        <input type="radio" name="studio_radio" value="{{ studio.id }}">
+                                        <div class="studio-image-container">
+                                            {% if studio.image_url %}
+                                            <img src="{{ url_for('static', filename=studio.image_url) }}" alt="{{ studio.name }}" class="studio-image">
+                                            {% else %}
+                                            <div class="studio-image-placeholder"><i class="fas fa-camera"></i></div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="studio-card-content">
+                                            <div class="studio-card-title">{{ studio.name_ar or studio.name if get_locale() == 'ar' else studio.name }}</div>
+                                            <div class="studio-card-rate"><i class="fas fa-users"></i> {{ studio.persons_capacity }} {{ _('Persons') }}</div>
+                                            
+                                            <a href="{{ url_for('portfolio_item', slug=studio.slug) }}" target="_blank" class="view-studio-btn" onclick="event.stopPropagation()">
+                                                <i class="fas fa-eye"></i> {{ _('View Studio') }}
+                                            </a>
+                                        </div>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+
+                                <button type="button" class="nav-btn next-btn" onclick="scrollCarousel(1)">&#10095;</button>
+                            </div>
+                            <div class="error-message" id="error1"><i class="fas fa-exclamation-circle"></i> {{ _('Please select a studio.') }}</div>
+                            <div class="nav-buttons" style="justify-content: flex-end;">
+                                <button type="button" class="btn-nav btn-next" onclick="nextStep(1)">{{ _('Next Step') }} <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="phase2" class="wizard-phase">
+                            <h2 class="phase-title"><i class="fas fa-calendar-alt text-gold"></i> {{ _('Date & Time') }}</h2>
+                            
+                            <div class="datetime-container">
+                                
+                                <div class="datetime-card full-width">
+                                    <label class="form-label"><i class="far fa-calendar"></i> {{ _('Select Date') }}</label>
+                                    <input type="text" id="visual_date_picker" class="form-input custom-date-trigger" placeholder="{{ _('Select a date...') }}">
+                                    <div style="display:none;">
+                                        {{ form.booking_date(id="real_booking_date") }}
+                                    </div>
+                                </div>
+
+                                <div class="time-selection-wrapper">
+                                    
+                                    <div class="time-input-group">
+                                        <label class="form-label">{{ _('Start Time') }}</label>
+                                        <div class="select-wrapper">
+                                            <select id="start_time_select" class="form-select custom-time-select" onchange="handleStartTimeChange()">
+                                                <option value="" disabled selected>{{ _('Select Start') }}</option>
+                                                </select>
+                                            <i class="fas fa-chevron-down select-arrow"></i>
+                                        </div>
+                                        <span class="sub-text">{{ _('Opens at 08:00 AM') }}</span>
+                                    </div>
+
+                                    <div class="time-connector">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </div>
+
+                                    <div class="time-input-group">
+                                        <label class="form-label">{{ _('End Time') }}</label>
+                                        <div class="select-wrapper">
+                                            <select id="end_time_select" class="form-select custom-time-select" onchange="calculateDuration()">
+                                                <option value="" disabled selected>{{ _('Select End') }}</option>
+                                                 </select>
+                                            <i class="fas fa-chevron-down select-arrow"></i>
+                                        </div>
+                                        <span class="sub-text">{{ _('Closes at 11:00 PM') }}</span>
+                                    </div>
+                                </div>
+
+                                <div id="duration_display_box" class="duration-card">
+                                    <div class="duration-icon">
+                                        <i class="fas fa-hourglass-half"></i>
+                                    </div>
+                                    <div class="duration-info">
+                                        <span class="duration-label">{{ _('Total Session Duration') }}</span>
+                                        <span id="duration_text_main" class="duration-value">0 {{ _('Hours') }}</span>
+                                    </div>
+                                    <div class="duration-badge" id="duration_status_badge">{{ _('Select Times') }}</div>
+                                </div>
+                                
+                                <div style="display:none;">
+                                    {{ form.start_time(id="real_start_time") }}
+                                    {{ form.end_time(id="real_end_time") }}
+                                    <input type="hidden" id="start_time_input"> 
+                                    <input type="hidden" id="end_time_input">
+                                </div>
+
+                                <div class="error-message" id="error2"><i class="fas fa-exclamation-circle"></i> {{ _('Please select a valid date and time duration (Min 2 hours).') }}</div>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button type="button" class="btn-nav btn-prev" onclick="prevStep(2)">{{ _('Back') }}</button>
+                                <button type="button" class="btn-nav btn-next" onclick="nextStep(2)">{{ _('Next Step') }} <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="phase3" class="wizard-phase">
+                            <h2 class="phase-title"><i class="fas fa-star text-gold"></i> {{ _('Select a Service') }}</h2>
+                            <p style="color: var(--color-gray-400); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                                {{ _('Select a service to see details.') }}
+                            </p>
+                            
+                            <div class="cards-grid">
+                                {% for service in services %}
+                                {% if service.slug != 'custom-package' %}
+                                
+                                <div class="selection-card-wrapper">
+                                    <label class="selection-card" 
+                                           data-service-id="{{ service.id }}"
+                                           data-is-quote="{{ 'true' if service.is_quotation_only else 'false' }}"
+                                           onclick="selectServiceNew(this, {{ service.id }}, '{{ service.name_ar or service.name if get_locale() == 'ar' else service.name }}', {{ service.hourly_rate }}, '{% if service.pricing_tiers %}{% for t in service.pricing_tiers %}{{ t.duration_hours }}={{ t.price }}{% if not loop.last %}|{% endif %}{% endfor %}{% endif %}')">
+                                        
+                                        <input type="radio" name="service_radio" value="{{ service.id }}">
+                                        
+                                        <div class="card-icon"><i class="fas fa-{{ service.icon }}"></i></div>
+                                        <div class="card-title">{{ service.name_ar or service.name if get_locale() == 'ar' else service.name }}</div>
+                                        
+                                        <div class="card-price">
+                                            {% if service.is_quotation_only %}
+                                                <span style="font-size: 0.8rem; letter-spacing: 0.5px;">{{ _('Request Quotation') }}</span>
+                                            {% else %}
+                                                {% if service.pricing_tiers %}
+                                                    {% set min_price = service.pricing_tiers|map(attribute='price')|min %}
+                                                    {{ _('From') }} {{ min_price|int }} {{ _('EGP') }}
+                                                {% else %}
+                                                     {{ service.hourly_rate|int }} {{ _('EGP') }}<span class="card-subtext">/ {{ _('Hour') }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </label>
+                                    
+                                    <button type="button" class="details-btn" onclick="openServiceModal({{ service.id }})">
+                                        <i class="fas fa-info-circle"></i> {{ _('View Details') }}
+                                    </button>
+                                </div>
+
+                                <div id="service-details-{{ service.id }}" style="display:none;">
+                                    <div style="text-align: start;"> 
+                                        <h3 style="color: var(--color-gold); font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-{{ service.icon }}" style="margin-inline-end: 8px;"></i> {{ service.name_ar or service.name if get_locale() == 'ar' else service.name }}
+                                        </h3>
+                                        
+                                        {% if service.is_quotation_only %}
+                                        <div style="background: rgba(212, 175, 55, 0.1); border-inline-start: 3px solid var(--color-gold); padding: 0.8rem; margin-bottom: 1.5rem;">
+                                            <strong style="color: var(--color-gold);">{{ _('Quotation Required:') }}</strong> {{ _('Pricing for this service depends on specific requirements. Submit your booking and we will contact you with a custom quote.') }}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div style="margin: 1.5rem 0; line-height: 1.7; color: #e6f1ff; font-size: 0.95rem;">
+                                            {{ (service.details_ar or service.details)|safe if get_locale() == 'ar' and service.details_ar else (service.details|safe if service.details else (service.description_ar or service.description if get_locale() == 'ar' else service.description)) }}
+                                        </div>
+                                        
+                                        {% if not service.is_quotation_only and service.pricing_tiers %}
+                                        <div style="background: rgba(10, 25, 47, 0.5); border-radius: 8px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                                            <h4 style="color: var(--color-white); border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                                                {{ _('Pricing Packages') }}
+                                            </h4>
+                                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                                {% for tier in service.pricing_tiers %}
+                                                <li style="display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                                    <span>{{ tier.label_ar or tier.label if get_locale() == 'ar' and tier.label_ar else (tier.label or (tier.duration_hours ~ " " ~ _('Hours'))) }}</span>
+                                                    <strong style="color: var(--color-gold); font-family: var(--font-heading);">{{ tier.price|int }} {{ _('EGP') }}</strong>
+                                                </li>
+                                                {% endfor %}
+                                                <li style="display: flex; justify-content: space-between; padding: 0.8rem 0; color: var(--color-gray-400); font-size: 0.9rem;">
+                                                    <span>{{ _('Additional hours') }}</span>
+                                                    <span>{{ service.hourly_rate|int }} {{ _('EGP / Hr') }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="error-message" id="error3"><i class="fas fa-exclamation-circle"></i> {{ _('Please select a service.') }}</div>
+                            <div class="nav-buttons">
+                                <button type="button" class="btn-nav btn-prev" onclick="prevStep(3)">{{ _('Back') }}</button>
+                                <button type="button" class="btn-nav btn-next" onclick="nextStep(3)">{{ _('Next Step') }} <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="phase4" class="wizard-phase">
+                            <h2 class="phase-title"><i class="fas fa-video text-gold"></i> {{ _('Equipment & Extras') }}</h2>
+                            <p style="color: var(--color-gray-400); margin-bottom: 1.5rem; font-size: 0.9rem;">{{ _('Enhance your session with our professional gear.') }}</p>
+                            
+                            {% for category, items in equipment_by_cat.items() %}
+                            <div class="addon-category">
+                                <h3>
+                                    {% if category == 'camera' %}<i class="fas fa-camera-retro"></i>
+                                    {% elif category == 'lighting' %}<i class="fas fa-lightbulb"></i>
+                                    {% elif category == 'audio' %}<i class="fas fa-microphone-alt"></i>
+                                    {% else %}<i class="fas fa-box-open"></i>{% endif %}
+                                    {{ _(category|capitalize) }}
+                                </h3>
+                                
+                                <div class="equipment-grid">
+                                    {% for item in items %}
+                                    <div class="equipment-card" id="addon-row-{{ item.id }}">
+                                        <input type="checkbox" name="addons" value="{{ item.id }}" 
+                                            style="display: none;">
+                                        
+                                        <div class="equipment-image-wrapper">
+                                            {% if item.image_url %}
+                                                <img src="{{ url_for('static', filename=item.image_url) }}" 
+                                                    alt="{{ item.name }}" 
+                                                    class="equipment-image" 
+                                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                
+                                                <div class="equipment-image-placeholder" style="display: none;">
+                                                    <i class="fas fa-{{ 'camera' if item.category == 'camera' else 'lightbulb' if item.category == 'lighting' else 'microphone' if item.category == 'audio' else 'cogs' }}"></i>
+                                                </div>
+                                            {% else %}
+                                                <div class="equipment-image-placeholder">
+                                                    <i class="fas fa-{{ 'camera' if item.category == 'camera' else 'lightbulb' if item.category == 'lighting' else 'microphone' if item.category == 'audio' else 'cogs' }}"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="equipment-info">
+                                            <span class="equipment-name">{{ item.name_ar or item.name if get_locale() == 'ar' else item.name }}</span>
+                                            
+                                            <div class="equipment-price-row">
+                                                <span class="add-label">+{{ item.price|int }} {{ _('EGP each') }}</span>
+                                            </div>
+                                            
+                                            <div class="quantity-selector" id="quantity-container-{{ item.id }}" style="display: none;">
+                                                <button type="button" class="qty-btn qty-minus" onclick="changeQuantity({{ item.id }}, -1)">−</button>
+                                                <input type="number" class="qty-input" id="quantity-{{ item.id }}" 
+                                                       value="1" min="1" max="99" 
+                                                       onchange="updateQuantity({{ item.id }}, {{ item.price }})"
+                                                       oninput="updateQuantity({{ item.id }}, {{ item.price }})">
+                                                <button type="button" class="qty-btn qty-plus" onclick="changeQuantity({{ item.id }}, 1)">+</button>
+                                            </div>
+                                            
+                                            <button type="button" class="add-btn" id="add-btn-{{ item.id }}" onclick="selectEquipment({{ item.id }}, '{{ item.name_ar or item.name if get_locale() == 'ar' else item.name }}', {{ item.price }})">
+                                                <i class="fas fa-plus"></i> {{ _('Add') }}
+                                            </button>
+                                            <button type="button" class="remove-btn" id="remove-btn-{{ item.id }}" onclick="deselectEquipment({{ item.id }}, '{{ item.name_ar or item.name if get_locale() == 'ar' else item.name }}', {{ item.price }})" style="display: none;">
+                                                <i class="fas fa-times"></i> {{ _('Remove') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <div class="nav-buttons">
+                                <button type="button" class="btn-nav btn-prev" onclick="prevStep(4)">{{ _('Back') }}</button>
+                                <button type="button" class="btn-nav btn-next" onclick="nextStep(4)">{{ _('Next Step') }} <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="phase5" class="wizard-phase">
+                            <h2 class="phase-title"><i class="fas fa-user-circle text-gold"></i> {{ _('Final Details') }}</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="first_name">{{ _('First Name') }}</label>
+                                    {{ form.first_name(class="form-input", placeholder=_("John"), oninput="clearFieldError('first_name')") }}
+                                    <span class="field-error" id="error-first_name" style="display: none;"><i class="fas fa-exclamation-circle"></i> {{ _('Required') }}</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="last_name">{{ _('Last Name') }}</label>
+                                    {{ form.last_name(class="form-input", placeholder=_("Doe"), oninput="clearFieldError('last_name')") }}
+                                    <span class="field-error" id="error-last_name" style="display: none;"><i class="fas fa-exclamation-circle"></i> {{ _('Required') }}</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="email">{{ _('Email Address') }}</label>
+                                    {{ form.email(class="form-input", placeholder=_("example@email.com"), oninput="clearFieldError('email')") }}
+                                    <span class="field-error" id="error-email" style="display: none;"><i class="fas fa-exclamation-circle"></i> {{ _('Required') }}</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">{{ _('Phone Number') }}</label>
+                                    {{ form.phone(class="form-input", placeholder=_("+1 (555) 000-0000"), oninput="clearFieldError('phone')") }}
+                                    <span class="field-error" id="error-phone" style="display: none;"><i class="fas fa-exclamation-circle"></i> {{ _('Required') }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="company">{{ _('Company Name') }}</label>
+                                {{ form.company(class="form-input", placeholder=_("Company Name (Optional)")) }}
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="client_notes">{{ _('Project Details / Notes') }}</label>
+                                {{ form.client_notes(class="form-textarea", rows=3, placeholder=_("Tell us about your project requirements...")) }}
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button type="button" class="btn-nav btn-prev" onclick="prevStep(5)">{{ _('Back') }}</button>
+                                <button type="button" class="btn-nav btn-next" style="width: auto;" onclick="validateAndSubmitPhase5()">{{ _('Submit Booking') }} <i class="fas fa-check"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-sidebar">
+                        <div class="summary-card">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 1rem; color: var(--color-gold);">{{ _('Booking Summary') }}</h3>
+                            <div class="summary-section">
+                                <span class="summary-label">{{ _('Studio') }}</span>
+                                <div class="summary-value">
+                                    <span id="sum-studio-name">{{ _('Select Studio') }}</span>
+                                    <span class="summary-price-tag" id="sum-studio-price">-</span>
+                                </div>
+                            </div>
+                            <div class="summary-section">
+                                <span class="summary-label">{{ _('Date & Time') }}</span>
+                                <div class="summary-value" id="sum-datetime" style="flex-wrap: wrap; justify-content: flex-start;">{{ _('TBD') }}</div>
+                            </div>
+                            <div class="summary-section">
+                                <span class="summary-label">{{ _('Selected Service') }}</span>
+                                <div class="summary-value">
+                                    <span id="sum-service-name">{{ _('Select Service') }}</span>
+                                    <span class="summary-price-tag" id="sum-service-price">-</span>
+                                </div>
+                                <span class="summary-label" style="margin-top: 0.3rem;" id="sum-service-duration"></span>
+                            </div>
+                            <div class="summary-section" id="sum-extras-box" style="display:none;">
+                                <span class="summary-label">{{ _('Equipment & Extras') }}</span>
+                                <div id="sum-extras-list"></div>
+                            </div>
+                            <div style="border-top: 2px dashed rgba(212,175,55,0.3); margin-top: 0.8rem;"></div>
+                            <div class="summary-total">
+                                <span>{{ _('Total') }}</span>
+                                <span id="sum-total">0 {{ _('EGP') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>    
+
+    <section class="trust-section">
+        <div class="trust-badges">
+            <div class="trust-badge"><i class="fas fa-shield-alt"></i><span>{{ _('Secure Booking') }}</span></div>
+            <div class="trust-badge"><i class="fas fa-star"></i><span>{{ _('5-Star Rated') }}</span></div>
+            <div class="trust-badge"><i class="fas fa-headset"></i><span>{{ _('24/7 Support') }}</span></div>
+        </div>
+    </section>
+
+    <div id="serviceModal" class="modal-overlay" onclick="closeServiceModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    {% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extra_js %}
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    {# Import Arabic Locale if needed #}
+    {% if get_locale() == 'ar' %}
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ar.js"></script>
+    {% endif %}
+    
+    <script>
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Initialize Booking Class
+        class PtahBooking {
+            constructor() { this.init(); }
+            init() {
+                this.initMagneticElements();
+                this.initFlatpickr();
+                this.fixDuplicateFooter();
+            }
+            
+            fixDuplicateFooter() {
+                const footers = document.querySelectorAll('.main-footer');
+                if (footers.length > 1) {
+                    for (let i = 1; i < footers.length; i++) { footers[i].style.display = 'none'; }
+                }
+            }
+            
+            initMagneticElements() {
+                const magneticElements = document.querySelectorAll('.magnetic-wrap');
+                magneticElements.forEach(wrap => {
+                    const button = wrap.querySelector('.btn-book');
+                    if (!button) return;
+                    wrap.addEventListener('mousemove', (e) => {
+                        const rect = wrap.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        gsap.to(button, { x: x * 0.3, y: y * 0.3, duration: 0.3 });
+                    });
+                    wrap.addEventListener('mouseleave', () => {
+                        gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                    });
+                });
+            }
+
+            initFlatpickr() {
+                const realDateInput = document.getElementById('real_booking_date');
+                const visualDateInput = document.getElementById('visual_date_picker');
+                
+                if(visualDateInput) {
+                    flatpickr(visualDateInput, {
+                        minDate: "today",
+                        dateFormat: "Y-m-d", 
+                        altInput: true,
+                        altFormat: "F j, Y", 
+                        disableMobile: "true", 
+                        locale: "{{ get_locale() }}",
+                        onChange: (selectedDates, dateStr, instance) => {
+                            realDateInput.value = dateStr;
+
+                            // --- NEW: Reveal Time Section Smoothly ---
+                            const timeWrapper = document.querySelector('.time-selection-wrapper');
+                            const durationBox = document.getElementById('duration_display_box');
+                            
+                            // Only animate if currently hidden
+                            if (window.getComputedStyle(timeWrapper).display === 'none') {
+                                // 1. Restore layout (Grid/Flex)
+                                timeWrapper.style.display = 'grid';
+                                durationBox.style.display = 'flex';
+                                
+                                // 2. Animate In using GSAP
+                                gsap.to([timeWrapper, durationBox], {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.6,
+                                    stagger: 0.15,
+                                    ease: "power2.out"
+                                });
+                            }
+                            
+                            // Standard Logic
+                            window.checkAvailability(dateStr); 
+                            updateSummary();
+                        }
+                    });
+                }
+            }
+        }
+
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new PtahBooking());
+        } else {
+            new PtahBooking();
+        }
+        
+        window.addEventListener('resize', function() {
+            if (window.ptahLenis) window.ptahLenis.resize();
+        });
+        
+        // --- LOGIC: Selection & Calculation ---
+        let bookingData = {
+            studioId: null, studioName: '', studioRate: 0,
+            serviceId: null, serviceName: '', serviceBaseRate: 0, servicePrice: 0,
+            serviceTiers: {}, // Stores duration:price mapping
+            isQuote: false,   // If true, price is TBD 
+            serviceDuration: 0,
+            extras: []
+        };
+
+        window.selectStudio = function(id, name, rate) {
+            bookingData.studioId = id;
+            bookingData.studioName = name;
+            bookingData.studioRate = rate;
+            document.getElementById('studio_id').value = id;
+            
+            const studioCard = document.querySelector(`.studio-card[data-studio-id="${id}"]`);
+            if (studioCard) {
+                document.querySelectorAll('.studio-card').forEach(el => el.classList.remove('selected'));
+                studioCard.classList.add('selected');
+            }
+            updateSummary();
+        };
+
+        // --- NEW SERVICE SELECTION LOGIC ---
+        window.selectServiceNew = function(element, id, name, hourlyRate, tiersString) {
+            bookingData.serviceId = id;
+            bookingData.serviceName = name;
+            bookingData.serviceBaseRate = hourlyRate; // This is now used as Overtime Rate
+            
+            // Parse Tiers String "2.0=4000|4.0=8000" into Object {2:4000, 4:8000}
+            bookingData.serviceTiers = {};
+            if(tiersString) {
+                tiersString.split('|').forEach(pair => {
+                    const [dur, price] = pair.split('=');
+                    if(dur && price) bookingData.serviceTiers[parseFloat(dur)] = parseFloat(price);
+                });
+            }
+            
+            bookingData.isQuote = element.getAttribute('data-is-quote') === 'true';
+            document.getElementById('service_id').value = id;
+            
+            // UI Update
+            document.querySelectorAll('#phase3 .selection-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            updateSummary();
+        };
+
+        window.updateSummary = function() {
+            // Update Studio
+            if (bookingData.studioId) {
+                document.getElementById('sum-studio-name').innerText = bookingData.studioName;
+                document.getElementById('sum-studio-price').innerText = `{{ _('Capacity') }}: ${bookingData.studioRate}`;
+            }
+            
+            // Update Date & Time
+            const dateVal = document.getElementById('real_booking_date').value;
+            const startTimeSelect = document.getElementById('start_time_select');
+            const endTimeSelect = document.getElementById('end_time_select');
+            const startTimeVal = startTimeSelect ? startTimeSelect.value : document.getElementById('start_time_input').value;
+            const endTimeVal = endTimeSelect ? endTimeSelect.value : document.getElementById('end_time_input').value;
+            
+            let durationHours = 0;
+            if (dateVal && startTimeVal && endTimeVal) {
+                const start = new Date(`2000-01-01T${startTimeVal}`);
+                const end = new Date(`2000-01-01T${endTimeVal}`);
+                let durationMs = end - start;
+                if (durationMs < 0) durationMs += 24 * 60 * 60 * 1000;
+                durationHours = durationMs / (1000 * 60 * 60);
+                
+                const d = new Date(dateVal);
+                // Use built-in localization for date
+                const locale = "{{ get_locale() }}";
+                const options = { month: 'short', day: 'numeric' };
+                const niceDate = isNaN(d) ? dateVal : d.toLocaleDateString(locale == 'ar' ? 'ar-EG' : 'en-US', options);
+                
+                const formatTime = (t) => {
+                    const [h, m] = t.split(':');
+                    const hour = parseInt(h);
+                    
+                    // Check if we are in Arabic mode
+                    const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+                    
+                    // Use 'م' for PM and 'ص' for AM if Arabic
+                    const suffix = hour >= 12 ? (isArabic ? 'م' : 'PM') : (isArabic ? 'ص' : 'AM');
+                    
+                    const niceHour = hour % 12 || 12;
+                    return `${niceHour}:${m} ${suffix}`;
+                };
+                
+                document.getElementById('sum-datetime').innerText = `${niceDate} | ${formatTime(startTimeVal)} - ${formatTime(endTimeVal)}`;
+            } else {
+                document.getElementById('sum-datetime').innerText = "{{ _('TBD') }}";
+            }
+            
+            // --- UPDATED PRICING LOGIC ---
+            let serviceTotal = 0;
+            if (bookingData.serviceId) {
+                document.getElementById('sum-service-name').innerText = bookingData.serviceName;
+                
+                if (bookingData.isQuote) {
+                    document.getElementById('sum-service-price').innerText = "{{ _('TBD') }}";
+                    document.getElementById('sum-service-duration').innerText = "{{ _('Quotation Required') }}";
+                    bookingData.servicePrice = 0;
+                    serviceTotal = 0;
+                } else {
+                    // Get tiers and convert to sorted array
+                    const tiers = bookingData.serviceTiers;
+                    const overtimeRate = bookingData.serviceBaseRate;
+                    
+                    let tierList = [];
+                    for (let [dur, price] of Object.entries(tiers)) {
+                        tierList.push({ duration: parseFloat(dur), price: parseFloat(price) });
+                    }
+                    tierList.sort((a, b) => a.duration - b.duration);
+
+                    if (tierList.length > 0) {
+                        // Find matches
+                        let applicableTier = null;
+                        
+                        // Loop to find the highest tier <= duration
+                        for (let t of tierList) {
+                            if (durationHours >= t.duration) {
+                                applicableTier = t;
+                            } else {
+                                break;
+                            }
+                        }
+
+                        if (applicableTier) {
+                            let basePrice = applicableTier.price;
+                            let extraHours = durationHours - applicableTier.duration;
+                            if (extraHours < 0.1) extraHours = 0; // Floating point safety
+                            
+                            let overtimePrice = extraHours * overtimeRate;
+                            serviceTotal = basePrice + overtimePrice;
+
+                            document.getElementById('sum-service-price').innerText = `${serviceTotal.toFixed(0)} {{ _('EGP') }}`;
+                            
+                            if (extraHours > 0) {
+                                document.getElementById('sum-service-duration').innerHTML = 
+                                    `<span style="color: var(--color-gold);">${applicableTier.duration}{{ _('h Bundle') }} + ${extraHours.toFixed(1)}{{ _('h Overtime') }}</span>`;
+                            } else {
+                                document.getElementById('sum-service-duration').innerHTML = 
+                                    `<span style="color: var(--color-gold);">${applicableTier.duration} {{ _('Hour Bundle') }}</span>`;
+                            }
+                        } else {
+                            // Duration is smaller than smallest tier (charge min tier price)
+                            let minTier = tierList[0];
+                            serviceTotal = minTier.price;
+                            document.getElementById('sum-service-price').innerText = `${serviceTotal.toFixed(0)} {{ _('EGP') }}`;
+                            document.getElementById('sum-service-duration').innerText = `{{ _('Minimum Package') }} (${minTier.duration}h)`;
+                        }
+
+                    } else {
+                        // Fallback to pure hourly if no tiers exist
+                        serviceTotal = overtimeRate * durationHours;
+                        document.getElementById('sum-service-price').innerText = `${serviceTotal.toFixed(0)} {{ _('EGP') }}`;
+                        document.getElementById('sum-service-duration').innerText = `${durationHours} {{ _('Hours') }}`;
+                    }
+                    
+                    bookingData.servicePrice = serviceTotal;
+                }
+            }
+            
+            // Update Extras
+            const extrasBox = document.getElementById('sum-extras-box');
+            const extrasList = document.getElementById('sum-extras-list');
+            extrasList.innerHTML = '';
+            let extrasTotal = 0;
+            
+            if (bookingData.extras.length > 0) {
+                extrasBox.style.display = 'block';
+                bookingData.extras.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    extrasTotal += itemTotal;
+                    const div = document.createElement('div');
+                    div.className = 'summary-value';
+                    div.style.fontSize = '0.8rem';
+                    const qtyLabel = item.quantity > 1 ? ` x${item.quantity}` : '';
+                    div.innerHTML = `<span>${item.name}${qtyLabel}</span><span class="summary-price-tag">+${itemTotal}</span>`;
+                    extrasList.appendChild(div);
+                });
+            } else {
+                extrasBox.style.display = 'none';
+            }
+            
+            // Grand Total
+            if (bookingData.isQuote) {
+                document.getElementById('sum-total').innerText = "{{ _('Quote Request') }}";
+            } else {
+                const grandTotal = serviceTotal + extrasTotal;
+                document.getElementById('sum-total').innerText = `${grandTotal.toFixed(0)} {{ _('EGP') }}`;
+            }
+        };
+        
+        // --- Equipment & Quantity Logic ---
+        window.selectEquipment = function(id, name, price) {
+            const row = document.getElementById(`addon-row-${id}`);
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const quantityContainer = document.getElementById(`quantity-container-${id}`);
+            const addBtn = document.getElementById(`add-btn-${id}`);
+            const removeBtn = document.getElementById(`remove-btn-${id}`);
+            const quantityInput = document.getElementById(`quantity-${id}`);
+            
+            checkbox.checked = true;
+            row.classList.add('checked');
+            quantityContainer.style.display = 'flex';
+            addBtn.style.display = 'none';
+            removeBtn.style.display = 'flex';
+            
+            const quantity = parseInt(quantityInput.value) || 1;
+            const existingIndex = bookingData.extras.findIndex(x => x.id === id);
+            if (existingIndex >= 0) {
+                bookingData.extras[existingIndex] = {id, name, price, quantity};
+            } else {
+                bookingData.extras.push({id, name, price, quantity});
+            }
+            updateSummary();
+        };
+        
+        window.deselectEquipment = function(id, name, price) {
+            const row = document.getElementById(`addon-row-${id}`);
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const quantityContainer = document.getElementById(`quantity-container-${id}`);
+            const addBtn = document.getElementById(`add-btn-${id}`);
+            const removeBtn = document.getElementById(`remove-btn-${id}`);
+            
+            checkbox.checked = false;
+            row.classList.remove('checked');
+            quantityContainer.style.display = 'none';
+            addBtn.style.display = 'flex';
+            removeBtn.style.display = 'none';
+            
+            bookingData.extras = bookingData.extras.filter(x => x.id !== id);
+            updateSummary();
+        };
+        
+        window.changeQuantity = function(id, delta) {
+            const quantityInput = document.getElementById(`quantity-${id}`);
+            const currentQty = parseInt(quantityInput.value) || 1;
+            const newQty = Math.max(1, Math.min(99, currentQty + delta));
+            quantityInput.value = newQty;
+            
+            const existingIndex = bookingData.extras.findIndex(x => x.id === id);
+            if (existingIndex >= 0) {
+                const item = bookingData.extras[existingIndex];
+                bookingData.extras[existingIndex] = {...item, quantity: newQty};
+            }
+            updateSummary();
+        };
+        
+        window.updateQuantity = function(id, price) {
+            const quantityInput = document.getElementById(`quantity-${id}`);
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            const existingIndex = bookingData.extras.findIndex(x => x.id === id);
+            if (existingIndex >= 0) {
+                const item = bookingData.extras[existingIndex];
+                bookingData.extras[existingIndex] = {...item, quantity: quantity};
+            }
+            updateSummary();
+        };
+
+        function scrollToTop() {
+            const section = document.querySelector('.booking-section');
+            const offset = -100; // Space for header
+
+            if (window.ptahLenis) {
+                // Use Lenis smooth scroll if active
+                window.ptahLenis.scrollTo(section, { offset: offset, duration: 1.2, lock: true });
+                // 'lock: true' prevents user from scrolling away during the transition
+                setTimeout(() => { window.ptahLenis.isLocked = false; }, 1200); 
+            } else {
+                // Fallback to standard scroll
+                const top = section.offsetTop + offset;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            }
+        }
+
+        
+        // --- Navigation Logic ---
+        window.nextStep = function(currentStep) {
+            const err = document.getElementById(`error${currentStep}`);
+            if(err) err.style.display = 'none';
+            
+            // Validation
+            if(currentStep === 1 && !bookingData.studioId) { document.getElementById('error1').style.display = 'block'; return; }
+            if(currentStep === 2) {
+                const d = document.getElementById('real_booking_date').value;
+                const isDurationValid = calculateDuration();
+                if(!d || !isDurationValid) { document.getElementById('error2').style.display = 'block'; return; }
+            }
+            if(currentStep === 3 && !bookingData.serviceId) { document.getElementById('error3').style.display = 'block'; return; }
+
+            // FIX: Scroll IMMEDIATELY before animation starts
+            scrollToTop();
+
+            const currentPhase = document.getElementById(`phase${currentStep}`);
+            const nextPhase = document.getElementById(`phase${currentStep + 1}`);
+            
+            gsap.to(currentPhase, { opacity: 0, y: -20, duration: 0.3, onComplete: () => {
+                currentPhase.classList.remove('active-phase');
+                nextPhase.classList.add('active-phase');
+                
+                const nextStepNum = currentStep + 1;
+                if (nextStepNum >= 2) {
+                    const sidebar = document.querySelector('.form-sidebar');
+                    if (sidebar) sidebar.classList.add('visible');
+                }
+                if (window.ptahLenis) window.ptahLenis.resize();
+
+                gsap.fromTo(nextPhase, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 });
+            }});
+            
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep + 1}`).classList.add('active');
+        };
+        
+        window.prevStep = function(currentStep) {
+            // FIX: Scroll IMMEDIATELY before animation starts
+            scrollToTop();
+
+            const currentPhase = document.getElementById(`phase${currentStep}`);
+            const prevPhase = document.getElementById(`phase${currentStep - 1}`);
+            
+            gsap.to(currentPhase, { opacity: 0, y: 20, duration: 0.3, onComplete: () => {
+                currentPhase.classList.remove('active-phase');
+                prevPhase.classList.add('active-phase');
+                
+                if (currentStep - 1 === 1) {
+                    const sidebar = document.querySelector('.form-sidebar');
+                    if (sidebar) sidebar.classList.remove('visible');
+                }
+                if (window.ptahLenis) window.ptahLenis.resize();
+
+                gsap.fromTo(prevPhase, { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.4 });
+            }});
+            
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep - 1}`).classList.remove('completed');
+            document.getElementById(`step${currentStep - 1}`).classList.add('active');
+        };
+        
+        window.scrollCarousel = function(direction) {
+            const track = document.getElementById('studioTrack');
+            const card = track.querySelector('.studio-card');
+            if(card) {
+                const scrollAmount = card.offsetWidth + 20;
+                if (direction === 1) track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                else track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            }
+        };
+
+        // --- Time Logic ---
+        const CONFIG = { openHour: 8, closeHour: 23, minDuration: 2 };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTimeDropdowns();
+            handleDirectStudioBooking();
+        });
+        
+        function populateTimeDropdowns() {
+            const startSelect = document.getElementById('start_time_select');
+            const endSelect = document.getElementById('end_time_select');
+            if(!startSelect || !endSelect) return;
+
+            // Reset options
+            startSelect.innerHTML = '<option value="" disabled selected>{{ _("Select Start") }}</option>';
+            endSelect.innerHTML = '<option value="" disabled selected>{{ _("Select End") }}</option>';
+
+            // Generate options (No locking logic needed)
+            for (let h = CONFIG.openHour; h < CONFIG.closeHour; h++) {
+                ['00', '30'].forEach(min => {
+                    if (h + CONFIG.minDuration > CONFIG.closeHour && min === '30') return; 
+                    let timeVal = `${h.toString().padStart(2, '0')}:${min}`;
+                    let display = formatTimeDisplay(h, min);
+                    startSelect.add(new Option(display, timeVal));
+                });
+            }
+            for (let h = CONFIG.openHour; h <= CONFIG.closeHour; h++) {
+                ['00', '30'].forEach(min => {
+                    if (h === CONFIG.closeHour && min === '30') return; 
+                    let timeVal = `${h.toString().padStart(2, '0')}:${min}`;
+                    let display = formatTimeDisplay(h, min);
+                    endSelect.add(new Option(display, timeVal));
+                });
+            }
+        }
+
+        function formatTimeDisplay(h, min) {
+            // Check if we are in Arabic mode
+            const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+            
+            // Use 'م' for PM and 'ص' for AM if Arabic
+            let period = h >= 12 ? (isArabic ? 'م' : 'PM') : (isArabic ? 'ص' : 'AM');
+            
+            let displayH = h % 12; 
+            displayH = displayH ? displayH : 12;
+            
+            return `${displayH}:${min} ${period}`;
+        }
+
+        window.handleStartTimeChange = function() {
+            const startVal = document.getElementById('start_time_select').value;
+            const endSelect = document.getElementById('end_time_select');
+            if (!startVal) return;
+
+            const [hStr, mStr] = startVal.split(':');
+            let startH = parseInt(hStr);
+            let startM = parseInt(mStr);
+            
+            // Calculate selected start in minutes
+            let startTotalMinutes = startH * 60 + startM;
+
+            // --- 1. Find the "Ceiling" (Start of the Next Booked Slot) ---
+            // Default ceiling is closing time
+            let maxEndTimeMinutes = CONFIG.closeHour * 60 + 60; // Allow ending up to close hour
+
+            if (bookingData.bookedSlots && bookingData.bookedSlots.length > 0) {
+                const getMins = (t) => parseInt(t.split(':')[0]) * 60 + parseInt(t.split(':')[1]);
+                
+                // Sort bookings to find the nearest one after our start time
+                const sortedSlots = bookingData.bookedSlots.sort((a, b) => getMins(a.start) - getMins(b.start));
+
+                for (let slot of sortedSlots) {
+                    const slotStartMinutes = getMins(slot.start);
+                    
+                    // If this booking starts AFTER our selected start time, 
+                    // it is the barrier we cannot cross.
+                    if (slotStartMinutes > startTotalMinutes) {
+                        maxEndTimeMinutes = slotStartMinutes;
+                        break; 
+                    }
+                }
+            }
+
+            // --- 2. Generate Options ---
+            endSelect.innerHTML = '<option value="" disabled selected>{{ _("Select End") }}</option>';
+            let autoSelectIndex = -1;
+            let minEndH = startH + CONFIG.minDuration;
+
+            for (let h = startH; h <= CONFIG.closeHour; h++) {
+                ['00', '30'].forEach(min => {
+                    // Skip invalid half-hours based on closing time
+                    if (h === CONFIG.closeHour && min === '30') return;
+                    
+                    // Current option time in minutes
+                    let currentOptionMinutes = h * 60 + (min === '30' ? 30 : 0);
+
+                    // Skip times before start time
+                    if (h < startH || (h === startH && min <= (startM === 0 ? '00' : '30'))) return;
+
+                    let timeVal = `${h.toString().padStart(2, '0')}:${min}`;
+                    let display = formatTimeDisplay(h, min);
+                    let option = new Option(display, timeVal);
+
+                    if (currentOptionMinutes > maxEndTimeMinutes) {
+                        option.disabled = true;
+                        option.text += " {{ _('(Booked)') }}";
+                        option.style.color = "#ff6b6b";
+                    }
+
+                    endSelect.add(option);
+                    
+                    // Auto-select logic (only if valid)
+                    if (!option.disabled && autoSelectIndex === -1 && h >= minEndH) {
+                        if (h > minEndH || (h === minEndH && min >= mStr)) {
+                             option.selected = true;
+                             autoSelectIndex = endSelect.options.length - 1;
+                        }
+                    }
+                });
+            }
+            calculateDuration();
+        };
+
+        window.calculateDuration = function() {
+            const startVal = document.getElementById('start_time_select').value;
+            const endVal = document.getElementById('end_time_select').value;
+            
+            const durationCard = document.getElementById('duration_display_box');
+            const durationText = document.getElementById('duration_text_main');
+            const statusBadge = document.getElementById('duration_status_badge');
+            const hiddenStart = document.getElementById('real_start_time');
+            const hiddenEnd = document.getElementById('real_end_time');
+            const hiddenStartInput = document.getElementById('start_time_input');
+            const hiddenEndInput = document.getElementById('end_time_input');
+
+            if (startVal) { hiddenStart.value = startVal; if(hiddenStartInput) hiddenStartInput.value = startVal; }
+            if (endVal) { hiddenEnd.value = endVal; if(hiddenEndInput) hiddenEndInput.value = endVal; }
+
+            if (startVal && endVal) {
+                const start = new Date(`2000-01-01T${startVal}`);
+                const end = new Date(`2000-01-01T${endVal}`);
+                let diff = (end - start) / (1000 * 60 * 60);
+                if (diff < 0) diff += 24;
+
+                durationText.innerText = `${diff.toFixed(1)} {{ _('Hours') }}`;
+                const allowedDurations = [2, 4, 6, 8, 10, 12];
+
+                if (allowedDurations.includes(diff) && diff >= CONFIG.minDuration) {
+                    durationCard.classList.remove('invalid');
+                    durationCard.classList.add('valid');
+                    statusBadge.innerText = "{{ _('Confirmed') }}";
+                    document.getElementById('error2').style.display = 'none';
+                    updateSummary();
+                    return true;
+                } else {
+                    durationCard.classList.add('invalid');
+                    durationCard.classList.remove('valid');
+                    statusBadge.innerText = !allowedDurations.includes(diff) ? "{{ _('Even Hours Only') }}" : `{{ _('Min') }} ${CONFIG.minDuration} {{ _('Hours') }}`;
+                    return false;
+                }
+            } else {
+                durationText.innerText = "0 {{ _('Hours') }}";
+                durationCard.classList.remove('valid', 'invalid');
+                statusBadge.innerText = "{{ _('Select Times') }}";
+                return false;
+            }
+        };
+
+        // --- Final Submission ---
+        window.validateAndSubmitPhase5 = function() {
+            window.clearAllFieldErrors();
+            let hasErrors = false;
+
+            // 1. Basic Empty Check
+            const requiredFields = ['first_name', 'last_name', 'email', 'phone'];
+            requiredFields.forEach(field => {
+                const inputEl = document.querySelector('[name="' + field + '"]');
+                if (!inputEl || !inputEl.value.trim()) {
+                    window.showFieldError(field, "{{ _('Required') }}");
+                    hasErrors = true;
+                }
+            });
+
+            // 2. Strict Email Validation
+            const emailInput = document.querySelector('[name="email"]');
+            if (emailInput && emailInput.value.trim()) {
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(emailInput.value.trim())) {
+                    window.showFieldError('email', "{{ _('Invalid email format') }}");
+                    hasErrors = true;
+                }
+            }
+
+            // 3. Strict Egyptian Phone Validation
+            // Supports: 010, 011, 012, 015 | Formats: 01xxxxxxxxx or +201xxxxxxxxx
+            const phoneInput = document.querySelector('[name="phone"]');
+            if (phoneInput && phoneInput.value.trim()) {
+                const egPhoneRegex = /^(?:\+20|0)?1[0125]\d{8}$/;
+                if (!egPhoneRegex.test(phoneInput.value.trim())) {
+                    window.showFieldError('phone', "{{ _('Invalid Egyptian number') }}");
+                    hasErrors = true;
+                }
+            }
+            
+            if (hasErrors) {
+                const firstError = document.querySelector('#phase5 .field-error[style*="flex"]');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            // Populate Equipment Data
+            const equipmentObj = {};
+            bookingData.extras.forEach(item => { equipmentObj[item.id] = item.quantity; });
+            document.getElementById('equipment_data').value = JSON.stringify(equipmentObj);
+            
+            // Final Sync & Submit
+            const startVal = document.getElementById('start_time_select').value;
+            const endVal = document.getElementById('end_time_select').value;
+            if (startVal) document.getElementById('real_start_time').value = startVal;
+            if (endVal) document.getElementById('real_end_time').value = endVal;
+            
+            document.getElementById('bookingForm').submit();
+        };
+
+        window.showFieldError = function(fieldName, message) {
+            const errorSpan = document.getElementById('error-' + fieldName);
+            if(errorSpan) {
+                errorSpan.style.display = 'flex';
+                // Update the text inside the span if a message is provided
+                if(message) errorSpan.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            }
+            document.querySelector('[name="' + fieldName + '"]').style.borderColor = '#ff6b6b';
+        };
+        
+        window.clearFieldError = function(fieldName) {
+            document.getElementById('error-' + fieldName).style.display = 'none';
+            document.querySelector('[name="' + fieldName + '"]').style.borderColor = 'rgba(212, 175, 55, 0.2)';
+        };
+        
+        window.clearAllFieldErrors = function() {
+            document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('#phase5 .form-input').forEach(el => el.style.borderColor = 'rgba(212, 175, 55, 0.2)');
+        };
+
+        // Auto-select Studio Logic
+        function handleDirectStudioBooking() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studioId = urlParams.get('studio_id');
+            let studioToSelect = null;
+            
+            if (studioId) {
+                const studioCard = document.querySelector(`.studio-card[data-studio-id="${studioId}"]`);
+                if (studioCard) {
+                    studioToSelect = {
+                        id: parseInt(studioId),
+                        name: studioCard.querySelector('.studio-card-title')?.textContent || '',
+                        capacity: parseInt(studioCard.getAttribute('data-capacity')) || 0
+                    };
+                }
+            }
+            
+            if (!studioToSelect) {
+                const storedStudio = sessionStorage.getItem('selectedStudio');
+                if (storedStudio) {
+                    try { studioToSelect = JSON.parse(storedStudio); } catch (e) {}
+                }
+            }
+            
+            if (studioToSelect && studioToSelect.id) {
+                const studioCard = document.querySelector(`.studio-card[data-studio-id="${studioToSelect.id}"]`);
+                if (studioCard) {
+                    const rateText = studioCard.querySelector('.studio-card-rate')?.textContent || '0';
+                    const rate = parseInt(rateText.replace(/[^0-9]/g, '')) || 0;
+                    selectStudio(studioToSelect.id, studioToSelect.name, rate);
+                    sessionStorage.removeItem('selectedStudio');
+                    
+                    setTimeout(function() {
+                        if (bookingData.studioId) nextStep(1);
+                        else {
+                            selectStudio(studioToSelect.id, studioToSelect.name, rate);
+                            setTimeout(() => { if (bookingData.studioId) nextStep(1); }, 200);
+                        }
+                    }, 500);
+                }
+            }
+        }
+
+        // --- NEW: Availability Logic ---
+        window.checkAvailability = function(dateStr) {
+            if (!bookingData.studioId || !dateStr) return;
+
+            // Reset dropdowns first
+            populateTimeDropdowns(); 
+            
+            // Call Backend API
+            fetch(`/api/check_availability?studio_id=${bookingData.studioId}&date=${dateStr}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.booked_slots) {
+                        disableBookedSlots(data.booked_slots);
+                    }
+                })
+                .catch(err => console.error("Availability check failed:", err));
+        };
+
+        window.disableBookedSlots = function(bookedSlots) {
+            bookingData.bookedSlots = bookedSlots; 
+
+            const startSelect = document.getElementById('start_time_select');
+            
+            // Helper to convert "HH:MM" to minutes
+            const toMinutes = (timeStr) => {
+                const [h, m] = timeStr.split(':').map(Number);
+                return h * 60 + m;
+            };
+
+            Array.from(startSelect.options).forEach(option => {
+                if (!option.value) return;
+                
+                const optTime = toMinutes(option.value);
+                
+                // Check if this option falls INSIDE any booked range
+                const isTaken = bookedSlots.some(slot => {
+                    const bookedStart = toMinutes(slot.start);
+                    const bookedEnd = toMinutes(slot.end);
+                    // Disable start times that fall strictly inside a booking
+                    return optTime >= bookedStart && optTime < bookedEnd;
+                });
+
+                if (isTaken) {
+                    option.disabled = true;
+                    option.text += " {{ _('(Booked)') }}";
+                    option.style.color = "#ff6b6b";
+                }
+            });
+        };
+        
+        // --- Modal Logic ---
+        window.openServiceModal = function(id) {
+            const content = document.getElementById(`service-details-${id}`).innerHTML;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('serviceModal').style.display = 'flex';
+        };
+        window.closeServiceModal = function() {
+            document.getElementById('serviceModal').style.display = 'none';
+        };
+    </script>
+{% endblock %}
+</html>

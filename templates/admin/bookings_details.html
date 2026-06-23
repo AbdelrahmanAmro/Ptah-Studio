@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Manage Bookings - PTAH STUDIOS{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===========================
+           DESIGN SYSTEM & VARIABLES
+           =========================== */
+        :root {
+            --color-bg-dark: #050d1a;       /* Deepest Navy */
+            --color-card-bg: #0A192F;       /* Card Background */
+            --color-border: rgba(255, 255, 255, 0.08);
+            
+            --color-gold: #D4AF37;
+            --color-text-main: #FFFFFF;
+            --color-text-muted: #8892B0;
+            
+            --color-status-confirmed-bg: rgba(16, 185, 129, 0.1);
+            --color-status-confirmed-text: #10B981;
+            
+            --color-status-pending-bg: rgba(245, 158, 11, 0.1);
+            --color-status-pending-text: #F59E0B;
+
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* ===========================
+           HEADER SECTION
+           =========================== */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-family: var(--font-body);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title span {
+            color: var(--color-gold);
+        }
+
+        .page-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard Back Button */
+        .btn-dashboard {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-dashboard:hover {
+            background: var(--color-gold);
+            color: var(--color-bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+
+        /* ===========================
+           STATS CARDS ROW
+           =========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Active State for Filter */
+        .stat-card.active {
+            border-color: var(--color-gold);
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+        }
+        
+        /* Small indicator for active tab */
+        .stat-card.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--color-gold);
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 -2px 10px rgba(212,175,55,0.5);
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--color-text-main);
+        }
+
+        .stat-label {
+            color: var(--color-text-muted);
+            font-size: 0.75rem;
+            text-transform: capitalize;
+        }
+
+        /* ===========================
+           FILTER BAR
+           =========================== */
+        .filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            color: var(--color-text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-gold);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+        }
+
+        /* Booking Reference Badge */
+        .booking-ref {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--color-gold);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===========================
+           TABLE STYLES
+           =========================== */
+        .bookings-table-container {
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .bookings-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--color-border);
+            background: rgba(10, 25, 47, 0.5);
+        }
+
+        .bookings-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-main);
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        .bookings-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .client-cell h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .client-cell span {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .service-cell {
+            color: var(--color-text-muted);
+        }
+
+        .date-cell div:first-child {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .date-cell div:last-child {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .amount-cell {
+            color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+            border: 1px solid transparent;
+        }
+
+        .status-pill.confirmed {
+            background: var(--color-status-confirmed-bg);
+            color: var(--color-status-confirmed-text);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .status-pill.pending {
+            background: var(--color-status-pending-bg);
+            color: var(--color-status-pending-text);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .status-pill.completed {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .status-pill.in_progress {
+            background: rgba(139, 92, 246, 0.15);
+            color: #A78BFA;
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .status-pill.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-manage {
+            background: transparent;
+            color: var(--color-gold);
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            padding: 0.5rem;
+        }
+
+        .btn-manage:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* ===========================
+           MODAL STYLES
+           =========================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-gold);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .close-btn:hover { color: #fff; }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .info-value.email { font-size: 0.8rem; color: var(--color-text-muted); }
+        .info-value.price { color: var(--color-gold); font-size: 1.1rem; font-weight: 700; }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-bg-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .form-select:focus { outline: none; border-color: var(--color-gold); }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        .btn-cancel:hover { background: rgba(239, 68, 68, 0.1); }
+
+        .btn-confirm {
+            background: #10B981;
+            color: #fff;
+        }
+        .btn-confirm:hover { background: #059669; }
+
+        /* ===========================
+           RESPONSIVE STYLES
+           =========================== */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .bookings-table th:nth-child(4), 
+            .bookings-table td:nth-child(4) { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+            .btn-dashboard { width: 100%; justify-content: center; }
+            .page-title { font-size: 1.5rem; }
+            .page-subtitle { font-size: 0.85rem; }
+            
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+            .stat-card { padding: 1rem 0.75rem; border-radius: 10px; }
+            .stat-number { font-size: 1.5rem; }
+            .stat-label { font-size: 0.7rem; }
+            
+            .filter-bar { gap: 0.75rem; }
+            .bookings-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .bookings-table { min-width: 700px; }
+            .bookings-table th, .bookings-table td { padding: 0.75rem; font-size: 0.8rem; }
+            
+            .modal-card { padding: 1.25rem; max-width: 100%; }
+            .modal-title { font-size: 1.1rem; }
+            .modal-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+            .modal-grid .info-group { text-align: left !important; }
+            .modal-actions { flex-direction: column-reverse; }
+            .btn-modal { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .stat-card { padding: 0.875rem 0.5rem; }
+            .stat-number { font-size: 1.35rem; }
+            .stat-label { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Manage <span>Bookings</span></h1>
+            <p class="page-subtitle">View and manage all studio bookings</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn-dashboard">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    {% set count_all = bookings|length %}
+    {% set count_pending = bookings|selectattr("status", "equalto", "pending")|list|length %}
+    {% set count_confirmed = bookings|selectattr("status", "equalto", "confirmed")|list|length %}
+    {% set count_completed = bookings|selectattr("status", "equalto", "completed")|list|length %}
+
+    <div class="stats-grid">
+        <div class="stat-card active" onclick="filterBookings('all', this)">
+            <div class="stat-number">{{ count_all }}</div>
+            <div class="stat-label">All</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('pending', this)">
+            <div class="stat-number">{{ count_pending }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('confirmed', this)">
+            <div class="stat-number">{{ count_confirmed }}</div>
+            <div class="stat-label">Confirmed</div>
+        </div>
+        <div class="stat-card" onclick="filterBookings('completed', this)">
+            <div class="stat-number">{{ count_completed }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by reference, client name, email or phone..." onkeyup="searchBookings()">
+        </div>
+    </div>
+
+    <div class="bookings-table-container">
+        <table class="bookings-table" id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Date & Time</th>
+                    <th>Location</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if bookings %}
+                    {% for booking in bookings|sort(attribute='id', reverse=True) %}
+                    <tr class="booking-row" data-status="{{ booking.status }}" data-reference="{{ booking.booking_reference|lower }}">
+                        <td>
+                            <span class="booking-ref">{{ booking.booking_reference }}</span>
+                        </td>
+                        <td class="client-cell">
+                            <h4>{{ booking.client.full_name }}</h4>
+                            <div style="margin-bottom: 3px;"><span>{{ booking.client.email }}</span></div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="display: flex; align-items: center; gap: 5px; color: var(--color-text-muted); font-size: 0.75rem;">
+                                    <i class="fas fa-phone" style="font-size: 0.65rem; opacity: 0.7;"></i> 
+                                    {{ booking.client.phone }}
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <td class="service-cell">
+                            {{ booking.service.name }}
+                            {% if booking.service.is_quotation_only %}
+                                <div style="font-size: 0.7rem; color: var(--color-gold); font-style: italic;">(Custom Quote)</div>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="date-cell">
+                            <div>{{ booking.booking_date.strftime('%b %d, %Y') }}</div>
+                            <div>
+                                {{ booking.start_time.strftime('%H:%M') }} - 
+                                {{ booking.end_time.strftime('%H:%M') }}
+                                <span style="color: var(--color-gold); font-size: 0.7rem; margin-left: 5px;">
+                                    ({{ booking.duration_hours|int }}h)
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <td class="service-cell">
+                            {{ booking.studio.name if booking.studio else 'No Studio Assigned' }}
+                            <div style="font-size: 0.7rem; color: var(--color-text-muted);">
+                                {{ booking.studio.persons_capacity if booking.studio else '' }} persons max
+                            </div>
+                        </td>
+                        
+                        <td class="amount-cell">
+                            {% set initial_calc = booking.studio_price + booking.equipment_price %}
+                            {% if booking.service.is_quotation_only and (booking.total_price - initial_calc)|abs < 0.1 %}
+                                <span style="font-size: 1.5rem; color: var(--color-text-muted); font-weight: 300;">&mdash;</span>
+                            {% else %}
+                                ${{ "{:,.0f}".format(booking.total_price) }}
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            <span class="status-pill {{ booking.status }}">
+                                {{ booking.status|replace('_', ' ')|title }}
+                            </span>
+                        </td>
+                        
+                        <td>
+                            <button 
+                                type="button"
+                                class="btn-manage"
+                                onclick="openManageModal(this)"
+                                data-id="{{ booking.id }}"
+                                data-reference="{{ booking.booking_reference }}"
+                                data-client="{{ booking.client.full_name }}"
+                                data-email="{{ booking.client.email }}"
+                                data-service="{{ booking.service.name }}"
+                                data-price="{{ booking.total_price }}"
+                                data-status="{{ booking.status }}"
+                                data-date="{{ booking.booking_date.strftime('%B %d, %Y') }}"
+                                data-start-time="{{ booking.start_time.strftime('%H:%M') }}"
+                                data-end-time="{{ booking.end_time.strftime('%H:%M') }}"
+                                data-duration="{{ booking.duration_hours }}"
+                                data-base-price="{{ booking.service.hourly_rate if booking.service.hourly_rate else booking.service.base_price }}"
+                                data-equipment='{{ booking.equipment_data if booking.equipment_data else "{}" }}'
+                            >
+                                Manage
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr id="noRowsMessage">
+                        <td colspan="8" style="text-align:center; color: #8892B0; padding: 2rem;">
+                            No bookings found.
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="8" style="text-align:center; color: #8892B0; padding: 3rem;">
+                        <i class="fas fa-filter" style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+                        No bookings found with this status or search criteria.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="manageModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Booking Details</h3>
+                <button onclick="closeModal()" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--color-text-muted); font-size: 0.8rem;">Booking Reference</span>
+                    <span id="m-reference" class="booking-ref"></span>
+                </div>
+            </div>
+
+            <div class="modal-grid">
+                <div class="info-group">
+                    <label>Client</label>
+                    <div id="m-client" class="info-value"></div>
+                    <div id="m-email" class="info-value email"></div>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <label>Current Status</label>
+                    <span id="m-status" class="status-pill"></span>
+                </div>
+                
+                <div class="info-group">
+                    <label>Service</label>
+                    <div id="m-service" class="info-value"></div>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <label>Total Amount</label>
+                    <div id="m-price" class="info-value price"></div>
+                </div>
+
+                <div class="info-group">
+                    <label>Date</label>
+                    <div id="m-date" class="info-value"></div>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <label>Time</label>
+                    <div id="m-time" class="info-value"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
+                <label style="display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 0.75rem; letter-spacing: 0.5px;">Equipment & Extras</label>
+                <div id="m-equipment" style="background: var(--color-bg-dark); border-radius: 8px; padding: 1rem;">
+                    <div style="color: var(--color-text-muted); font-size: 0.85rem;">No equipment selected</div>
+                </div>
+            </div>
+
+            <form id="updateForm" method="POST" action="">
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(10, 25, 47, 0.6);">
+                    <label style="color: var(--color-gold); font-weight: 600; margin-bottom: 0.5rem; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-tag"></i> Final Agreed Price (EGP)
+                    </label>
+                    <div style="position: relative;">
+                        <input type="number" name="total_price" id="m-price-input" class="form-select" step="0.01" style="font-size: 1.1rem; font-weight: bold; margin-bottom: 0; padding-left: 2.5rem; background: rgba(5, 13, 26, 0.8);">
+                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-gold); font-weight: bold;">$</span>
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.5rem; font-style: italic;">
+                    </div>
+                </div>
+
+                <div class="info-group" style="margin-top: 1.5rem;">
+                    <label style="color: var(--color-gold); margin-bottom: 0.5rem;">Update Status</label>
+                    <select name="status" class="form-select">
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button type="button" onclick="confirmDeleteBooking()" class="btn-modal" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; flex: 0 0 auto; padding: 0.75rem 1rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+
+                    <div style="display: flex; gap: 0.75rem; flex: 1; justify-content: flex-end;">
+                        <button type="button" onclick="updateStatusAndSubmit('cancelled')" class="btn-modal btn-cancel">
+                            <i class="fas fa-times"></i> Decline
+                        </button>
+                        <button type="submit" class="btn-modal btn-confirm">
+                            <i class="fas fa-check"></i> Submit
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <form id="deleteBookingForm" method="POST" style="display: none;">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Filter Functionality ---
+        function filterBookings(status, cardElement) {
+            if(cardElement) {
+                document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+                cardElement.classList.add('active');
+            }
+
+            const rows = document.querySelectorAll('.booking-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const noResultsRow = document.getElementById('noResultsRow');
+            if (visibleCount === 0 && rows.length > 0) {
+                noResultsRow.style.display = '';
+            } else {
+                noResultsRow.style.display = 'none';
+            }
+        }
+
+        // --- 2. Search Functionality ---
+        function searchBookings() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('.booking-row');
+
+            rows.forEach(row => {
+                const reference = row.getAttribute('data-reference') || '';
+                const clientText = row.querySelector('.client-cell').innerText.toLowerCase();
+                if (reference.includes(filter) || clientText.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // --- 3. Modal Functionality ---
+        const modal = document.getElementById('manageModal');
+        const updateForm = document.getElementById('updateForm');
+        const bookingEquipmentData = {};
+        
+        // Track current ID for deletion
+        let currentBookingId = null;
+
+        function openManageModal(btn) {
+            const dataset = btn.dataset;
+            
+            // Extract data
+            const id = dataset.id;
+            currentBookingId = id; // Set global ID for delete function
+            
+            const reference = dataset.reference;
+            const client = dataset.client;
+            const email = dataset.email;
+            const service = dataset.service;
+            const price = dataset.price;
+            const status = dataset.status;
+            const date = dataset.date;
+            const startTime = dataset.startTime;
+            const endTime = dataset.endTime;
+            const duration = dataset.duration;
+            const basePrice = dataset.basePrice;
+            const equipmentJson = dataset.equipment;
+
+            document.getElementById('m-reference').innerText = reference;
+            document.getElementById('m-client').innerText = client;
+            document.getElementById('m-email').innerText = email;
+            document.getElementById('m-service').innerText = service;
+            document.getElementById('m-price').innerText = '$' + Math.floor(parseFloat(price));
+            document.getElementById('m-date').innerText = date;
+            document.getElementById('m-time').innerText = startTime + ' - ' + endTime;
+            
+            // Populate the editable price input
+            document.getElementById('m-price-input').value = parseFloat(price);
+
+            // REMOVED SERVICE BREAKDOWN CALCULATION LOGIC
+            
+            try {
+                if (equipmentJson && equipmentJson !== 'null' && equipmentJson !== '{}') {
+                    bookingEquipmentData[id] = JSON.parse(equipmentJson);
+                } else {
+                    bookingEquipmentData[id] = {};
+                }
+            } catch (e) {
+                console.error("Error parsing equipment JSON:", e);
+                bookingEquipmentData[id] = {};
+            }
+            
+            displayEquipment(id);
+            
+            let displayStatus = status.replace('_', ' ');
+            displayStatus = displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1);
+            
+            const statusEl = document.getElementById('m-status');
+            statusEl.innerText = displayStatus;
+            statusEl.className = 'status-pill ' + status;
+
+            updateForm.action = `/admin/bookings/${id}/update`;
+            
+            const select = updateForm.querySelector('select[name="status"]');
+            if(select) {
+                if(status === 'pending') {
+                    select.value = 'confirmed'; 
+                } else {
+                    select.value = status;
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // --- Delete Logic ---
+        function confirmDeleteBooking() {
+            if (!currentBookingId) return;
+            
+            if (confirm("ARE YOU SURE?\n\nThis will permanently delete this booking history from the database.\nThis action cannot be undone.")) {
+                const deleteForm = document.getElementById('deleteBookingForm');
+                deleteForm.action = `/admin/bookings/${currentBookingId}/delete`;
+                deleteForm.submit();
+            }
+        }
+
+        // Helper function for the "Decline" button
+        function updateStatusAndSubmit(newStatus) {
+            const select = updateForm.querySelector('select[name="status"]');
+            if (select) {
+                select.value = newStatus;
+                updateForm.submit();
+            }
+        }
+
+        function displayEquipment(bookingId) {
+            const equipmentContainer = document.getElementById('m-equipment');
+            const equipment = bookingEquipmentData[bookingId] || {};
+            
+            let equipmentList = [];
+            try {
+                equipmentList = [
+                    {% for addon in equipment_list %}
+                    {
+                        "id": {{ addon.id }},
+                        "name": {{ addon.name | tojson }},
+                        "price": {{ addon.price }}
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ];
+            } catch (e) {
+                console.error("Error loading equipment list", e);
+                equipmentList = [];
+            }
+            
+            if (Object.keys(equipment).length === 0) {
+                equipmentContainer.innerHTML = '<div style="color: var(--color-text-muted); font-size: 0.85rem;">No equipment selected</div>';
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            let total = 0;
+            
+            for (const [addonId, quantity] of Object.entries(equipment)) {
+                const addon = equipmentList.find(e => e.id == addonId);
+                if (addon) {
+                    const itemTotal = addon.price * quantity;
+                    total += itemTotal;
+                    html += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: var(--color-gold); font-weight: 600;">x${quantity}</span>
+                                <span>${addon.name}</span>
+                            </div>
+                            <span style="color: var(--color-gold);">+${itemTotal} EGP</span>
+                        </div>
+                    `;
+                }
+            }
+            html += '</div>';
+            equipmentContainer.innerHTML = html;
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
