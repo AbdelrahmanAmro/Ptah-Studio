@@ -1,0 +1,7 @@
+Flask>=2.3.0
+Flask-SQLAlchemy>=3.0.0
+Flask-WTF>=1.1.0
+email_validator>=2.0.0
+WTForms>=3.0.0
+gunicorn>=21.0.0
+flask-babel

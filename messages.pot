@@ -1,0 +1,1692 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-02-02 14:12+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: templates/base.html:7
+msgid "Ptah Studios - Premium Creative Production"
+msgstr ""
+
+#: templates/base.html:8
+msgid ""
+"Professional creative studio for podcast, video, and content production. "
+"Premium quality, exceptional results."
+msgstr ""
+
+#: templates/base.html:845
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:846 templates/base.html:878
+#: templates/user/dashboard.html:792
+msgid "Bookings"
+msgstr ""
+
+#: templates/base.html:847 templates/base.html:879
+#: templates/public/portfolio.html:495
+msgid "PTAH Studios"
+msgstr ""
+
+#: templates/base.html:859 templates/base.html:899
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:861 templates/base.html:903
+msgid "Log In"
+msgstr ""
+
+#: templates/base.html:862 templates/base.html:906
+msgid "Sign Up"
+msgstr ""
+
+#: templates/base.html:873
+msgid "Creation & Crafts"
+msgstr ""
+
+#: templates/base.html:896
+msgid "Account"
+msgstr ""
+
+#: templates/base.html:912
+msgid "Book Session"
+msgstr ""
+
+#: templates/base.html:944
+msgid "CREATE"
+msgstr ""
+
+#: templates/base.html:945
+msgid "Ready to elevate your vision?"
+msgstr ""
+
+#: templates/base.html:947
+msgid "Start Your Project"
+msgstr ""
+
+#: templates/base.html:975
+msgid ""
+"The digital temple of creation. Where ambitious ideas become captivating "
+"reality."
+msgstr ""
+
+#: templates/base.html:987
+msgid "Quick Links"
+msgstr ""
+
+#: templates/base.html:989
+msgid "About Us"
+msgstr ""
+
+#: templates/base.html:990 templates/public/booking_success.html:492
+#: templates/public/service_detail.html:472 templates/user/dashboard.html:1024
+msgid "Contact Us"
+msgstr ""
+
+#: templates/base.html:991
+msgid "Portfolio"
+msgstr ""
+
+#: templates/base.html:992 templates/public/index.html:1390
+#: templates/public/services.html:338
+msgid "Services"
+msgstr ""
+
+#: templates/base.html:993 templates/public/pricing.html:212
+msgid "FAQs"
+msgstr ""
+
+#: templates/base.html:998
+msgid "Connect"
+msgstr ""
+
+#: templates/base.html:1015
+msgid "5th District, 6th October City"
+msgstr ""
+
+#: templates/base.html:1015 templates/public/contact.html:628
+msgid "Giza, Egypt"
+msgstr ""
+
+#: templates/base.html:1022
+msgid "Newsletter"
+msgstr ""
+
+#: templates/base.html:1024
+msgid "Stay updated with our latest projects."
+msgstr ""
+
+#: templates/base.html:1028
+msgid "Your name (optional)"
+msgstr ""
+
+#: templates/base.html:1034
+msgid "Enter your email"
+msgstr ""
+
+#: templates/base.html:1037 templates/public/contact.html:549
+msgid "Please enter a valid email address (e.g. user@example.com)"
+msgstr ""
+
+#: templates/base.html:1039
+msgid "Keep updated"
+msgstr ""
+
+#: templates/base.html:1048
+msgid "Ptah Studios. Temple of Creation."
+msgstr ""
+
+#: templates/base.html:1050
+msgid "Privacy Policy"
+msgstr ""
+
+#: templates/base.html:1052
+msgid "Terms of Service"
+msgstr ""
+
+#: templates/base.html:1054
+msgid "Cookie Policy"
+msgstr ""
+
+#: templates/public/about-us.html:5 templates/public/about-us.html:9
+msgid "About Us - Ptah Studios"
+msgstr ""
+
+#: templates/public/about-us.html:416
+msgid "Temple of Creation"
+msgstr ""
+
+#: templates/public/about-us.html:418 templates/public/index.html:1390
+#: templates/public/services.html:337
+msgid "Our"
+msgstr ""
+
+#: templates/public/about-us.html:418
+msgid "Story"
+msgstr ""
+
+#: templates/public/about-us.html:419
+msgid ""
+"Where ancient Egyptian craftsmanship meets modern content creation "
+"excellence. Discover the story behind Cairo's premier production studio."
+msgstr ""
+
+#: templates/public/about-us.html:426
+msgid "Born from"
+msgstr ""
+
+#: templates/public/about-us.html:426
+msgid "Craftsmanship"
+msgstr ""
+
+#: templates/public/about-us.html:427
+msgid ""
+"In the heart of Cairo, where ancient craftsmanship meets modern "
+"innovation, PTAH Studios was born. Named after the revered Egyptian god "
+"of creation and craftsmen, our studio embodies the timeless pursuit of "
+"excellence that has defined Egyptian artistry for millennia."
+msgstr ""
+
+#: templates/public/about-us.html:428
+msgid ""
+"What started as a passion project has grown into a full-service "
+"production facility, equipped with cutting-edge technology and staffed by"
+" industry veterans who share our commitment to quality. From podcasters "
+"and content creators to corporate clients and advertising agencies, we've"
+" helped hundreds bring their visions to life."
+msgstr ""
+
+#: templates/public/about-us.html:429
+msgid ""
+"Today, PTAH Studios stands as a testament to what happens when creative "
+"passion meets technical excellence. We're not just a rental facility – "
+"we're your creative partners, dedicated to crafting content that "
+"resonates and inspires."
+msgstr ""
+
+#: templates/public/about-us.html:432
+msgid "PTAH Studios Interior"
+msgstr ""
+
+#: templates/public/about-us.html:440 templates/public/index.html:1287
+msgid "PTAH Vision"
+msgstr ""
+
+#: templates/public/about-us.html:443 templates/public/index.html:1290
+msgid ""
+"\"To redefine the horizon of digital media, transforming fleeting moments"
+" into timeless, high-impact cinematic experiences.\""
+msgstr ""
+
+#: templates/public/about-us.html:450 templates/public/index.html:1297
+msgid "PTAH Mission"
+msgstr ""
+
+#: templates/public/about-us.html:453 templates/public/index.html:1300
+msgid ""
+"\"We architect visual legacies by fusing authentic storytelling with "
+"strategic precision, crafting content that doesn't just engage—it "
+"captivates.\""
+msgstr ""
+
+#: templates/public/about-us.html:461 templates/public/index.html:1308
+msgid "Our Values"
+msgstr ""
+
+#: templates/public/about-us.html:465 templates/public/index.html:1312
+msgid "Creativity First"
+msgstr ""
+
+#: templates/public/about-us.html:466 templates/public/index.html:1313
+msgid ""
+"We believe in pushing creative boundaries and bringing unique visions to "
+"life."
+msgstr ""
+
+#: templates/public/about-us.html:470 templates/public/index.html:1317
+msgid "Excellence"
+msgstr ""
+
+#: templates/public/about-us.html:471 templates/public/index.html:1318
+msgid ""
+"Delivering premium quality in every project, from concept to final "
+"delivery."
+msgstr ""
+
+#: templates/public/about-us.html:475 templates/public/index.html:1322
+msgid "Collaboration"
+msgstr ""
+
+#: templates/public/about-us.html:476 templates/public/index.html:1323
+msgid "Working closely with clients as partners to achieve their creative goals."
+msgstr ""
+
+#: templates/public/about-us.html:480 templates/public/index.html:1327
+msgid "Integrity"
+msgstr ""
+
+#: templates/public/about-us.html:481 templates/public/index.html:1328
+msgid ""
+"Transparent pricing, honest timelines, and professional service every "
+"time."
+msgstr ""
+
+#: templates/public/about-us.html:489
+msgid "What Our"
+msgstr ""
+
+#: templates/public/about-us.html:489
+msgid "Clients Say"
+msgstr ""
+
+#: templates/public/about-us.html:490 templates/public/index.html:1487
+msgid "Professional feedback from our creative partners."
+msgstr ""
+
+#: templates/public/about-us.html:500
+msgid ""
+"\"PTAH Studios exceeded our expectations! Their podcast production "
+"service is top-notch. The team's professionalism and attention to detail "
+"made our corporate podcast series a huge success.\""
+msgstr ""
+
+#: templates/public/about-us.html:505 templates/public/index.html:1502
+msgid "Ahmed Hassan"
+msgstr ""
+
+#: templates/public/about-us.html:506
+msgid "Marketing Director, TechVision Egypt"
+msgstr ""
+
+#: templates/public/about-us.html:517
+msgid ""
+"\"The social media content PTAH created for us went viral! Their creative"
+" team knows exactly how to capture attention and engage audiences. Highly"
+" recommend!\""
+msgstr ""
+
+#: templates/public/about-us.html:522 templates/public/index.html:1536
+msgid "Omar Kamal"
+msgstr ""
+
+#: templates/public/about-us.html:523
+msgid "CEO, StartHub Cairo"
+msgstr ""
+
+#: templates/public/about-us.html:534
+msgid ""
+"\"From concept to final edit, PTAH Studios demonstrated unmatched "
+"professionalism. Their team guided us through every step, and the final "
+"corporate video exceeded all expectations.\""
+msgstr ""
+
+#: templates/public/about-us.html:539
+msgid "Nadia El-Sayed"
+msgstr ""
+
+#: templates/public/about-us.html:540
+msgid "HR Manager, Global Finance Corp"
+msgstr ""
+
+#: templates/public/about-us.html:551
+msgid ""
+"\"We've worked with many studios, but PTAH is in a league of their own. "
+"The quality of equipment, the expertise of the team, and the final output"
+" are simply outstanding.\""
+msgstr ""
+
+#: templates/public/about-us.html:556
+msgid "Mohamed Rashad"
+msgstr ""
+
+#: templates/public/about-us.html:557
+msgid "Founder, Digital Dreams Agency"
+msgstr ""
+
+#: templates/public/about-us.html:568
+msgid ""
+"\"PTAH Studios transformed our brand identity with a stunning promotional"
+" video. Their attention to detail and creative vision brought our story "
+"to life in ways we never imagined.\""
+msgstr ""
+
+#: templates/public/about-us.html:573
+msgid "Layla Mahmoud"
+msgstr ""
+
+#: templates/public/about-us.html:574
+msgid "Brand Manager, Luxe Retail Egypt"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:3
+msgid "Behind The Scenes - Ptah Studios"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:178
+msgid "UNFILTERED ACCESS"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:179
+msgid "Behind The"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:179
+msgid "Scenes"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:181
+msgid ""
+"Step inside the chaos and craftsmanship. A raw look at how we bring our "
+"projects to life."
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:204
+msgid "items"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:210
+msgid "No Footage Released Yet"
+msgstr ""
+
+#: templates/public/behind_the_scenes.html:211
+msgid "Check back soon for new project uploads."
+msgstr ""
+
+#: templates/public/booking.html:6 templates/public/booking.html:10
+msgid "Book a Session - Ptah Studios"
+msgstr ""
+
+#: templates/public/booking.html:732
+msgid "Reserve Your Creation Session"
+msgstr ""
+
+#: templates/public/booking.html:734
+msgid "Book Your"
+msgstr ""
+
+#: templates/public/booking.html:734 templates/public/index.html:1442
+msgid "Session"
+msgstr ""
+
+#: templates/public/booking.html:735
+msgid "Select your studio, choose a date and time, and customize your booking."
+msgstr ""
+
+#: templates/public/booking.html:761
+msgid "Select a Studio"
+msgstr ""
+
+#: templates/public/booking.html:762
+msgid "Choose from our professional studio spaces."
+msgstr ""
+
+#: templates/public/booking.html:783
+msgid "Persons"
+msgstr ""
+
+#: templates/public/booking.html:786 templates/public/portfolio.html:545
+msgid "View Studio"
+msgstr ""
+
+#: templates/public/booking.html:795
+msgid "Please select a studio."
+msgstr ""
+
+#: templates/public/booking.html:797 templates/public/booking.html:866
+#: templates/public/booking.html:954 templates/public/booking.html:1026
+msgid "Next Step"
+msgstr ""
+
+#: templates/public/booking.html:802 templates/public/booking.html:1083
+#: templates/user/dashboard.html:842
+msgid "Date & Time"
+msgstr ""
+
+#: templates/public/booking.html:807
+msgid "Select Date"
+msgstr ""
+
+#: templates/public/booking.html:808
+msgid "Select a date..."
+msgstr ""
+
+#: templates/public/booking.html:817
+msgid "Start Time"
+msgstr ""
+
+#: templates/public/booking.html:820 templates/public/booking.html:1601
+msgid "Select Start"
+msgstr ""
+
+#: templates/public/booking.html:824
+msgid "Opens at 08:00 AM"
+msgstr ""
+
+#: templates/public/booking.html:832
+msgid "End Time"
+msgstr ""
+
+#: templates/public/booking.html:835 templates/public/booking.html:1602
+#: templates/public/booking.html:1671
+msgid "Select End"
+msgstr ""
+
+#: templates/public/booking.html:839
+msgid "Closes at 11:00 PM"
+msgstr ""
+
+#: templates/public/booking.html:848
+msgid "Total Session Duration"
+msgstr ""
+
+#: templates/public/booking.html:849 templates/public/booking.html:934
+#: templates/public/booking.html:1390 templates/public/booking.html:1731
+#: templates/public/booking.html:1744 templates/public/booking.html:1748
+msgid "Hours"
+msgstr ""
+
+#: templates/public/booking.html:851 templates/public/booking.html:1750
+msgid "Select Times"
+msgstr ""
+
+#: templates/public/booking.html:861
+msgid "Please select a valid date and time duration (Min 2 hours)."
+msgstr ""
+
+#: templates/public/booking.html:865 templates/public/booking.html:953
+#: templates/public/booking.html:1025 templates/public/booking.html:1066
+msgid "Back"
+msgstr ""
+
+#: templates/public/booking.html:871
+msgid "Select a Service"
+msgstr ""
+
+#: templates/public/booking.html:873
+msgid "Select a service to see details."
+msgstr ""
+
+#: templates/public/booking.html:893
+msgid "Request Quotation"
+msgstr ""
+
+#: templates/public/booking.html:897
+msgid "From"
+msgstr ""
+
+#: templates/public/booking.html:897 templates/public/booking.html:899
+#: templates/public/booking.html:935 templates/public/booking.html:1101
+#: templates/public/booking.html:1369 templates/public/booking.html:1382
+#: templates/public/booking.html:1389 templates/public/booking.html:1424
+#: templates/public/booking_success.html:459 templates/public/index.html:1473
+#: templates/user/booking_detail.html:493 templates/user/dashboard.html:900
+#: templates/user/dashboard.html:999 templates/user/dashboard.html:1113
+#: templates/user/dashboard.html:1122 templates/user/dashboard.html:1167
+msgid "EGP"
+msgstr ""
+
+#: templates/public/booking.html:899
+msgid "Hour"
+msgstr ""
+
+#: templates/public/booking.html:906 templates/public/services.html:407
+#: templates/user/dashboard.html:934
+msgid "View Details"
+msgstr ""
+
+#: templates/public/booking.html:918
+msgid "Quotation Required:"
+msgstr ""
+
+#: templates/public/booking.html:918
+msgid ""
+"Pricing for this service depends on specific requirements. Submit your "
+"booking and we will contact you with a custom quote."
+msgstr ""
+
+#: templates/public/booking.html:929
+msgid "Pricing Packages"
+msgstr ""
+
+#: templates/public/booking.html:939
+msgid "Additional hours"
+msgstr ""
+
+#: templates/public/booking.html:940
+msgid "EGP / Hr"
+msgstr ""
+
+#: templates/public/booking.html:951
+msgid "Please select a service."
+msgstr ""
+
+#: templates/public/booking.html:959 templates/public/booking.html:1095
+#: templates/user/booking_detail.html:513
+#: templates/user/booking_detail.html:525
+#: templates/user/booking_detail.html:544 templates/user/dashboard.html:1012
+msgid "Equipment & Extras"
+msgstr ""
+
+#: templates/public/booking.html:960
+msgid "Enhance your session with our professional gear."
+msgstr ""
+
+#: templates/public/booking.html:999
+msgid "EGP each"
+msgstr ""
+
+#: templates/public/booking.html:1012
+msgid "Add"
+msgstr ""
+
+#: templates/public/booking.html:1015
+msgid "Remove"
+msgstr ""
+
+#: templates/public/booking.html:1031
+msgid "Final Details"
+msgstr ""
+
+#: templates/public/booking.html:1034
+msgid "First Name"
+msgstr ""
+
+#: templates/public/booking.html:1035
+msgid "John"
+msgstr ""
+
+#: templates/public/booking.html:1036 templates/public/booking.html:1041
+#: templates/public/booking.html:1048 templates/public/booking.html:1053
+#: templates/public/booking.html:1765
+msgid "Required"
+msgstr ""
+
+#: templates/public/booking.html:1039
+msgid "Last Name"
+msgstr ""
+
+#: templates/public/booking.html:1040
+msgid "Doe"
+msgstr ""
+
+#: templates/public/booking.html:1046
+msgid "Email Address"
+msgstr ""
+
+#: templates/public/booking.html:1047
+msgid "example@email.com"
+msgstr ""
+
+#: templates/public/booking.html:1051
+msgid "Phone Number"
+msgstr ""
+
+#: templates/public/booking.html:1052
+msgid "+1 (555) 000-0000"
+msgstr ""
+
+#: templates/public/booking.html:1057 templates/public/contact.html:567
+msgid "Company Name"
+msgstr ""
+
+#: templates/public/booking.html:1058
+msgid "Company Name (Optional)"
+msgstr ""
+
+#: templates/public/booking.html:1061
+msgid "Project Details / Notes"
+msgstr ""
+
+#: templates/public/booking.html:1062
+msgid "Tell us about your project requirements..."
+msgstr ""
+
+#: templates/public/booking.html:1067
+msgid "Submit Booking"
+msgstr ""
+
+#: templates/public/booking.html:1074 templates/public/booking_success.html:389
+msgid "Booking Summary"
+msgstr ""
+
+#: templates/public/booking.html:1076
+msgid "Studio"
+msgstr ""
+
+#: templates/public/booking.html:1078
+msgid "Select Studio"
+msgstr ""
+
+#: templates/public/booking.html:1084 templates/public/booking.html:1324
+#: templates/public/booking.html:1333
+msgid "TBD"
+msgstr ""
+
+#: templates/public/booking.html:1087
+msgid "Selected Service"
+msgstr ""
+
+#: templates/public/booking.html:1089
+msgid "Select Service"
+msgstr ""
+
+#: templates/public/booking.html:1100 templates/user/booking_detail.html:518
+msgid "Total"
+msgstr ""
+
+#: templates/public/booking.html:1112
+msgid "Secure Booking"
+msgstr ""
+
+#: templates/public/booking.html:1113
+msgid "5-Star Rated"
+msgstr ""
+
+#: templates/public/booking.html:1114
+msgid "24/7 Support"
+msgstr ""
+
+#: templates/public/booking.html:1284
+msgid "Capacity"
+msgstr ""
+
+#: templates/public/booking.html:1334
+msgid "Quotation Required"
+msgstr ""
+
+#: templates/public/booking.html:1373
+msgid "h Bundle"
+msgstr ""
+
+#: templates/public/booking.html:1373
+msgid "h Overtime"
+msgstr ""
+
+#: templates/public/booking.html:1376
+msgid "Hour Bundle"
+msgstr ""
+
+#: templates/public/booking.html:1383
+msgid "Minimum Package"
+msgstr ""
+
+#: templates/public/booking.html:1421
+msgid "Quote Request"
+msgstr ""
+
+#: templates/public/booking.html:1692 templates/public/booking.html:1918
+msgid "(Booked)"
+msgstr ""
+
+#: templates/public/booking.html:1737 templates/user/dashboard.html:821
+msgid "Confirmed"
+msgstr ""
+
+#: templates/public/booking.html:1744
+msgid "Even Hours Only"
+msgstr ""
+
+#: templates/public/booking.html:1744
+msgid "Min"
+msgstr ""
+
+#: templates/public/booking.html:1775
+msgid "Invalid email format"
+msgstr ""
+
+#: templates/public/booking.html:1786
+msgid "Invalid Egyptian number"
+msgstr ""
+
+#: templates/public/booking_success.html:5
+#: templates/public/booking_success.html:9
+msgid "Booking Confirmed - Ptah Studios"
+msgstr ""
+
+#: templates/public/booking_success.html:377
+msgid "Booking Request"
+msgstr ""
+
+#: templates/public/booking_success.html:377
+msgid "Received!"
+msgstr ""
+
+#: templates/public/booking_success.html:380
+msgid "To secure your booking, please transfer the booking fee via InstaPay to"
+msgstr ""
+
+#: templates/public/booking_success.html:380
+msgid "and send us a screenshot of the payment receipt."
+msgstr ""
+
+#: templates/public/booking_success.html:384
+msgid "Your Booking Reference"
+msgstr ""
+
+#: templates/public/booking_success.html:393
+#: templates/user/booking_detail.html:501 templates/user/dashboard.html:841
+#: templates/user/dashboard.html:976
+msgid "Service"
+msgstr ""
+
+#: templates/public/booking_success.html:400 templates/user/dashboard.html:985
+msgid "Date"
+msgstr ""
+
+#: templates/public/booking_success.html:414 templates/user/dashboard.html:989
+msgid "Time"
+msgstr ""
+
+#: templates/public/booking_success.html:427
+#: templates/user/booking_detail.html:472
+msgid "Duration"
+msgstr ""
+
+#: templates/public/booking_success.html:428
+#: templates/user/booking_detail.html:473
+msgid "hours"
+msgstr ""
+
+#: templates/public/booking_success.html:432
+msgid "Complexity"
+msgstr ""
+
+#: templates/public/booking_success.html:437
+msgid "Standard"
+msgstr ""
+
+#: templates/public/booking_success.html:443 templates/user/dashboard.html:845
+#: templates/user/dashboard.html:980
+msgid "Status"
+msgstr ""
+
+#: templates/public/booking_success.html:458
+msgid "Estimated Total"
+msgstr ""
+
+#: templates/public/booking_success.html:466
+msgid "What Happens Next?"
+msgstr ""
+
+#: templates/public/booking_success.html:469
+msgid "Review:"
+msgstr ""
+
+#: templates/public/booking_success.html:469
+msgid "Our team will review your booking request within 24 hours"
+msgstr ""
+
+#: templates/public/booking_success.html:470
+msgid "Confirmation:"
+msgstr ""
+
+#: templates/public/booking_success.html:470
+msgid ""
+"You'll receive a detailed confirmation message to your number with "
+"session specifics"
+msgstr ""
+
+#: templates/public/booking_success.html:471
+msgid "Discovery Call:"
+msgstr ""
+
+#: templates/public/booking_success.html:471
+msgid ""
+"We'll schedule a brief call to discuss your project vision and "
+"requirements"
+msgstr ""
+
+#: templates/public/booking_success.html:472
+msgid "Final Confirmation:"
+msgstr ""
+
+#: templates/public/booking_success.html:472
+msgid "Once all details are aligned, your session will be officially confirmed"
+msgstr ""
+
+#: templates/public/booking_success.html:480 templates/user/dashboard.html:796
+msgid "Back to Home"
+msgstr ""
+
+#: templates/public/booking_success.html:486
+msgid "View Studios"
+msgstr ""
+
+#: templates/public/bts_folder.html:5 templates/public/portfolio_item.html:5
+#: templates/public/service_detail.html:11 templates/user/booking_detail.html:6
+#: templates/user/dashboard.html:6
+msgid "Ptah Studios"
+msgstr ""
+
+#: templates/public/bts_folder.html:264
+msgid "Back to Archives"
+msgstr ""
+
+#: templates/public/bts_folder.html:273
+msgid "Assets"
+msgstr ""
+
+#: templates/public/bts_folder.html:288
+msgid "Video"
+msgstr ""
+
+#: templates/public/bts_folder.html:296
+msgid "BTS Image"
+msgstr ""
+
+#: templates/public/bts_folder.html:304
+msgid "No media uploaded to this folder yet."
+msgstr ""
+
+#: templates/public/bts_folder.html:319
+msgid "Press ESC to close"
+msgstr ""
+
+#: templates/public/contact.html:9
+msgid "Contact Us - Ptah Studios"
+msgstr ""
+
+#: templates/public/contact.html:519
+msgid "Let's Connect"
+msgstr ""
+
+#: templates/public/contact.html:521
+msgid "Get in"
+msgstr ""
+
+#: templates/public/contact.html:521
+msgid "Touch"
+msgstr ""
+
+#: templates/public/contact.html:522
+msgid ""
+"Have a question or want to discuss your project? We'd love to hear from "
+"you and bring your vision to life."
+msgstr ""
+
+#: templates/public/contact.html:532
+msgid "Send Us a Message"
+msgstr ""
+
+#: templates/public/contact.html:540
+msgid "Full Name"
+msgstr ""
+
+#: templates/public/contact.html:541
+msgid "John Doe"
+msgstr ""
+
+#: templates/public/contact.html:548
+msgid "Email"
+msgstr ""
+
+#: templates/public/contact.html:549
+msgid "name@company.com"
+msgstr ""
+
+#: templates/public/contact.html:558
+msgid "Phone"
+msgstr ""
+
+#: templates/public/contact.html:559
+msgid "+20 123 456 7890"
+msgstr ""
+
+#: templates/public/contact.html:559 templates/public/contact.html:595
+msgid "Must be a valid Egyptian Number (010, 011, 012, 015)"
+msgstr ""
+
+#: templates/public/contact.html:566
+msgid "Company"
+msgstr ""
+
+#: templates/public/contact.html:573
+msgid "Company Size"
+msgstr ""
+
+#: templates/public/contact.html:578
+msgid "Service Interested In"
+msgstr ""
+
+#: templates/public/contact.html:584
+msgid "How did you know about us?"
+msgstr ""
+
+#: templates/public/contact.html:589 templates/public/contact.html:752
+msgid "Please Specify"
+msgstr ""
+
+#: templates/public/contact.html:590
+msgid "Enter details..."
+msgstr ""
+
+#: templates/public/contact.html:594
+msgid "Referrer's Number"
+msgstr ""
+
+#: templates/public/contact.html:595
+msgid "+20 1xx xxx xxxx"
+msgstr ""
+
+#: templates/public/contact.html:602
+msgid "Message"
+msgstr ""
+
+#: templates/public/contact.html:603
+msgid "Tell us about your project..."
+msgstr ""
+
+#: templates/public/contact.html:611
+msgid "Send Message"
+msgstr ""
+
+#: templates/public/contact.html:619
+msgid "Contact Information"
+msgstr ""
+
+#: templates/public/contact.html:627
+msgid "Our Location"
+msgstr ""
+
+#: templates/public/contact.html:628
+msgid "5th Disrict, 6 October City"
+msgstr ""
+
+#: templates/public/contact.html:637
+msgid "Email Us"
+msgstr ""
+
+#: templates/public/contact.html:647
+msgid "Call Us"
+msgstr ""
+
+#: templates/public/contact.html:657
+msgid "Live Chat"
+msgstr ""
+
+#: templates/public/contact.html:658
+msgid "Available 24/7"
+msgstr ""
+
+#: templates/public/contact.html:658
+msgid "Response within minutes"
+msgstr ""
+
+#: templates/public/contact.html:665
+msgid "Business Hours"
+msgstr ""
+
+#: templates/public/contact.html:668
+msgid "Monday - Friday"
+msgstr ""
+
+#: templates/public/contact.html:669
+msgid "9:00 AM - 6:00 PM"
+msgstr ""
+
+#: templates/public/contact.html:672
+msgid "Saturday"
+msgstr ""
+
+#: templates/public/contact.html:673
+msgid "10:00 AM - 4:00 PM"
+msgstr ""
+
+#: templates/public/contact.html:676
+msgid "Sunday"
+msgstr ""
+
+#: templates/public/contact.html:677
+msgid "Closed"
+msgstr ""
+
+#: templates/public/contact.html:740
+msgid "Referrer Name"
+msgstr ""
+
+#: templates/public/contact.html:741
+msgid "Enter friend's name"
+msgstr ""
+
+#: templates/public/contact.html:753
+msgid "e.g. Event name..."
+msgstr ""
+
+#: templates/public/index.html:3
+msgid "Ptah Studios - Temple of Creation"
+msgstr ""
+
+#: templates/public/index.html:1253
+msgid "God of Creation & Craftsmen"
+msgstr ""
+
+#: templates/public/index.html:1256
+msgid "WHERE"
+msgstr ""
+
+#: templates/public/index.html:1257
+msgid "CREATION"
+msgstr ""
+
+#: templates/public/index.html:1258
+msgid "COMES"
+msgstr ""
+
+#: templates/public/index.html:1259
+msgid "ALIVE"
+msgstr ""
+
+#: templates/public/index.html:1262
+msgid ""
+"The ancient Egyptian god of craftsmen and architects. We craft visual "
+"masterpieces that tell your story."
+msgstr ""
+
+#: templates/public/index.html:1266 templates/public/service_detail.html:486
+msgid "Book Your Session"
+msgstr ""
+
+#: templates/public/index.html:1269
+msgid "View Our Service"
+msgstr ""
+
+#: templates/public/index.html:1276
+msgid "Ancient Egyptian Statue"
+msgstr ""
+
+#: templates/public/index.html:1336 templates/public/portfolio.html:497
+msgid "Explore Our"
+msgstr ""
+
+#: templates/public/index.html:1336 templates/public/portfolio.html:497
+#: templates/public/portfolio_item.html:1052
+msgid "Studios"
+msgstr ""
+
+#: templates/public/index.html:1337
+msgid "State-of-the-art production environments designed for creators."
+msgstr ""
+
+#: templates/public/index.html:1341
+msgid "Scroll Left"
+msgstr ""
+
+#: templates/public/index.html:1365
+msgid "View Studio Details"
+msgstr ""
+
+#: templates/public/index.html:1372
+msgid "No featured studios available at the moment."
+msgstr ""
+
+#: templates/public/index.html:1378
+msgid "Scroll Right"
+msgstr ""
+
+#: templates/public/index.html:1383
+msgid "See All Spaces"
+msgstr ""
+
+#: templates/public/index.html:1389
+msgid "Our Expertise"
+msgstr ""
+
+#: templates/public/index.html:1391
+msgid "Professional creative services delivered with studio precision."
+msgstr ""
+
+#: templates/public/index.html:1411
+msgid "View"
+msgstr ""
+
+#: templates/public/index.html:1411
+msgid "details"
+msgstr ""
+
+#: templates/public/index.html:1419
+msgid "Special Offers"
+msgstr ""
+
+#: templates/public/index.html:1420
+msgid "Exclusive"
+msgstr ""
+
+#: templates/public/index.html:1420
+msgid "Packages"
+msgstr ""
+
+#: templates/public/index.html:1421
+msgid "Bundled solutions designed to give you maximum value."
+msgstr ""
+
+#: templates/public/index.html:1432
+msgid "SAVE"
+msgstr ""
+
+#: templates/public/index.html:1476
+msgid "Contact Sales"
+msgstr ""
+
+#: templates/public/index.html:1486
+msgid "What our clients"
+msgstr ""
+
+#: templates/public/index.html:1486
+msgid "Says"
+msgstr ""
+
+#: templates/public/index.html:1497
+msgid ""
+"\"PTAH Studios exceeded our expectations! Their podcast production "
+"service is top-notch. The team's attention to detail made our series a "
+"huge success.\""
+msgstr ""
+
+#: templates/public/index.html:1503
+msgid "TechVision Egypt"
+msgstr ""
+
+#: templates/public/index.html:1514
+msgid ""
+"\"Working on our product ads was incredible. They understood our brand "
+"vision perfectly and delivered stunning visuals.\""
+msgstr ""
+
+#: templates/public/index.html:1519
+msgid "Sarah Mohamed"
+msgstr ""
+
+#: templates/public/index.html:1520
+msgid "Bloom Cosmetics"
+msgstr ""
+
+#: templates/public/index.html:1531
+msgid ""
+"\"The social media content PTAH created went viral! Their creative team "
+"knows exactly how to engage audiences.\""
+msgstr ""
+
+#: templates/public/index.html:1537
+msgid "StartHub Cairo"
+msgstr ""
+
+#: templates/public/portfolio.html:9
+msgid "Portfolio - Ptah Studios"
+msgstr ""
+
+#: templates/public/portfolio.html:498
+msgid ""
+"Discover our state-of-the-art production spaces designed to bring your "
+"creative vision to life"
+msgstr ""
+
+#: templates/public/portfolio.html:505
+msgid "All Studios"
+msgstr ""
+
+#: templates/public/portfolio.html:508
+msgid "Production"
+msgstr ""
+
+#: templates/public/portfolio.html:511
+msgid "Podcast"
+msgstr ""
+
+#: templates/public/portfolio.html:514
+msgid "Commercial"
+msgstr ""
+
+#: templates/public/portfolio.html:517
+msgid "Educational"
+msgstr ""
+
+#: templates/public/portfolio.html:553
+msgid "No Studios Found"
+msgstr ""
+
+#: templates/public/portfolio.html:554
+msgid "Check back soon for new additions to our studio portfolio."
+msgstr ""
+
+#: templates/public/portfolio_item.html:915
+msgid "Back to Studios"
+msgstr ""
+
+#: templates/public/portfolio_item.html:954
+msgid "Watch Studio Tour"
+msgstr ""
+
+#: templates/public/portfolio_item.html:967
+msgid "Studio Gallery"
+msgstr ""
+
+#: templates/public/portfolio_item.html:983
+msgid "About This Studio"
+msgstr ""
+
+#: templates/public/portfolio_item.html:988
+msgid "Studio Features"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1009
+msgid "Studio Details"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1012
+msgid "Studio Name"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1018
+msgid "Category"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1022
+msgid "Added"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1029
+msgid "Ready to Create?"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1030
+msgid ""
+"Book this studio for your next production. Our team will ensure "
+"everything is set up for your success."
+msgstr ""
+
+#: templates/public/portfolio_item.html:1035
+msgid "Book This Studio"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1040 templates/public/services.html:345
+msgid "Book a Session"
+msgstr ""
+
+#: templates/public/portfolio_item.html:1052
+msgid "More"
+msgstr ""
+
+#: templates/public/pricing.html:3
+msgid "Pricing & FAQ - Ptah Studios"
+msgstr ""
+
+#: templates/public/pricing.html:210
+msgid "Support Center"
+msgstr ""
+
+#: templates/public/pricing.html:212
+msgid "Support"
+msgstr ""
+
+#: templates/public/pricing.html:213
+msgid "Everything you need to know before booking your creative session."
+msgstr ""
+
+#: templates/public/pricing.html:218
+msgid "Frequently Asked"
+msgstr ""
+
+#: templates/public/pricing.html:218
+msgid "Questions"
+msgstr ""
+
+#: templates/public/pricing.html:222
+msgid "Do you offer package discounts?"
+msgstr ""
+
+#: templates/public/pricing.html:223
+msgid ""
+"Yes! Combine multiple sessions or services for custom quotes tailored to "
+"your long-term projects."
+msgstr ""
+
+#: templates/public/pricing.html:227
+msgid "What's your cancellation policy?"
+msgstr ""
+
+#: templates/public/pricing.html:228
+msgid ""
+"We require 48 hours notice. Cancellations made within shorter timeframes "
+"may incur a service fee."
+msgstr ""
+
+#: templates/public/pricing.html:232
+msgid "Can I get a custom quote?"
+msgstr ""
+
+#: templates/public/pricing.html:233
+msgid ""
+"Every vision is unique. Contact us directly for a proposal designed for "
+"your specific production needs."
+msgstr ""
+
+#: templates/public/pricing.html:237
+msgid "Do you offer rush delivery?"
+msgstr ""
+
+#: templates/public/pricing.html:238
+msgid ""
+"Yes, rush editing and production options are available for most services "
+"at an additional premium."
+msgstr ""
+
+#: templates/public/pricing.html:242
+msgid "What's included in the base price?"
+msgstr ""
+
+#: templates/public/pricing.html:243
+msgid ""
+"Base rates typically include studio access, standard equipment, and basic"
+" post-production support."
+msgstr ""
+
+#: templates/public/pricing.html:247
+msgid "Do you offer ongoing contracts?"
+msgstr ""
+
+#: templates/public/pricing.html:248
+msgid ""
+"We offer monthly retainer packages for consistent content creators and "
+"enterprise partners."
+msgstr ""
+
+#: templates/public/service_detail.html:425
+msgid "Back to Services"
+msgstr ""
+
+#: templates/public/service_detail.html:458
+msgid "Premium Quality"
+msgstr ""
+
+#: templates/public/service_detail.html:462
+msgid "Satisfaction Guaranteed"
+msgstr ""
+
+#: templates/public/service_detail.html:469
+msgid "Need more info?"
+msgstr ""
+
+#: templates/public/service_detail.html:480
+msgid "How It"
+msgstr ""
+
+#: templates/public/service_detail.html:480
+msgid "Works"
+msgstr ""
+
+#: templates/public/service_detail.html:487
+msgid "Select your preferred date and time through our simple booking form"
+msgstr ""
+
+#: templates/public/service_detail.html:493
+msgid "Pre-Production"
+msgstr ""
+
+#: templates/public/service_detail.html:494
+msgid "We'll discuss your vision and prepare everything needed for success"
+msgstr ""
+
+#: templates/public/service_detail.html:500
+msgid "Production Day"
+msgstr ""
+
+#: templates/public/service_detail.html:501
+msgid "Experience our professional studio environment and expert team"
+msgstr ""
+
+#: templates/public/service_detail.html:507
+msgid "Final Delivery"
+msgstr ""
+
+#: templates/public/service_detail.html:508
+msgid "Receive your polished deliverables on time, ready to use"
+msgstr ""
+
+#: templates/public/services.html:5 templates/public/services.html:9
+msgid "Our Services - Ptah Studios"
+msgstr ""
+
+#: templates/public/services.html:334
+msgid "Premium Services"
+msgstr ""
+
+#: templates/public/services.html:341
+msgid ""
+"Professional creative production solutions tailored to your unique "
+"vision. From podcast production to cinematic video, we bring your ideas "
+"to life."
+msgstr ""
+
+#: templates/public/services.html:348
+msgid "Get in Touch"
+msgstr ""
+
+#: templates/public/services.html:356
+msgid "What We Offer"
+msgstr ""
+
+#: templates/public/services.html:357
+msgid "Premium"
+msgstr ""
+
+#: templates/public/services.html:357
+msgid "Production Services"
+msgstr ""
+
+#: templates/public/services.html:358
+msgid ""
+"Professional creative solutions tailored to bring your vision to life "
+"with studio-quality results."
+msgstr ""
+
+#: templates/public/services.html:392
+msgid "Professional Equipment"
+msgstr ""
+
+#: templates/public/services.html:393
+msgid "Expert Team"
+msgstr ""
+
+#: templates/public/services.html:394
+msgid "Quick Turnaround"
+msgstr ""
+
+#: templates/public/services.html:395
+msgid "Unlimited Revisions"
+msgstr ""
+
+#: templates/public/services.html:403
+msgid "Build Package"
+msgstr ""
+
+#: templates/user/booking_detail.html:6 templates/user/dashboard.html:963
+msgid "Booking Details"
+msgstr ""
+
+#: templates/user/booking_detail.html:403
+msgid "Booking"
+msgstr ""
+
+#: templates/user/booking_detail.html:403
+msgid "Details"
+msgstr ""
+
+#: templates/user/booking_detail.html:404 templates/user/dashboard.html:840
+msgid "Reference"
+msgstr ""
+
+#: templates/user/booking_detail.html:407
+msgid "Back to My Bookings"
+msgstr ""
+
+#: templates/user/booking_detail.html:416
+msgid "Booking Confirmation"
+msgstr ""
+
+#: templates/user/booking_detail.html:445
+msgid "Booking Date"
+msgstr ""
+
+#: templates/user/booking_detail.html:457
+msgid "Time Slot"
+msgstr ""
+
+#: templates/user/booking_detail.html:476
+msgid "Studio Location"
+msgstr ""
+
+#: templates/user/booking_detail.html:481
+msgid "Not assigned"
+msgstr ""
+
+#: templates/user/booking_detail.html:486
+msgid "Studio Capacity"
+msgstr ""
+
+#: templates/user/booking_detail.html:488
+msgid "persons"
+msgstr ""
+
+#: templates/user/booking_detail.html:492 templates/user/dashboard.html:1005
+msgid "Total Amount"
+msgstr ""
+
+#: templates/user/booking_detail.html:498
+msgid "Cost Breakdown"
+msgstr ""
+
+#: templates/user/booking_detail.html:501 templates/user/dashboard.html:883
+msgid "h"
+msgstr ""
+
+#: templates/user/booking_detail.html:501
+msgid "hr"
+msgstr ""
+
+#: templates/user/booking_detail.html:507
+msgid "Studio Time"
+msgstr ""
+
+#: templates/user/booking_detail.html:547
+msgid "No additional equipment selected"
+msgstr ""
+
+#: templates/user/booking_detail.html:554
+msgid "Contact Support"
+msgstr ""
+
+#: templates/user/booking_detail.html:557 templates/user/dashboard.html:1027
+msgid "New Booking"
+msgstr ""
+
+#: templates/user/dashboard.html:6
+msgid "My Bookings"
+msgstr ""
+
+#: templates/user/dashboard.html:792
+msgid "My"
+msgstr ""
+
+#: templates/user/dashboard.html:793
+msgid "View and manage your studio bookings"
+msgstr ""
+
+#: templates/user/dashboard.html:801
+msgid "Welcome back"
+msgstr ""
+
+#: templates/user/dashboard.html:802
+msgid ""
+"Here's an overview of your booking activity. Click on any booking to view"
+" details."
+msgstr ""
+
+#: templates/user/dashboard.html:813
+msgid "All Bookings"
+msgstr ""
+
+#: templates/user/dashboard.html:817
+msgid "Pending"
+msgstr ""
+
+#: templates/user/dashboard.html:825
+msgid "Completed"
+msgstr ""
+
+#: templates/user/dashboard.html:832
+msgid "Search by reference or service..."
+msgstr ""
+
+#: templates/user/dashboard.html:843
+msgid "Location"
+msgstr ""
+
+#: templates/user/dashboard.html:844
+msgid "Amount"
+msgstr ""
+
+#: templates/user/dashboard.html:846
+msgid "Actions"
+msgstr ""
+
+#: templates/user/dashboard.html:892
+msgid "persons max"
+msgstr ""
+
+#: templates/user/dashboard.html:895
+msgid "No Studio Assigned"
+msgstr ""
+
+#: templates/user/dashboard.html:943
+msgid "No bookings found."
+msgstr ""
+
+#: templates/user/dashboard.html:945
+msgid "Book a session now"
+msgstr ""
+
+#: templates/user/dashboard.html:953
+msgid "No bookings found with this status or search criteria."
+msgstr ""
+
+#: templates/user/dashboard.html:969
+msgid "Booking Reference"
+msgstr ""
+
+#: templates/user/dashboard.html:995
+msgid "Service Cost Breakdown"
+msgstr ""
+
+#: templates/user/dashboard.html:998
+msgid "Service Cost"
+msgstr ""
+
+#: templates/user/dashboard.html:1014 templates/user/dashboard.html:1150
+msgid "No equipment selected"
+msgstr ""
+
+#: templates/user/dashboard.html:1020
+msgid "Need to make changes to your booking?"
+msgstr ""
+
+#: templates/user/dashboard.html:1121
+msgid "h session @"
+msgstr ""
+
+#: templates/user/dashboard.html:1121
+msgid "EGP/hr"
+msgstr ""
+
